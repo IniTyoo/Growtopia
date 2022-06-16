@@ -934,6 +934,22 @@ public:
 
 	WorldStruct* world = NULL;
 
+	
+	gameupdatepacket_t* get_struct(ENetPacket* packet) {
+	    if (packet->dataLength < sizeof(gameupdatepacket_t) - 4)
+	        return nullptr;
+	    gametankpacket_t* tank = reinterpret_cast<gametankpacket_t*>(packet->data);
+	    gameupdatepacket_t* gamepacket = reinterpret_cast<gameupdatepacket_t*>(packet->data + 4);
+	    if (gamepacket->m_packet_flags & 8) {
+	        if (packet->dataLength < gamepacket->m_data_size + 60) {
+	            printf("got invalid packet. (too small)\n");
+	            return nullptr;
+	        }
+	        return reinterpret_cast<gameupdatepacket_t*>(&tank->m_data);
+	    } else
+	        gamepacket->m_data_size = 0;
+	    return gamepacket;
+	}
 	void ProcessTankUpdatePacket(float someVal, EntityComponent* entityComponent, BYTE* structPointer)
 	{
 		switch (*(char*)structPointer)
