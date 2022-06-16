@@ -22,10 +22,6 @@ struct vec2i {
 	int x;
 	int y;
 };
-
-uint8_t* get_extended(gameupdatepacket_t* packet) {
-        return reinterpret_cast<uint8_t*>(&packet->m_data_size);
-}
 class GrowtopiaBot
 {
 public:
@@ -34,8 +30,6 @@ public:
 
 	int login_user = 0;
 	int login_token = 0;
-    	string UUIDToken;
-    	string doorID;
 
 	string currentWorld;
 	int timeFromWorldEnter = 0; // in 10mss...
@@ -75,7 +69,6 @@ public:
 	};
 
 	vector<ObjectData> objects;
-	vector<Item> items;
 
 	string uname;
 	string upass;
@@ -198,7 +191,7 @@ public:
 	void packet_type3(string text);
 	void packet_type6(string text);
 	void packet_unknown(ENetPacket *packet);
-	void OnSendToServer(string address, int port, int userId, int token, string doorID, string UUIDToken);
+	void OnSendToServer(string address, int port, int userId, int token);
 	void move(std::string to, int blocks);
 	void sleepforgo();
 	void OnConsoleMessage(string message);
@@ -397,8 +390,6 @@ public:
 		int port;
 		int userId;
 		int token;
-		string doorID;
-		string UUIDToken;
 	};
 
 	struct OnConsoleMessageStruct
@@ -776,7 +767,7 @@ public:
 		}
 		if (action == "OnSendToServer")
 		{
-			OnSendToServer(((OnSendToServerStruct*)dataStruct)->address, ((OnSendToServerStruct*)dataStruct)->port, ((OnSendToServerStruct*)dataStruct)->userId, ((OnSendToServerStruct*)dataStruct)->token, ((OnSendToServerStruct*)dataStruct)->doorID, ((OnSendToServerStruct*)dataStruct)->UUIDToken);
+			OnSendToServer(((OnSendToServerStruct*)dataStruct)->address, ((OnSendToServerStruct*)dataStruct)->port, ((OnSendToServerStruct*)dataStruct)->userId, ((OnSendToServerStruct*)dataStruct)->token);
 		}
 		else if (action == "OnConsoleMessage")
 		{
@@ -875,52 +866,6 @@ public:
 			break;
 		}
 	}
-	void decPacket(gameupdatepacket_t* packet) {
-		if (packet) {
-			variantlist_t varlist{};
-	   	 auto extended = get_extended(packet);
-	    	if (extended) {
-	    		extended += 4;
-	    		varlist.serialize_from_mem(extended);
-	    		//cout << "varlist: " << varlist.print() << endl;
-	    		auto func = varlist[0].get_string();
-                
-                //cout << varlist.print() << endl;
-	    		
-                
-                if (func == "OnRequestWorldSelectMenu") {
-	    			localX = -1;localY=-1;localid=-1;world->name="EXIT";
-	    		}
-	    		else if (func == "OnSendToServer") {
-	    			auto port = varlist[1].get_uint32();
-                    login_user = varlist[3].get_uint32();
-                    login_token = varlist[2].get_uint32();
-                    auto str = varlist[4].get_string();
-                    doorID = str.substr(16,1);
-                    UUIDToken = str.substr(18,32);
-                    auto address = str.substr(0,15);
-					connectClient(address, port);
-	    		}
-	    		else if (func == "onShowCaptcha") {
-	    			auto ctx = varlist[1].get_string();
-	    			if (ctx.find("add_label_with_icon|big|`wAre you Human?``|left|206|") != std::string::npos) fixCaptcha(ctx);
-                    if (ctx.find("add_puzzle_captcha|") != std::string::npos){
-                        cout << "Found PUZZLE " << endl;
-                    };
-	    		}
-	    		else if (func == "OnSpawn") {
-	    			auto ctx = varlist[1].get_string();
-	    			if (ctx.find("type|local") != std::string::npos) {
-	    				string net = explode("\n", explode("netID|", ctx)[1])[0];
-	    				auto gg = explode("|", explode("\n", explode("posXY|", ctx)[1])[0]);//posXY|320|736
-	    				int netid = atoi(net.c_str());
-	    				localid = netid;localX = atoi(gg[0].c_str());localY=atoi(gg[1].c_str());	    				
-	    				//cout << uname << " Local netid: " << localid << " X: " << localX << " Y: " << localY << endl;
-	    			}	    				 
-	    		}
-			}
-		}
-	}
 
 	struct WorldThingStruct
 	{
@@ -987,22 +932,6 @@ public:
 
 	WorldStruct* world = NULL;
 
-	
-	gameupdatepacket_t* get_struct(ENetPacket* packet) {
-	    if (packet->dataLength < sizeof(gameupdatepacket_t) - 4)
-	        return nullptr;
-	    gametankpacket_t* tank = reinterpret_cast<gametankpacket_t*>(packet->data);
-	    gameupdatepacket_t* gamepacket = reinterpret_cast<gameupdatepacket_t*>(packet->data + 4);
-	    if (gamepacket->m_packet_flags & 8) {
-	        if (packet->dataLength < gamepacket->m_data_size + 60) {
-	            printf("got invalid packet. (too small)\n");
-	            return nullptr;
-	        }
-	        return reinterpret_cast<gameupdatepacket_t*>(&tank->m_data);
-	    } else
-	        gamepacket->m_data_size = 0;
-	    return gamepacket;
-	}
 	void ProcessTankUpdatePacket(float someVal, EntityComponent* entityComponent, BYTE* structPointer)
 	{
 		switch (*(char*)structPointer)
@@ -1010,9 +939,8 @@ public:
 		case 1:
 		{
 			try {
-				//SerializeFromMem(GetExtendedDataPointerFromTankPacket(structPointer), *(int*)(structPointer + 52), 0, *(int*)(structPointer + 4));
-				auto packet = get_struct(packets);
-				decPacket(packet);
+				SerializeFromMem(GetExtendedDataPointerFromTankPacket(structPointer), *(int*)(structPointer + 52), 0, *(int*)(structPointer + 4));
+
 			}
 			catch (int e)
 			{
