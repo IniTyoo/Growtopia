@@ -1545,50 +1545,6 @@ void GrowtopiaBot::OnConsoleMessage(string message)
     string strippedMessage = stripMessage(message);
     cout << strippedMessage << endl;
 
-    /*
-    // Nuked Logs
-    if (message.find("was nuked from orbit") != string::npos) {
-        nukedlogs = message.substr(message.find(">>") + 5, message.length() - message.find(">>") - 1);
-        utils::replace(nukedlogs, "``", "");
-        DiscordWebhookSenderNukedLogs1(nukedlogs);
-        DiscordWebhookSenderNukedLogs2(nukedlogs);
-        DiscordWebhookSenderNukedLogs3(nukedlogs);
-    }
-    
-    // Ban System Logs
-    if (message.find("to see the rules!") != string::npos) {
-        bansystemlogs = message.substr(message.find("`#") + 2, message.length() - message.find("`#") - 1);
-        utils::replace(bansystemlogs, "`#", "");
-        utils::replace(bansystemlogs, "```$", "");
-        utils::replace(bansystemlogs, "``", "");
-        utils::replace(bansystemlogs, "``", "");
-        utils::replace(bansystemlogs, "``", "");
-        utils::replace(bansystemlogs, "``", "");
-        utils::replace(bansystemlogs, "``", "");
-        utils::replace(bansystemlogs, "`2", "");
-        utils::replace(bansystemlogs, "`^", "");
-        utils::replace(bansystemlogs, "`4", "");
-        utils::replace(bansystemlogs, "`4", "");
-        utils::replace(bansystemlogs, "`w", "");
-        DiscordWebhookSender3(bansystemlogs);
-    }
-    */
-
-    // Donate Logs
-    if (strippedMessage.find("into the Donation Box") != string::npos) {
-        donatelogs = strippedMessage.substr(strippedMessage.find("[[") + 2, strippedMessage.length() - strippedMessage.find("[[") - 1);
-        /*
-        utils::replace(donatelogs, "[```5[```w", "");
-        utils::replace(donatelogs, "`5", "");
-        utils::replace(donatelogs, "``", "");
-        utils::replace(donatelogs, "``", "");
-        utils::replace(donatelogs, "`2", "");
-        utils::replace(donatelogs, "`5]```7]``", "");
-        */
-        utils::replace(donatelogs, "]]", "");
-        DiscordWebhookSender9(donatelogs);
-    }
-
     if (autoAccess) {
         if (message.find("wants to add you to a") != std::string::npos && message.find("Wrench yourself to accept.") != std::string::npos && localnetid != 0) {
             SendPacket(2, "action|wrench\n|netid|" + to_string(localnetid), peer);
