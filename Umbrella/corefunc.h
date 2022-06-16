@@ -191,7 +191,7 @@ public:
 	void packet_type3(string text);
 	void packet_type6(string text);
 	void packet_unknown(ENetPacket *packet);
-	void OnSendToServer(string address, int port, int userId, int token);
+	void OnSendToServer(string address, int port, int userId, int token, string doorID, string UUIDToken);
 	void move(std::string to, int blocks);
 	void sleepforgo();
 	void OnConsoleMessage(string message);
@@ -390,6 +390,8 @@ public:
 		int port;
 		int userId;
 		int token;
+		string doorID;
+		string UUIDToken;
 	};
 
 	struct OnConsoleMessageStruct
@@ -767,7 +769,7 @@ public:
 		}
 		if (action == "OnSendToServer")
 		{
-			OnSendToServer(((OnSendToServerStruct*)dataStruct)->address, ((OnSendToServerStruct*)dataStruct)->port, ((OnSendToServerStruct*)dataStruct)->userId, ((OnSendToServerStruct*)dataStruct)->token);
+			OnSendToServer(((OnSendToServerStruct*)dataStruct)->address, ((OnSendToServerStruct*)dataStruct)->port, ((OnSendToServerStruct*)dataStruct)->userId, ((OnSendToServerStruct*)dataStruct)->token, ((OnSendToServerStruct*)dataStruct)->doorID, ((OnSendToServerStruct*)dataStruct)->UUIDToken);
 		}
 		else if (action == "OnConsoleMessage")
 		{
