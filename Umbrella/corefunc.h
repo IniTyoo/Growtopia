@@ -34,6 +34,8 @@ public:
 
 	int login_user = 0;
 	int login_token = 0;
+    	string UUIDToken;
+    	string doorID;
 
 	string currentWorld;
 	int timeFromWorldEnter = 0; // in 10mss...
