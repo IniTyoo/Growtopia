@@ -22,6 +22,10 @@ struct vec2i {
 	int x;
 	int y;
 };
+
+uint8_t* get_extended(gameupdatepacket_t* packet) {
+        return reinterpret_cast<uint8_t*>(&packet->m_data_size);
+}
 class GrowtopiaBot
 {
 public:
