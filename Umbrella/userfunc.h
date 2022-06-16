@@ -912,20 +912,25 @@ void GrowtopiaBot::collecting(int range) {
 
 void GrowtopiaBot::onLoginRequested()
 {
+    http::Request request{ "http://growtopia1.com/growtopia/server_data.php" };
+
+	const auto response = request.send("POST", "version=1&protocol=128", { "Content-Type: application/x-www-form-urlencoded" });
+	std::string body = std::string{ response.body.begin(), response.body.end() };
+    	auto omg = string_split(body, "\n");
 	string token;
 	if (!login_user && !login_token) {
 		token = "";
 	} else {
-		token = "\nuser|" + std::to_string(login_user) + "\ntoken|" + std::to_string(login_token);
+		token = "\nuser|" + std::to_string(login_user) + "\ntoken|" + std::to_string(login_token) + "\nUUIDToken|" + UUIDToken + "\ndoorID" + doorID; 
 	}
 	string ver = gameVersion;
 	string hash = std::to_string((unsigned int)rand());
 	string hash2 = std::to_string((unsigned int)rand());
-    string packet = "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|UmbrellaBot\nf|1\nprotocol|158\ngame_version|" + ver + "\nfz|5367464\nlmode|0\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\nmeta|defined\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|id\nhash|" + hash + "\nmac|" + generateMac() + "" + token + "\nwk|879B19E330180B0568DE7FBF65895029\nzf|-2140678549";
-    cout << packet + "\n";
-    SendPacket(2, "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|UmbrellaBot\nf|1\nprotocol|158\ngame_version|" + ver + "\nfz|5367464\nlmode|0\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\nmeta|defined\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|id\nhash|" + hash + "\nmac|" + generateMac() + "" + token + "\n\nUUIDToken|" + uuidtoken + "\ndoorID|0wk|879B19E330180B0568DE7FBF65895029\nzf|-2140678549", peer);
-
-    currentWorld = "";
+	//string packet = "Logging on: " + uname + " Token: " + to_string(login_token) + " UserID: " + to_string(login_user) + "\n";
+	//if (login_token != 0 || login_token != -1) //cout << packet;
+    cout << "Meta : " + omg.at(11) << endl;
+	SendPacket(2, "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|RyoCloud\nf|1\nprotocol|127\ngame_version|" + ver + "\nfz|5367464\nlmode|0\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\n" + omg.at(11) + "\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|us\nhash|" + hash + "\nmac|" + generateMac() + "\nwk|" + generateRid() + "\nzf|-496303939" + token, peer);
+	currentWorld = "";
 }
 
 void GrowtopiaBot::packet_type3(string text)
