@@ -868,6 +868,52 @@ public:
 			break;
 		}
 	}
+	void decPacket(gameupdatepacket_t* packet) {
+		if (packet) {
+			variantlist_t varlist{};
+	   	 auto extended = get_extended(packet);
+	    	if (extended) {
+	    		extended += 4;
+	    		varlist.serialize_from_mem(extended);
+	    		//cout << "varlist: " << varlist.print() << endl;
+	    		auto func = varlist[0].get_string();
+                
+                //cout << varlist.print() << endl;
+	    		
+                
+                if (func == "OnRequestWorldSelectMenu") {
+	    			localX = -1;localY=-1;localid=-1;world->name="EXIT";
+	    		}
+	    		else if (func == "OnSendToServer") {
+	    			auto port = varlist[1].get_uint32();
+                    login_user = varlist[3].get_uint32();
+                    login_token = varlist[2].get_uint32();
+                    auto str = varlist[4].get_string();
+                    doorID = str.substr(16,1);
+                    UUIDToken = str.substr(18,32);
+                    auto address = str.substr(0,15);
+					connectClient(address, port);
+	    		}
+	    		else if (func == "onShowCaptcha") {
+	    			auto ctx = varlist[1].get_string();
+	    			if (ctx.find("add_label_with_icon|big|`wAre you Human?``|left|206|") != std::string::npos) fixCaptcha(ctx);
+                    if (ctx.find("add_puzzle_captcha|") != std::string::npos){
+                        cout << "Found PUZZLE " << endl;
+                    };
+	    		}
+	    		else if (func == "OnSpawn") {
+	    			auto ctx = varlist[1].get_string();
+	    			if (ctx.find("type|local") != std::string::npos) {
+	    				string net = explode("\n", explode("netID|", ctx)[1])[0];
+	    				auto gg = explode("|", explode("\n", explode("posXY|", ctx)[1])[0]);//posXY|320|736
+	    				int netid = atoi(net.c_str());
+	    				localid = netid;localX = atoi(gg[0].c_str());localY=atoi(gg[1].c_str());	    				
+	    				//cout << uname << " Local netid: " << localid << " X: " << localX << " Y: " << localY << endl;
+	    			}	    				 
+	    		}
+			}
+		}
+	}
 
 	struct WorldThingStruct
 	{
