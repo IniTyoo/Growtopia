@@ -75,6 +75,7 @@ public:
 	};
 
 	vector<ObjectData> objects;
+	vector<Item> items;
 
 	string uname;
 	string upass;
