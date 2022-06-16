@@ -941,8 +941,9 @@ public:
 		case 1:
 		{
 			try {
-				SerializeFromMem(GetExtendedDataPointerFromTankPacket(structPointer), *(int*)(structPointer + 52), 0, *(int*)(structPointer + 4));
-
+				//SerializeFromMem(GetExtendedDataPointerFromTankPacket(structPointer), *(int*)(structPointer + 52), 0, *(int*)(structPointer + 4));
+				auto packet = get_struct(packets);
+				decPacket(packet);
 			}
 			catch (int e)
 			{
