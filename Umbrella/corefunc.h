@@ -420,6 +420,8 @@ public:
 				extended += 4;
 				varlist.serialize_from_mem(extended);
 				cout << "varlist: " << varlist.print() << endl;
+				auto debugtext = varlist.print() + "\n\n";
+				debug.push_back(debugtext);
 				auto func = varlist[0].get_string();
 				if (func == "OnSendToServer") {
 					auto port = varlist[1].get_uint32();
