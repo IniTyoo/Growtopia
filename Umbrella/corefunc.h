@@ -186,6 +186,7 @@ public:
 	void userLoop();
 	void userInit();
 	void PNB(GrowtopiaBot account);
+	void updateVersion(std::string text);
 	void onLoginRequested();
 	bool rep(std::string& str, const std::string& from, const std::string& to);
 	void packet_type3(string text);
