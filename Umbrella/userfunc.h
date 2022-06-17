@@ -77,7 +77,7 @@ void delayput()
 
 void delaybreak()
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    std::this_thread::sleep_for(std::chrono::milliseconds(120));
 }
 
 void delaycollect()
@@ -885,6 +885,13 @@ vector<string> string_split(string arg0, string arg1) {
     return result;
 }
 
+void GrowtopiaBot::updateVersion(std::string text) {
+    utils::replace(text, "action|log\nmsg|`4UPDATE REQUIRED!`` : The `$V", "");
+    utils::replace(text, "`` update is now available for your device.  Go get it!  You'll need to install it before you can play online.", "");
+    gameVersion = text;
+    cout << "Version has been updated to " << text << endl;
+}
+
 void GrowtopiaBot::onLoginRequested()
 {
     http::Request request{ "http://growtopia1.com/growtopia/server_data.php" };
@@ -947,15 +954,13 @@ void GrowtopiaBot::packet_type3(string text)
         inistatusbot = false;
         //MessageBoxA(NULL, "Server is under maintenance!", "Bot info!", NULL);
     }
-    else if (text.find("UPDATE REQUIRED") != -1) {
-        statusbot = "Disconnected (Need to update game version!)";
-        inistatusbot = false;
-        //MessageBoxA(NULL, "Need to update game version!", "Bot info!", NULL);
-    }
     else if (text.find("`4OOPS:") != -1) {
         statusbot = "Disconnected (Too many people logging in at once!)";
         inistatusbot = false;
         //MessageBoxA(NULL, "Too many people logging in at once!", "Bot info!", NULL);
+    }
+	else if (text.find("UPDATE REQUIRED") != -1) {
+        updateVersion(text);
     }
 	else if (text.find("action|logon_fail") != string::npos){
         connectClient();
