@@ -28,6 +28,7 @@
 #include <iostream>
 #include "globals.h"
 #include "xorstr.hpp"
+#include "proton/variant.hpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -62,9 +63,9 @@ bool autoacc = false;
 bool autostartopia = false;
 
 // Misc
-static char versiongt[5] = "3.87";
+static char versiongt[5] = "3.93";
 static char serverip[16] = "213.179.209.168";
-int serverport = 17251;
+int serverport = 17257;
 bool rgbmode = false;
 
 string word = "";
@@ -337,6 +338,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                                 ImGui::EndTabItem();
                             }
                             */
+                            if (ImGui::BeginTabItem("Debug")) {
+                                active_tab = 10;
+                                ImGui::EndTabItem();
+                            }
 
                             // TAB 1.1 (INFO)
                             if (active_tab == 4)
@@ -440,34 +445,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                                         bot.autoAccess = false;
                                     }
 
-                                    if (ImGui::Button("Auto Startopia"))
-                                    {
-                                        for (int i = 0;auto & bot : bots)
-                                        {
-                                            if (selected[i]) {
-                                                GrowtopiaBot::TankPacketStruct wrenchpacket;
-                                                wrenchpacket.packetType = PACKET_TILE_CHANGE_REQUEST;
-                                                wrenchpacket.x = (int)(bot.localx);
-                                                wrenchpacket.y = (int)(bot.localy);
-                                                wrenchpacket.punchX = (int)((bot.localx / 32) + 1);
-                                                wrenchpacket.punchY = (int)((bot.localy / 32));
-                                                wrenchpacket.value = 32;
-                                                bot.SendPacketRaw(4, &wrenchpacket, 56, 0, bot.peer, ENET_PACKET_FLAG_RELIABLE);
-                                            }
-                                            i++;
-                                        }
-                                    }
-
-                                    for (int i = 0; GrowtopiaBot bot : bots) {
-                                        if (selected[i] && !selectall)
-                                        {
-                                            ImGui::Spacing();
-                                            ImGui::Text("Mission: %s", bot.missionstartopia.c_str());
-                                            ImGui::Text("Status Auto Startopia:\n%s", bot.statusautostartopia.c_str());
-                                        }
-                                        i++;
-                                    }
-
                                     ImGui::SetCursorPosX(286.0f);
                                     ImGui::SetCursorPosY(70.0f);
                                     if (ImGui::Button("Up", ImVec2(50, 50)))
@@ -550,10 +527,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                                             ImGui::SameLine();
                                             ImGui::Checkbox("Auto Place", &bot.enableautoput);
                                             ImGui::InputInt("Items ID", &bot.itemData);
-                                            if (ImGui::Checkbox("Auto Collect", &bot.autocollect))
+                                            /*if (ImGui::Checkbox("Auto Collect", &bot.autocollect))
                                             {
                                                 bot.GrowtopiaBot::collecting(range);
-                                            }
+                                            }*/
                                         }
                                         i++;
                                     }
@@ -1159,6 +1136,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                                 ImGui::Spacing();
                             }
                             */
+
+                            // TAB 1.7 (Debug)
+                            if (active_tab == 10)
+                            {
+                                if (bots.size() > 0) {
+                                    
+                                }
+                                else {
+                                    ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "Add Bot First.");
+                                }
+                            }
+
                             ImGui::EndChild();
                         }
                     }
