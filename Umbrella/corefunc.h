@@ -71,6 +71,7 @@ public:
 	};
 
 	vector<ObjectData> objects;
+	vector<string> debug;
 
 	string uname;
 	string upass;
