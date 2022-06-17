@@ -1143,8 +1143,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                                 if (bots.size() > 0) {
                                     for (int i = 0; i < bots.at(current_item).debug.size(); i++)
                                         {
-                                            ImGui::Text(bots.at(current_item).debug.at(i));
-                                            ImGui::Sameline();
+                                            ImGui::Text("%f",bots.at(current_item).debug.at(i));
+                                            ImGui::SameLine();
                                         }
                                     if (bots.at(current_item).debug.size() > 50)
                                     {
