@@ -1141,7 +1141,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                             if (active_tab == 10)
                             {
                                 if (bots.size() > 0) {
-                                    
+                                    for (int i = 0; i < bots.at(current_item).debug.size(); i++)
+                                        {
+                                            ImGui::Text(bots.at(current_item).debug.at(i));
+                                            ImGui::Sameline();
+                                        }
+                                    if (bots.at(current_item).debug.size() > 50)
+                                    {
+                                        bots.at(current_item).debug.erase(bots.at(current_item).debug.begin() + 0);
+                                    }
                                 }
                                 else {
                                     ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "Add Bot First.");
