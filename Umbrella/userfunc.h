@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <thread>
 #include <chrono>
 #include <sstream>
@@ -17,7 +17,7 @@
 #include "enet/include/enet.h"
 #include "proton/rtparam.hpp"
 #include "xorstr.hpp"
-#include "discord_webhook.h"
+#include "HTTPRequest.hpp"
 
 using namespace std;
 
@@ -63,18 +63,6 @@ bool GrowtopiaBot::rep(std::string& str, const std::string& from, const std::str
 	return true;
 }
 
-void GrowtopiaBot::solve_captcha(std::string text) {
-	GrowtopiaBot::rep(text,
-		"set_default_color|`o\nadd_label_with_icon|big|`wAre you Human?``|left|206|\nadd_spacer|small|\nadd_textbox|What will be the sum of the following "
-		"numbers|left|\nadd_textbox|",
-		"");
-	GrowtopiaBot::rep(text, "|left|\nadd_text_input|captcha_answer|Answer:||32|\nend_dialog|captcha_submit||Submit|", "");
-	auto number1 = text.substr(0, text.find(" +"));
-	auto number2 = text.substr(number1.length() + 3, text.length());
-	int result = atoi(number1.c_str()) + atoi(number2.c_str());
-	SendPacket(2, "action|dialog_return\ndialog_name|captcha_submit\ncaptcha_answer|" + std::to_string(result), peer);
-}
-
 string stripMessage(string msg) {
 	regex e("\\x60[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]\\{};':\"\\\\|,.<>\\/?]");
 	string result = regex_replace(msg, e, "");
@@ -101,17 +89,6 @@ void GrowtopiaBot::PNB(GrowtopiaBot account)
 {
     while (enableautofarm)
     {
-        if (accountblockcount)
-        {
-            if (accountblockcount == 200)
-            {
-                Wrench();
-                accountblockcount = 0;
-                std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-            }
-            accountblockcount++;
-        }
-
         if (enableautofarm && !enableautoput && !enableautobreak) { 
             enableautofarm = false; 
         }
@@ -893,38 +870,42 @@ void GrowtopiaBot::PNB(GrowtopiaBot account)
     }
 }
 
-void GrowtopiaBot::collecting(int range) {
-    DroppedItem obj{ 0 };
-    float posx;
-    float posy;
-    posx = std::abs(localx - obj.x);
-    posy = std::abs(localy - obj.y);
-    if (posx && posy < range) {
+vector<string> string_split(string arg0, string arg1) {
 
-        GamePacket pkt{ 0 };
-        pkt.type = 11;
-        pkt.int_data = obj.uid;
-        pkt.pos.x = obj.x;
-        pkt.pos.y = obj.y;
-        SendPacketRaw(4, &pkt, 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
+    size_t pos_start = 0, pos_end, delim_len = arg1.length();
+    string token;
+    vector<string> result;
+    result.clear();
+    while ((pos_end = arg0.find(arg1, pos_start)) != string::npos) {
+        token = arg0.substr(pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        result.push_back(token);
     }
+    result.push_back(arg0.substr(pos_start));
+    return result;
 }
 
 void GrowtopiaBot::onLoginRequested()
 {
-	string token;
-	if (!login_user && !login_token) {
-		token = "";
-	} else {
-		token = "\nuser|" + std::to_string(login_user) + "\ntoken|" + std::to_string(login_token);
-	}
-	string ver = gameVersion;
-	string hash = std::to_string((unsigned int)rand());
-	string hash2 = std::to_string((unsigned int)rand());
-    string packet = "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|UmbrellaBot\nf|1\nprotocol|158\ngame_version|" + ver + "\nfz|5367464\nlmode|0\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\nmeta|defined\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|id\nhash|" + hash + "\nmac|" + generateMac() + "" + token + "\nwk|879B19E330180B0568DE7FBF65895029\nzf|-2140678549";
-    cout << packet + "\n";
-    SendPacket(2, "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|UmbrellaBot\nf|1\nprotocol|158\ngame_version|" + ver + "\nfz|5367464\nlmode|0\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\nmeta|defined\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|id\nhash|" + hash + "\nmac|" + generateMac() + "" + token + "\n\nUUIDToken|" + uuidtoken + "\ndoorID|0wk|879B19E330180B0568DE7FBF65895029\nzf|-2140678549", peer);
+    http::Request request{ "http://growtopia1.com/growtopia/server_data.php" };
+    const auto response = request.send("POST", "version=1&protocol=128", { "Content-Type: application/x-www-form-urlencoded" });
+    std::string body = std::string{ response.body.begin(), response.body.end() };
+    auto omg = string_split(body, "\n");
 
+    string token;
+    if (!login_user && !login_token) {
+        token = "";
+    }
+    else {
+        token = "\nuser|" + std::to_string(login_user) + "\ntoken|" + std::to_string(login_token) + "\nUUIDToken|" + login_uuidtoken + "\ndoorID" + DoorID;
+    }
+    string ver = gameVersion;
+    string hash = std::to_string((unsigned int)rand());
+    string hash2 = std::to_string((unsigned int)rand());
+    string packet = "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|RyoCloud\nf|1\nprotocol|127\ngame_version|" + ver + "\nfz|5367464\nlmode|0\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\n" + omg.at(11) + "\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|us\nhash|" + hash + "\nmac|" + generateMac() + "\nwk|" + generateRid() + "\nzf|-496303939" + token;
+    cout << packet + "\n";
+    //cout << "Meta : " + omg.at(11) << endl;
+    SendPacket(2, "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|RyoCloud\nf|1\nprotocol|127\ngame_version|" + ver + "\nfz|5367464\nlmode|0\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\n" + omg.at(11) + "\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|us\nhash|" + hash + "\nmac|" + generateMac() + "\nwk|" + generateRid() + "\nzf|-496303939" + token, peer);
     currentWorld = "";
 }
 
@@ -1026,36 +1007,7 @@ void GrowtopiaBot::packet_unknown(ENetPacket* packet)
 	dbgPrint("Packet size is " + std::to_string(packet->dataLength));
 }
 
-void GrowtopiaBot::OnSendToServer(string address, int port, int userId, int token)
-{
-    serveripaddress = address;
-    serverportaddress = port;
-	login_user = userId;
-	login_token = token;
-	connectClient(address, port);
-}
-
-void GrowtopiaBot::onShowCaptcha(string text) {
-	solve_captcha(text);
-	cout << text << endl;
-}
-
-void GrowtopiaBot::Wrench() {
-    TankPacketStruct wrenchpacket;
-    wrenchpacket.packetType = PACKET_TILE_CHANGE_REQUEST;
-    wrenchpacket.x = (int)(localx);
-    wrenchpacket.y = (int)(localy);
-    wrenchpacket.punchX = (int)((localx / 32));
-    wrenchpacket.punchY = (int)((localy / 32));
-    wrenchpacket.value = 32;
-    SendPacketRaw(4, &wrenchpacket, 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
-}
-
 void GrowtopiaBot::OnDialogRequest(string text) {
-	if (text.find("end_dialog|captcha_submit||Submit|") != -1)
-		solve_captcha(text);
-	cout << text << endl;
-
     // Auto Access
     if (text.find("end_dialog|popup||Continue|") != std::string::npos) {
         if (text.find("acceptlock") != std::string::npos) {
@@ -1064,428 +1016,6 @@ void GrowtopiaBot::OnDialogRequest(string text) {
     }
     else if (text.find("end_dialog|acceptaccess|No|Yes|") != std::string::npos) {
             SendPacket(2, "action|dialog_return\ndialog_name|acceptaccess", peer);
-    }
-
-    // Auto Retrieve Vending
-    if (text.find("end_dialog|vending") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|vending\ntilex|" + to_string(localx / 32) + "|\ntiley|" + to_string(localy / 32) + "|\nbuttonClicked|pullstock", peer);
-    }
-
-    // Auto Startopia
-    if (text.find("beginvoyage|Begin a Star Voyage|") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|beginvoyage", peer);
-        missionstartopia = text.substr(text.find("add_label_with_icon|big|") + 26, text.length() - text.find("add_label_with_icon|big|") - 1);
-        missionstartopia.erase(missionstartopia.begin() + missionstartopia.find("\n"), missionstartopia.end());
-        missionstartopia.erase(missionstartopia.begin() + missionstartopia.find("``|left|6486|"), missionstartopia.end());
-        statusautostartopia = "Starting Autostartopia!";
-    }
-    else if (text.find("beginvoyageForSure|Begin a Star Voyage|") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|beginvoyageForSure", peer);
-    }
-    else if (text.find("finishmission|The voyage continues!|") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|finishmission", peer);
-        statusautostartopia = "Autostartopia Successfully!";
-    }
-
-    // Used Tools: Tactical Drone
-    if (text.find("let's take them out.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("perhaps we should investigate!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("requires you to investigate") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("find out about this!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("Let's see what they want") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("We need to know more!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("their territory immediately!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("What the heck is going on here?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("mining colony! Now to find it") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("There's no sign of any attacker at all!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("We must investigate further!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("Better check it out.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("your immediate attention!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("What's going on?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("they've just assigned us to help out!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("visit their renowned shooting range!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("the star before we can escape!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("What's out there?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-    }
-    else if (text.find("assistance to any survivors.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6532", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2Tactical Drone", peer);
-    }
-
-    // Used Tools: Stellar Documents
-    if (text.find("Let's file an official report") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6534", peer);
-    }
-    else if (text.find("with all proper documentation.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6534", peer);
-    }
-    else if (text.find("who knows how long the temple will remain open?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6534", peer);
-    }
-    else if (text.find("out official papers as passage!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6534", peer);
-    }
-    else if (text.find("At a time like this?!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6534", peer);
-    }
-    else if (text.find("to prove which claim is valid?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6534", peer);
-    }
-    else if (text.find("can succeed where firepower cannot") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6534", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2Stellar Documents", peer);
-    }
-
-    // Used Tools: HyperShields
-    if (text.find("Prepare for incoming! Defenses up!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6518", peer);
-    }
-    else if (text.find("We need defenses, NOW!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6518", peer);
-    }
-    else if (text.find("We'd better reinforce them, FAST!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6518", peer);
-    }
-    else if (text.find("JUST A LITTLE LONGER!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6518", peer);
-    }
-    else if (text.find("He's going to hit us! SHIELDS!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6518", peer);
-    }
-    else if (text.find("Defenses up! For SCIENCE!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6518", peer);
-    }
-    else if (text.find("DEFENSES UP!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6518", peer);
-    }
-    else if (text.find("first priority is the ship!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6518", peer);
-    }
-    else if (text.find("it's coming right for us!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6518", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2HyperShields", peer);
-    }
-
-    // Used Tools: Teleporter Charge
-    if (text.find("Sounds like a good opportunity for some exploration!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("to the ship") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Looks like we're clear to head in.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Now let's get our people back!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("You hail it, but receive no signal.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("adrift with no power!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("everyone's anxious to leave!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("so far out here?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("get out of this mess!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("to go!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Our engineers are standing by to assist!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("a peaceful solution in person.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Let's bring our people home!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Let's get our crew over there, and fast!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Now let's get them out of there!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("get out of this debris field!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Send in the crew!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("We have to get our people out of there!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Maybe a closer look?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("begin to run toward them!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("they realize what's happening!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Let's get down to the surface, pronto!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Let's try again - and hurry!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("before we lose anyone else!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Let's take a closer look") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("and start blasting things!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("Let's see what the problem is") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("our people are ready to deploy") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("your crew back to safety!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-    }
-    else if (text.find("The countdown on the screan reads") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6526", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2Teleporter Charge", peer);
-    }
-
-    // Used Tools: Quadriscanner
-    if (text.find("Let's see if there's anything of value here") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("Let's find them.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("We must investigate!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("Let's see if anything's still active") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("We're going to need more data.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("with a hight-level scan") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("Something's wrong") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("we need to find them") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("but something feels") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("and how many of them are") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("and how many of them are") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("Where should we go?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("Where is everyone?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("do some reconnaissance before entering") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-    }
-    else if (text.find("Perhaps another scan would be wise") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6530", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2Quadriscanner", peer);
-    }
-
-    // Used Tools: Gigablaster
-    if (text.find("attack on our people!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6528", peer);
-    }
-    else if (text.find("let's take them out!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6528", peer);
-    }
-    else if (text.find("Blazing Gigablaster energy") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6528", peer);
-    }
-    else if (text.find("Take them out!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6528", peer);
-    }
-    else if (text.find("Something terrible is happening!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6528", peer);
-    }
-    else if (text.find("It's a snack food abomination!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6528", peer);
-    }
-    else if (text.find("and your crew get ready to fire!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6528", peer);
-    }
-    else if (text.find("pulls a blaster and begins shooting!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6528", peer);
-    }
-    else if (text.find("take them out before going any further!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6528", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2Gigablaster", peer);
-    }
-
-    // Used Tools: AI Brain
-    if (text.find("they'll need a software") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("to get more info") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("our computers") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("with it while it's still flickering!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("his mind without him realizing it") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("with some computer assistance!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("Nothing's responding!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("local security system to gain acces.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("We need computer backups in place!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("continue until they're completely") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("security computers controlling that laser grid!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-    }
-    else if (text.find("We'll need to override it!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6520", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2AI Brain", peer);
-    }
-
-    // Used Tools: Growton Torpedo
-    if (text.find("Shall we respond in kind, Captain?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6540", peer);
-    }
-    else if (text.find("Captain! We need to press the assault!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6540", peer);
-    }
-    else if (text.find("thrashing across space toward us!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6540", peer);
-    }
-    else if (text.find("We have to destroy this ship immediately!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6540", peer);
-    }
-    else if (text.find("they're preparing to fire!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6540", peer);
-    }
-    else if (text.find("get away with this!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6540", peer);
-    }
-    else if (text.find("We'll have to destroy it!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6540", peer);
-    }
-    else if (text.find("Captain! All hands, red alert!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6540", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2Growton Torpedo", peer);
-    }
-
-    // Used Tools: Space Meds
-    if (text.find("will need medical") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6524", peer);
-    }
-    else if (text.find("They need aid!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6524", peer);
-    }
-    else if (text.find("They're dropping like flies!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6524", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2Space Meds", peer);
-    }
-
-    // Used Tools: Star Supplies
-    if (text.find("Amazing! We sould help her") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6536", peer);
-    }
-    else if (text.find("Should we put something on it?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6536", peer);
-    }
-    else if (text.find("We need to distract it with food!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6536", peer);
-    }
-
-    // Used Tools: Cyborg Diplomat
-    if (text.find("We need linguistic assistance!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6538", peer);
-    }
-    else if (text.find("They've become less aggressive.") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6538", peer);
-    }
-    else if (text.find("Do you think we can communicate with him?") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6538", peer);
-    }
-    else if (text.find("We need to mediate!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6538", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2Cyborg Diplomat", peer);
-    }
-
-    // Used Tools: Galactibolt
-    if (text.find("We need to patch that, and fast!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6522", peer);
-    }
-    else if (text.find("and the ship shakes!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6522", peer);
-    }
-    else if (text.find("We need to repair it before we do anything else!") != std::string::npos) {
-        SendPacket(2, "action|dialog_return\ndialog_name|startopia\nbuttonClicked|tool6522", peer);
-        //SendPacket(2, "action|input\n|text|`#Using `2Galactibolt", peer);
     }
 }
 
