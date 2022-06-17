@@ -60,25 +60,22 @@ bool set = true;
 static int speed = 1;
 bool follow = false;
 bool autoacc = false;
-bool autostartopia = false;
-
-// Misc
-static char versiongt[5] = "3.93";
-static char serverip[16] = "213.179.209.168";
-int serverport = 17257;
-bool rgbmode = false;
 
 string word = "";
 string name = "";
-
-
 vector<GrowtopiaBot> bots;
 
 GrowtopiaBot create(string username, string password) {
     GrowtopiaBot bot = { username, password };
-    bot.gameVersion = versiongt;
-    bot.SERVER_HOST = serverip;
-    bot.SERVER_PORT = serverport;
+    http::Request request{ "http://growtopia2.com/growtopia/server_data.php" };
+    const auto response = request.send("POST", "version=1&protocol=128", { "Content-Type: application/x-www-form-urlencoded" });
+    rtvar var = rtvar::parse({ response.body.begin(), response.body.end() });
+    var.serialize();
+    if (var.find("server")) {
+        bot.SERVER_HOST = var.get("server");
+        bot.SERVER_PORT = std::stoi(var.get("port"));
+    }
+    cout << "Parsing port and ip is done. port is " << to_string(bot.SERVER_PORT).c_str() << " and ip is " << bot.SERVER_HOST << endl;
     bot.userInit();
     bots.push_back(bot);
     return bot;
@@ -228,11 +225,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                     if (ImGui::BeginTabItem("Item DB"))
                     {
                         active_tab = 2;
-                        ImGui::EndTabItem();
-                    }
-                    if (ImGui::BeginTabItem("Settings"))
-                    {
-                        active_tab = 3;
                         ImGui::EndTabItem();
                     }
 
@@ -1164,27 +1156,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                     if (active_tab == 2)
                     {
 
-                    }
-
-                    // TAB 3 Settings
-                    if (active_tab == 3)
-                    {
-                        ImGui::Spacing();
-                        ImGui::Text("Version      :");
-                        ImGui::SameLine();
-                        ImGui::SetNextItemWidth(310.0f);
-                        ImGui::InputText("##version", versiongt, sizeof(versiongt));
-                        ImGui::Spacing();
-                        ImGui::Text("Server IP   :");
-                        ImGui::SameLine();
-                        ImGui::SetNextItemWidth(310.0f);
-                        ImGui::InputText("##serverip", serverip, sizeof(serverip));
-                        ImGui::Spacing();
-                        ImGui::Text("Server Port:");
-                        ImGui::SameLine();
-                        ImGui::SetNextItemWidth(310.0f);
-                        ImGui::InputInt("##serverport", &serverport);
-                        ImGui::Spacing();
                     }
                 }
                 ImGui::End();
