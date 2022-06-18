@@ -436,6 +436,11 @@ public:
 					serverportaddress = port;
 					connectClient(address, port);
 				}
+				else if (func == "OnSetPos") {
+                		    auto ctx = varlist[1].get_string();
+                		    localx = varlist[1].get_vector2().m_x;
+                		    localy = varlist[1].get_vector2().m_y;
+            			}
 				else if (func == "OnSpawn") {
 					auto ctx = varlist[1].get_string();
 					if (ctx.find("type|local") != std::string::npos) {
