@@ -111,6 +111,16 @@ static int lua_sendpacket(lua_State* L) {
 	return 0;
 }
 
+static int lua_sleep(lua_State* L) {
+	if (lua_isnumber(L, 1)) {
+		if (!selectall) {
+			this_thread::sleep_for(chrono::milliseconds(lua_tonumber(L,1));
+		}
+		
+	}
+	return 0;
+}
+//this_thread::sleep_for(chrono::milliseconds(20000) );
 
 inline bool exists_test(const string& name) {
     ifstream f(name.c_str());
@@ -1230,6 +1240,7 @@ int main()
                                 lua_setglobal(state, "imgui");
 
                                 lua_register(state, "SendPacket", lua_sendpacket);
+				lua_register(state, "Sleep", lua_sleep);
 
                                 std::thread thr(execute_thread, state, editor.GetText());
 		                        thr.detach();
