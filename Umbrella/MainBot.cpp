@@ -25,6 +25,14 @@
 #include "imgui/TextEditor.h"
 #include "ItemList.h"
 
+extern "C" {
+#include "lua/lauxlib.h"
+#include "lua/lua.h"
+#include "lua/luaconf.h"
+#include "lua/lualib.h"
+}
+
+
 #include <d3d9.h>
 #include <tchar.h>
 #include <iostream>
