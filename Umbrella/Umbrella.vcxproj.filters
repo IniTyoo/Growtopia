@@ -53,6 +53,7 @@
       <Filter>enet</Filter>
     </ClCompile>
     <ClCompile Include="MainBot.cpp" />
+    <ClCompile Include="imgui\TextEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="corefunc.h">
@@ -135,6 +136,8 @@
     <ClInclude Include="utils.h" />
     <ClInclude Include="discord_webhook.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="imgui\TextEditor.h" />
+    <ClInclude Include="ItemList.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="enet">

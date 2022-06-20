@@ -22,6 +22,8 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx9.h"
 #include "imgui/imgui_impl_win32.h"
+#include "imgui/TextEditor.h"
+#include "ItemList.h"
 
 #include <d3d9.h>
 #include <tchar.h>
@@ -42,6 +44,7 @@ static char usernamebot[120];
 static char passwordbot[120];
 
 static char worldName[60];
+char namaFile[40] = "Script.lua";
 static char growid[70];
 
 // Auto Spam
@@ -63,8 +66,10 @@ bool autoacc = false;
 
 string word = "";
 string name = "";
-vector<GrowtopiaBot> bots;
+string last;
 
+
+vector<GrowtopiaBot> bots;
 GrowtopiaBot create(string username, string password) {
     GrowtopiaBot bot = { username, password };
     http::Request request{ "http://growtopia2.com/growtopia/server_data.php" };
@@ -128,7 +133,8 @@ void ResetDevice();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Main code
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+//int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int main()
 {
     // Create application window
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("UMBRELLA"), NULL };
@@ -136,7 +142,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("UMBRELLA"), WS_OVERLAPPEDWINDOW, 0, 0, 50, 50, NULL, NULL, wc.hInstance, NULL);
 
     // Hide console window
-    ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+    //::ShowWindow(::GetConsoleWindow(), SW_HIDE);
 
     // Init Direct3d
     if (!CreateDeviceD3D(hwnd))
@@ -158,6 +164,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
     ImFont* font;
     font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 16);
+
+    auto lang = TextEditor::LanguageDefinition::Lua();
+
+    static TextEditor editor;
+    static TextEditor editor2;
+
+    editor.SetLanguageDefinition(lang);
+    editor.SetPalette(TextEditor::GetDarkPalette());
+
+    editor2.SetLanguageDefinition(lang);
+    editor2.SetPalette(TextEditor::GetDarkPalette());
 
     ImGuiStyle& style = ImGui::GetStyle();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -332,6 +349,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                             */
                             if (ImGui::BeginTabItem("Debug")) {
                                 active_tab = 10;
+                                ImGui::EndTabItem();
+                            }
+                            if (ImGui::BeginTabItem("Executor")) {
+                                active_tab = 11;
                                 ImGui::EndTabItem();
                             }
 
@@ -1132,20 +1153,38 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                             // TAB 1.7 (Debug)
                             if (active_tab == 10)
                             {
+                                debu
+                                bots.at(current_item).debug.push_back();
                                 if (bots.size() > 0) {
-                                    for (int i = 0; i < bots.at(current_item).debug.size(); i++)
+                                    editor2.Render("", ImVec2(400, 265), true); //height - 30
+                                        for (int i = 0; i < bots.at(current_item).debug.size(); i++)
                                         {
-                                            ImGui::Text("%f",bots.at(current_item).debug.at(i));
-                                            ImGui::SameLine();
+                                            editor2.SetReadOnly(true);
+                                            editor2.SetText(bots.at(current_item).debug.at(i).text.c_str());
+                                            if (bots.at(current_item).debug.size() > 50)
+                                            {
+                                                bots.at(current_item).debug.erase(bots.at(current_item).debug.begin() + 0);
+                                            }
+                                            
                                         }
-                                    if (bots.at(current_item).debug.size() > 50)
-                                    {
-                                        bots.at(current_item).debug.erase(bots.at(current_item).debug.begin() + 0);
-                                    }
-                                }
-                                else {
+                                } else {
                                     ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "Add Bot First.");
                                 }
+                            }
+
+                            if (active_tab == 11) {
+                                
+                                ImGui::Text("%d lines | %s", editor.GetTotalLines(), editor.GetCurrentLineText().c_str());
+                                ImGui::InputTextWithHint("##Script", "Script.lua", namaFile, 40, 0);
+                                ImGui::SameLine();
+                                if (ImGui::Button("Save", ImVec2(40, 20))) {}
+                                ImGui::SameLine();
+                                if (ImGui::Button("Load", ImVec2(40, 20))) {}
+                                editor.Render("", ImVec2(400, 265), true); //height - 30
+                                if (ImGui::Button("Execute", ImVec2(85, 20))) {}
+                                ImGui::SameLine();
+                                if (ImGui::Button("Stop", ImVec2(85, 20))) {}
+                                
                             }
 
                             ImGui::EndChild();
@@ -1155,7 +1194,35 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                     // TAB 2 Item DB
                     if (active_tab == 2)
                     {
+                        if (ImGui::BeginChild(XorStr("#ItemDatas").c_str(), ImVec2(700, 347), true, 0))
+                        {
+                            static ImGuiTextFilter filter;
+                            ImGui::Text("Search:");
+                            filter.Draw("", 450);
+                            ImGui::SameLine();
+                            if (ImGui::Button("Load Items.dat", ImVec2(125, 25))) {
+                                ItemList.clear();
+                                Vectorting();
+                            };
+                            if (ImGui::BeginListBox("##ItemList", ImVec2(625, 280)))
+                            {
+                                for (int i = 0; i < ItemList.size(); i++) {
+                                    auto paintkit = ItemList.at(i);
+                                    if (filter.PassFilter(paintkit.c_str())) {
+                                        std::string label = paintkit + "##" + std::to_string(i); //do this or you will have problems selecting elements with the same name
 
+                                        if (ImGui::Selectable(label.c_str())) {
+
+                                        }
+                                    }
+
+                                }
+                                //ItemList.clear();
+                                //ItemList.push_back("Dirt    2");
+                                ImGui::EndListBox();
+                            }
+                            ImGui::EndChild();
+                        }
                     }
                 }
                 ImGui::End();

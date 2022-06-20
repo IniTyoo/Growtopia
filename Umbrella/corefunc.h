@@ -8,7 +8,9 @@
 #include <time.h>
 #include "proton/variant.hpp"
 #include "packet.h"
-
+#include "xorstr.hpp"
+#include "proton/rtparam.hpp"
+#include <regex>
 using namespace std;
 
 
@@ -27,8 +29,8 @@ uint8_t* get_extended(gameupdatepacket_t* packet) {
 }
 class GrowtopiaBot {
 public:
-	ENetPeer *peer;
-	ENetHost *client;
+	ENetPeer* peer;
+	ENetHost* client;
 
 	int login_user = 0;
 	int login_token = 0;
@@ -45,9 +47,9 @@ public:
 
 	string SERVER_HOST = "213.179.209.168";
 	int SERVER_PORT = 17257;
-	
-	int localx=-1;
-	int localy=-1;
+
+	int localx = -1;
+	int localy = -1;
 	int localnetid;
 	int localuserid;
 	//int worldplayercount=0;
@@ -71,7 +73,12 @@ public:
 	};
 
 	vector<ObjectData> objects;
-	vector<string> debug;
+	
+	struct Debug
+	{
+		string text = "";
+	};
+	vector<Debug> debug;
 
 	string uname;
 	string upass;
@@ -171,15 +178,15 @@ public:
 		uint32_t extDataSize = 0;
 #pragma pack (pop)
 	};
+
 	struct DroppedItem {
-		short itemid;
-		int x;
-		int y;
-		BYTE count;
-		BYTE flags;
-		int uid;
-		char padding[0];
+		uint16_t itemID;
+		vector2_t pos;
+		uint8_t count;
+		uint8_t flags;
+		uint32_t uid;
 	};
+	vector<DroppedItem> FloatingItem;
 	/*********** structs declaration *********/
 
 	/********* user funcs  *********/
@@ -191,7 +198,7 @@ public:
 	bool rep(std::string& str, const std::string& from, const std::string& to);
 	void packet_type3(string text);
 	void packet_type6(string text);
-	void packet_unknown(ENetPacket *packet);
+	void packet_unknown(ENetPacket* packet);
 	void move(std::string to, int blocks);
 	void OnConsoleMessage(string message);
 	void onShowCaptcha(string text);
@@ -212,7 +219,7 @@ public:
 	void OnAddNotification(string image, string message, string audio, int val1);
 	void AtApplyTileDamage(int x, int y);
 	void AtApplyLock(int x, int y, int itemId);
-	void AtPlayerMoving(PlayerMoving *data);
+	void AtPlayerMoving(PlayerMoving* data);
 	void AtAvatarSetIconState(int netID, int state);
 	void WhenConnected();
 	void WhenDisconnected();
@@ -412,7 +419,13 @@ public:
 		arr.push_back(str.substr(k, i - k));
 		return arr;
 	}
-
+	rtvar var2;
+	string stripMessage(string msg) {
+	regex e("\\x60[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]\\{};':\"\\\\|,.<>\\/?]");
+	string result = regex_replace(msg, e, "");
+	result.erase(std::remove(result.begin(), result.end(), '`'), result.end());
+	return result;
+}
 	void decPacket(gameupdatepacket_t* packet) {
 		if (packet) {
 			variantlist_t varlist{};
@@ -420,9 +433,15 @@ public:
 			if (extended) {
 				extended += 4;
 				varlist.serialize_from_mem(extended);
-				cout << "varlist: " << varlist.print() << endl;
-				auto debugtext = varlist.print() + "\n\n";
-				debug.push_back(debugtext);
+				//cout << "varlist: " << varlist.print() << endl;
+				auto var1 = varlist[0].get_string();
+				auto varx2 = varlist[1].get_string();
+				auto var3 = varlist[2].get_string();
+				auto var4 = varlist[3].get_string();
+				auto var5 = varlist[4].get_string();
+				Debug debag;
+				debag.text = varlist.print().c_str();
+				debug.push_back(debag);
 				auto func = varlist[0].get_string();
 				if (func == "OnSendToServer") {
 					auto port = varlist[1].get_uint32();
@@ -436,21 +455,100 @@ public:
 					serverportaddress = port;
 					connectClient(address, port);
 				}
-				else if (func == "OnSetPos") {
-                		    auto ctx = varlist[1].get_string();
-                		    localx = varlist[1].get_vector2().m_x;
-                		    localy = varlist[1].get_vector2().m_y;
-            			}
-				else if (func == "OnSpawn") {
+				else if (func == "onShowCaptcha") {
 					auto ctx = varlist[1].get_string();
-					if (ctx.find("type|local") != std::string::npos) {
-						string net = explode("\n", explode("netID|", ctx)[1])[0];
-						string user = explode("\n", explode("userID|", ctx)[1])[0];
-						auto gg = explode("|", explode("\n", explode("posXY|", ctx)[1])[0]);//posXY|320|736
-						int netid = atoi(net.c_str());
-						localuserid = atoi(user.c_str());
-						localnetid = netid;localx = atoi(gg[0].c_str());localy = atoi(gg[1].c_str());
-						//cout << uname << " Local netid: " << localid << " X: " << localX << " Y: " << localY << endl;
+
+;				}
+				else if (func == "OnSetPos") {
+					auto ctx = varlist[1].get_string();
+					localx = varlist[1].get_vector2().m_x;
+					localy = varlist[1].get_vector2().m_y;
+				}
+				else if (func == "OnSpawn") {
+					auto data = varlist[1].get_string();
+					var2 = rtvar::parse(data);
+					auto gg = explode("|", explode("\n", explode("posXY|", data)[1])[0]);//posXY|320|736
+
+					ObjectData objectData;
+					bool actuallyOwner = false;
+
+					auto name = var2.find(XorStr("name"));
+					auto netid = var2.find(XorStr("netID"));
+
+
+					objectData.country = var2.get(XorStr("country"));
+
+					if (stripMessage(var2.get(XorStr("name"))) == ownerUsername) actuallyOwner = true;
+					objectData.name = var2.get(XorStr("name"));
+
+					if (actuallyOwner) owner = var2.get_int(XorStr("netID"));
+					objectData.netId = var2.get_int(XorStr("netID"));
+					objectData.userId = var2.get_int(XorStr("userID"));
+
+
+					auto posx = atoi(gg[0].c_str());
+					auto posy = atoi(gg[1].c_str());
+					objectData.x = posx;
+					objectData.y = posy;
+
+
+					if (data.find(XorStr("type|local")) != -1) {
+						objectData.isLocal = true;
+						localx = objectData.x;
+						localy = objectData.y;
+						localnetid = objectData.netId;
+						localuserid = objectData.userId;
+					}
+					if (var2.get(XorStr("mstate")) == "1" || var2.get(XorStr("smstate")) == "1" || var2.get(XorStr("invis")) == "1") {
+
+						objectData.isMod = true;
+					}
+
+					objectData.isGone = false;
+
+
+					objects.push_back(objectData);
+
+
+					/*
+					struct ObjectData
+				{
+					int netId = -1;	 // used to interact with stuff in world
+					int userId = -1; // growtopia id
+					string name = "";
+					string country = "";
+					string objectType = ""; // "avatar" is player creature
+					float x = -1;
+					float y = -1;
+					bool isGone = false; // set true if character left
+					int rectX;			 // collision stuff
+					int rectY;			 // collision stuff
+					int rectWidth;		 // collision stuff
+					int rectHeight;		 // collision stuff
+					bool isMod = false;
+					bool isLocal = false;
+				};*/
+				}
+				else if (func == "OnRemove") {
+					auto ctx = varlist[1].get_string();
+					std::stringstream ss(ctx.c_str());
+					std::string to;
+					int netID = -1;
+					while (std::getline(ss, to, '\n')) {
+						string id = to.substr(0, to.find("|"));
+						string act = to.substr(to.find("|") + 1, to.length() - to.find("|"));
+						if (id == XorStr("netID"))
+						{
+							netID = atoi(act.c_str());
+						}
+						else {
+
+						}
+					}
+					for (int i = 0; i < objects.size(); i++) {
+						if (objects.at(i).netId == netID) {
+							objects.at(i).isGone = true;
+						}
 					}
 				}
 			}
@@ -582,7 +680,7 @@ public:
 
 	void ProcessTankUpdatePacket(float someVal, EntityComponent* entityComponent, BYTE* structPointer, ENetPacket* packets)
 	{
-		//cout << "Processing tank packet with id of: " << +(*(char*)structPointer) << " Where first byte is " << std::to_string(structPointer[0]) << endl;
+		cout << "Processing tank packet with id of: " << +(*(char*)structPointer) << " Where first byte is " << std::to_string(structPointer[0]) << endl;
 		auto ptype = *(char*)structPointer;
 		switch (*(char*)structPointer)
 		{
@@ -635,8 +733,14 @@ public:
 			//SendPacket(2, "action|input\n|text|x: " + x + ", y: " + y, peer);
 			break;
 		}
-		case 0xE:
+		case 0xE: // 14
 		{
+			int last_oit;
+			auto packet = get_struct(packets);
+			auto extended = get_extended(packet);
+			memcpy(&last_oit, extended, 4);
+			cout << "Dropped count : " << last_oit << endl;
+			break;
 		}
 		case 0x23u:
 			break;
