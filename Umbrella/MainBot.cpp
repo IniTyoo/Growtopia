@@ -76,7 +76,6 @@ string word = "";
 string name = "";
 string last;
 
-
 vector<GrowtopiaBot> bots;
 GrowtopiaBot create(string username, string password) {
     GrowtopiaBot bot = { username, password };
@@ -93,6 +92,25 @@ GrowtopiaBot create(string username, string password) {
     bots.push_back(bot);
     return bot;
 }
+
+
+void execute_thread(lua_State* state, std::string text) {
+	luaL_dostring(state, text.c_str());
+	
+}
+
+
+// LUA 
+static int lua_sendpacket(lua_State* L) {
+	if (lua_isstring(L, 2) && lua_isnumber(L, 1)) {
+		if (!selectall) {
+			bots.at(current_item).SendPacket(lua_tonumber(L, 1), lua_tostring(L, 2), bots.at(current_item).peer);
+		}
+		
+	}
+	return 0;
+}
+
 
 inline bool exists_test(const string& name) {
     ifstream f(name.c_str());
@@ -1185,11 +1203,40 @@ int main()
                                 ImGui::Text("%d lines | %s", editor.GetTotalLines(), editor.GetCurrentLineText().c_str());
                                 ImGui::InputTextWithHint("##Script", "Script.lua", namaFile, 40, 0);
                                 ImGui::SameLine();
+                                
+                                
                                 if (ImGui::Button("Save", ImVec2(40, 20))) {}
+                                
+                                
                                 ImGui::SameLine();
+                                
+                                
                                 if (ImGui::Button("Load", ImVec2(40, 20))) {}
+                                
+                                
                                 editor.Render("", ImVec2(400, 265), true); //height - 30
-                                if (ImGui::Button("Execute", ImVec2(85, 20))) {}
+                                
+                                
+                                if (ImGui::Button("Execute", ImVec2(85, 20))) {
+                                    
+                                    
+                                
+                                lua_State* state = luaL_newstate();
+                                luaL_openlibs(state);
+
+                                lua_newtable(state);
+                                luaL_setfuncs(state, imguilib, 0);
+                                PushImguiEnums(state, "constant");
+                                lua_setglobal(state, "imgui");
+
+                                lua_register(state, "SendPacket", lua_sendpacket);
+
+                                std::thread thr(execute_thread, state, editor.GetText());
+		                        thr.detach();
+                                    
+                                    
+                                    
+                                }
                                 ImGui::SameLine();
                                 if (ImGui::Button("Stop", ImVec2(85, 20))) {}
                                 
