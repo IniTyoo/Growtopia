@@ -111,17 +111,6 @@ static int lua_sendpacket(lua_State* L) {
 	return 0;
 }
 
-static int lua_sleep(lua_State* L) {
-	if (lua_isnumber(L, 1)) {
-		if (!selectall) {
-			this_thread::sleep_for(chrono::milliseconds(lua_tonumber(L,1)));
-		}
-		
-	}
-	return 0;
-}
-//this_thread::sleep_for(chrono::milliseconds(20000) );
-
 inline bool exists_test(const string& name) {
     ifstream f(name.c_str());
     return f.good();
@@ -1189,8 +1178,6 @@ int main()
                             // TAB 1.7 (Debug)
                             if (active_tab == 10)
                             {
-                                debu
-                                bots.at(current_item).debug.push_back();
                                 if (bots.size() > 0) {
                                     editor2.Render("", ImVec2(400, 265), true); //height - 30
                                         for (int i = 0; i < bots.at(current_item).debug.size(); i++)
@@ -1228,28 +1215,33 @@ int main()
                                 
                                 
                                 if (ImGui::Button("Execute", ImVec2(85, 20))) {
-                                    
-                                    
-                                
-                                lua_State* state = luaL_newstate();
-                                luaL_openlibs(state);
+                                    lua_State* state = luaL_newstate();
+                                    luaL_openlibs(state);
 
-                                lua_newtable(state);
-                                luaL_setfuncs(state, imguilib, 0);
-                                PushImguiEnums(state, "constant");
-                                lua_setglobal(state, "imgui");
+                                    lua_newtable(state);
+                                    lua_setglobal(state, "imgui");
 
-                                lua_register(state, "SendPacket", lua_sendpacket);
-				lua_register(state, "Sleep", lua_sleep);
+                                    lua_register(state, "SendPacket", lua_sendpacket);
+                                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n" + editor.GetText();
+                                    std::thread thr(execute_thread, state, script);
+                                    thr.detach();
 
-                                std::thread thr(execute_thread, state, editor.GetText());
-		                        thr.detach();
-                                    
-                                    
-                                    
+
+
                                 }
                                 ImGui::SameLine();
-                                if (ImGui::Button("Stop", ImVec2(85, 20))) {}
+                                if (ImGui::Button("Stop", ImVec2(85, 20))) {
+                                    lua_State* state = luaL_newstate();
+                                    luaL_openlibs(state);
+
+                                    lua_newtable(state);
+                                    lua_setglobal(state, "imgui");
+
+                                    lua_register(state, "SendPacket", lua_sendpacket);
+                                    //          lua_register(state, "Sleep", lua_sleep);
+                                    std::thread thr(execute_thread, state, "os.exit()");
+                                    thr.detach();
+                                }
                                 
                             }
 
