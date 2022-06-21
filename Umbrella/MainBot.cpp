@@ -111,6 +111,23 @@ static int lua_sendpacket(lua_State* L) {
 	return 0;
 }
 
+
+
+
+
+void executelua(string text){
+				    lua_State* state = luaL_newstate();
+                                    luaL_openlibs(state);
+
+                                    lua_newtable(state);
+                                    lua_setglobal(state, "imgui");
+
+                                    lua_register(state, "SendPacket", lua_sendpacket);
+                                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n" + text;
+                                    std::thread thr(execute_thread, state, script);
+                                    thr.detach();	
+}
+
 inline bool exists_test(const string& name) {
     ifstream f(name.c_str());
     return f.good();
@@ -1215,32 +1232,11 @@ int main()
                                 
                                 
                                 if (ImGui::Button("Execute", ImVec2(85, 20))) {
-                                    lua_State* state = luaL_newstate();
-                                    luaL_openlibs(state);
-
-                                    lua_newtable(state);
-                                    lua_setglobal(state, "imgui");
-
-                                    lua_register(state, "SendPacket", lua_sendpacket);
-                                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n" + editor.GetText();
-                                    std::thread thr(execute_thread, state, script);
-                                    thr.detach();
-
-
-
+					executelua(editor.GetText());
                                 }
                                 ImGui::SameLine();
                                 if (ImGui::Button("Stop", ImVec2(85, 20))) {
-                                    lua_State* state = luaL_newstate();
-                                    luaL_openlibs(state);
-
-                                    lua_newtable(state);
-                                    lua_setglobal(state, "imgui");
-
-                                    lua_register(state, "SendPacket", lua_sendpacket);
-                                    //          lua_register(state, "Sleep", lua_sleep);
-                                    std::thread thr(execute_thread, state, "os.exit()");
-                                    thr.detach();
+                                    	executelua('os.exit()');
                                 }
                                 
                             }
