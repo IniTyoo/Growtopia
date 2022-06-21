@@ -114,7 +114,7 @@ static int lua_sendpacket(lua_State* L) {
 static int lua_sleep(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
-			this_thread::sleep_for(chrono::milliseconds(lua_tonumber(L,1));
+			this_thread::sleep_for(chrono::milliseconds(lua_tonumber(L,1)));
 		}
 		
 	}
