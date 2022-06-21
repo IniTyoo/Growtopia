@@ -2006,24 +2006,24 @@ void TextEditor::Redo(int aSteps)
 const TextEditor::Palette& TextEditor::GetDarkPalette()
 {
 	const static Palette p = { {
-			0xff7f7f7f,	// Default
-			0xffd69c56,	// Keyword	
-			0xff00ff00,	// Number
-			ImColor(248, 79, 49, 255),	// String
+			ImColor(224, 108, 117, 255),	// Default
+			ImColor(170, 120, 211, 255),	// Keyword	
+			ImColor(209, 154, 102, 255),	// Number
+			ImColor(137, 195, 97, 255),	// String
 			0xff70a0e0, // Char literal
 			0xffffffff, // Punctuation
 			0xff408080,	// Preprocessor
-			0xffaaaaaa, // Identifier
-			ImColor(197,197,0,255), // Known identifier
+			ImColor(224, 108, 117, 255), // Identifier
+			ImColor(61,169,194,255), // Known identifier rgb(61, 169, 194)
 			0xffc040a0, // Preproc identifier
-			0xff206020, // Comment (single line)
-			0xff406020, // Comment (multi line)
-			ImColor(30,30,30,255), // Background 0xff101010
+			ImColor(127, 132, 142, 255), // Comment (single line)
+			ImColor(127, 132, 142, 255), // Comment (multi line)
+			ImColor(35, 39, 46,255), // Background 0xff101010
 			0xffe0e0e0, // Cursor
-			0x80a06020, // Selection
+			ImColor(47, 54, 65, 255), // Selection
 			0x800020ff, // ErrorMarker
 			0x40f08000, // Breakpoint
-			ImColor(255, 101, 53, 255), // Line number
+			ImColor(73, 81, 98, 255), // Line number
 			0x40000000, // Current line fill
 			0x40808080, // Current line fill (inactive)
 			0x40a0a0a0, // Current line edge
@@ -2894,10 +2894,11 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::GLSL()
 			"abort", "abs", "acos", "asin", "atan", "atexit", "atof", "atoi", "atol", "ceil", "clock", "cosh", "ctime", "div", "exit", "fabs", "floor", "fmod", "getchar", "getenv", "isalnum", "isalpha", "isdigit", "isgraph",
 			"ispunct", "isspace", "isupper", "kbhit", "log10", "log2", "log", "memcmp", "modf", "pow", "putchar", "putenv", "puts", "rand", "remove", "rename", "sinh", "sqrt", "srand", "strcat", "strcmp", "strerror", "time", "tolower", "toupper"
 		};
+		
 		for (auto& k : identifiers)
 		{
 			Identifier id;
-			id.mDeclaration = "Built-in function";
+			id.mDeclaration = "Lua Function";
 			langDef.mIdentifiers.insert(std::make_pair(std::string(k), id));
 		}
 
@@ -3130,9 +3131,37 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Lua()
 			"reverse", "sub", "upper", "pack", "packsize", "unpack", "concat", "maxn", "insert", "pack", "unpack", "remove", "move", "sort", "offset", "codepoint", "char", "len", "codes", "charpattern",
 			"coroutine", "table", "io", "os", "string", "utf8", "bit32", "math", "debug", "package"
 		};
+		// api
+		static const char* const SendPacket[] = {
+			"SendPacket"
+		};
+		
+		for (auto& kx : SendPacket)
+		{
+			SendPacket idx;
+			idx.mDeclaration = "SendPacket(type,packet)";
+			langDef.mIdentifiers.insert(std::make_pair(std::string(kx), idx));
+		}
+		
+		
+		static const char* const Sleep[] = {
+			"Sleep"
+		};
+		
+		for (auto& kxv : Sleep)
+		{
+			SendPacket idxv;
+			idxv.mDeclaration = "Sleep(ms)";
+			langDef.mIdentifiers.insert(std::make_pair(std::string(kxv), idxv));
+		}
+		
+		
+		
+		
 		for (auto& k : identifiers)
 		{
 			Identifier id;
+			id.mDeclaration = "Built-in function";
 			langDef.mIdentifiers.insert(std::make_pair(std::string(k), id));
 		}
 
