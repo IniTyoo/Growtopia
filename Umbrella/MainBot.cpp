@@ -112,6 +112,13 @@ static int lua_sendpacket(lua_State* L) {
 }
 
 
+static int lua_getbotx(lua_State* L){
+	return bots.at(current_item).localx.c_str();
+}
+
+static int lua_getboty(lua_State* L){
+	return bots.at(current_item).localy.c_str();
+}
 
 
 
@@ -123,7 +130,9 @@ void executelua(string text){
                                     lua_setglobal(state, "imgui");
 
                                     lua_register(state, "SendPacket", lua_sendpacket);
-                                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n" + text;
+				    lua_register(state, "getBotx", lua_getbotx);
+				    lua_register(state, "getBoty", lua_getboty);
+                                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n\n\nfunction getBot(str)\nif str == 'posX' then\nreturn getBotx()\nend\nif str == 'posY' then\nreturn getBoty()\nend\nend\n\n" + text;
                                     std::thread thr(execute_thread, state, script);
                                     thr.detach();	
 }
