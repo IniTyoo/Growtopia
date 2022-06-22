@@ -112,15 +112,33 @@ static int lua_sendpacket(lua_State* L) {
 }
 
 
-static int lua_getbotx(lua_State* L){
-	return bots.at(current_item).localx.c_str();
-}
+static int lua_getbot(lua_State* L) {
+				    	lua_newtable(L);
+					lua_pushliteral(L, "x"); // assign table.x
+					lua_pushnumber(L, atoi(bots.at(current_item).localx)); // misal value 1000
+					lua_settable(L, -3); // wajib -3
+					    
+					lua_pushliteral(L, "y"); // assign table.x
+					lua_pushnumber(L, atoi(bots.at(current_item).localy)); // misal value 1000
+					lua_settable(L, -3); // wajib -3
 
-static int lua_getboty(lua_State* L){
-	return bots.at(current_item).localy.c_str();
-}
+					lua_pushliteral(L, "world"); // assign table.x
+					lua_pushstring(L, bots.at(current_item).currentworld.c_str()); // misal value 1000
+					lua_settable(L, -3); // wajib -3
+					    
+					lua_pushliteral(L, "status"); // assign table.x
+					lua_pushstring(L, bots.at(current_item).statusbot.c_str()); // misal value 1000
+					lua_settable(L, -3); // wajib -3
+					
+					    
+					lua_pushliteral(L, "name"); // assign table.x
+					lua_pushstring(L, bots.at(current_item).uname.c_str()); // misal value 1000
+					lua_settable(L, -3); // wajib -3
+					    //.statusbot.c_str()
 
-
+					...
+					return 1;
+					}
 
 void executelua(string text){
 				    lua_State* state = luaL_newstate();
@@ -130,9 +148,8 @@ void executelua(string text){
                                     lua_setglobal(state, "imgui");
 
                                     lua_register(state, "SendPacket", lua_sendpacket);
-				    lua_register(state, "getBotx", lua_getbotx);
-				    lua_register(state, "getBoty", lua_getboty);
-                                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n\n\nfunction getBot(str)\nif str == 'posX' then\nreturn getBotx()\nend\nif str == 'posY' then\nreturn getBoty()\nend\nend\n\n" + text;
+				    lua_register(state, "GetBot", lua_getbot);
+                                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n\n\n" + text;
                                     std::thread thr(execute_thread, state, script);
                                     thr.detach();	
 }
@@ -1245,7 +1262,7 @@ int main()
                                 }
                                 ImGui::SameLine();
                                 if (ImGui::Button("Stop", ImVec2(85, 20))) {
-                                    	executelua('os.exit()');
+                                    	executelua("os.exit()");
                                 }
                                 
                             }
