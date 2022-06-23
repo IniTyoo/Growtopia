@@ -194,7 +194,7 @@ public:
 	    uint8_t amount;
 	    //uint8_t type;
 	};
-	vector<Item> Items;
+	vector<InventoryItem> Items;
 	vector<DroppedItem> FloatingItem;
 	/*********** structs declaration *********/
 
