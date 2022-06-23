@@ -53,6 +53,9 @@ public:
 	int localy = -1;
 	int localnetid;
 	int localuserid;
+	int localitem_count;
+	int localslot_count;
+	int gems;
 	
 	//int worldplayercount=0;
 
