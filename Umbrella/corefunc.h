@@ -53,6 +53,7 @@ public:
 	int localy = -1;
 	int localnetid;
 	int localuserid;
+	
 	//int worldplayercount=0;
 
 	struct ObjectData
@@ -189,10 +190,10 @@ public:
 		uint8_t flags;
 		uint32_t uid;
 	};
-	struct InventoryItem {
-	    uint16_t id;
-	    uint8_t amount;
-	    //uint8_t type;
+	struct Item {
+	uint16_t id;
+	uint8_t count;
+	uint8_t type;
 	};
 	vector<InventoryItem> Items;
 	vector<DroppedItem> FloatingItem;
