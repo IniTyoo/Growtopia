@@ -11,6 +11,7 @@
 #include "xorstr.hpp"
 #include "proton/rtparam.hpp"
 #include <regex>
+#include "utilsfunc.h"
 using namespace std;
 
 
@@ -460,12 +461,45 @@ public:
 				}
 				else if (func == "onShowCaptcha") {
 					auto ctx = varlist[1].get_string();
-
-;				}
+				}
+				else if (func == "OnRequestWorldSelectMenu") {
+                			auto ctx = varlist[1].get_string();
+                			currentworld = "In EXIT";
+            			}
 				else if (func == "OnSetPos") {
 					auto ctx = varlist[1].get_string();
 					localx = varlist[1].get_vector2().m_x;
 					localy = varlist[1].get_vector2().m_y;
+				}
+				else if (func == "OnDialogRequest") {
+					auto ctx = varlist[1].get_string();
+					// Auto Access
+					if (ctx.find("end_dialog|popup||Continue|") != std::string::npos) {
+						if (ctx.find("acceptlock") != std::string::npos) {
+							SendPacket(2, "action|dialog_return\ndialog_name|popup\nnetID|" + to_string(localnetid) + "|\nbuttonClicked|acceptlock", peer);
+						}
+					}
+					else if (ctx.find("end_dialog|acceptaccess|No|Yes|") != std::string::npos) {
+						SendPacket(2, "action|dialog_return\ndialog_name|acceptaccess", peer);
+					}
+				}
+				else if (func == "OnConsoleMessage") {
+					auto ctx = varlist[1].get_string();
+					if (autoAccess) {
+						if (ctx.find("wants to add you to a") != std::string::npos && ctx.find("Wrench yourself to accept.") != std::string::npos && localnetid != 0) {
+							SendPacket(2, "action|wrench\n|netid|" + to_string(localnetid), peer);
+						}
+					}
+					if (automsgg) {
+						if (ctx.find("`` entered, `w") != string::npos) {
+							string::size_type loc = ctx.find("`` entered,", 0);
+							SendPacket(2, "action|input\n|text|/msg" + colorstr2(ctx.substr(3, loc) + msgtextt), peer);
+						}
+						if (ctx.find("`` left, `w") != string::npos) {
+							string::size_type loc = ctx.find("`` left,", 0);
+							SendPacket(2, "action|input\n|text|/msg" + colorstr2(ctx.substr(3, loc) + msgtexttt), peer);
+						}
+					}
 				}
 				else if (func == "OnSpawn") {
 					auto data = varlist[1].get_string();
