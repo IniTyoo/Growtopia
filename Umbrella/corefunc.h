@@ -592,6 +592,7 @@ public:
 					for (int i = 0; i < objects.size(); i++) {
 						if (objects.at(i).netId == netID) {
 							objects.at(i).isGone = true;
+							objects.erase(objects.begin() + i - 1);
 						}
 					}
 				}
@@ -1055,6 +1056,7 @@ public:
 			//if (world->name.find("TUTORIAL_1") != std::string::npos) SendPacket(2, "action|growid", peer);
 			//if (world->name != currentWorld) SendPacket(3, "action|join_request\nname|" + currentWorld, peer);
 			//if (world->name == currentWorld) cout << uname << " has been landed in " << currentWorld << endl;
+			if (world->name == "EXIT") objects.clear();
 			currentWorld = world->name;
 			break;
 		}
