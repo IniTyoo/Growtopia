@@ -765,6 +765,19 @@ public:
 			floatItem.push_back(obj);
 		}
 	}
+	
+	void SerializeInventory(ENetPacket* packet){
+		items.clear();
+		BYTE* extended_ptr = get_extended(packet);
+		vector<Item> invbuf;
+		memcpy(&localslot_count, extended_ptr + 5,4);
+		memcpy(&localitem_count, extended_ptr + 9,2);
+		invbuf.resize(localitem_count);
+		memcpy(invbuf.data(), extended_ptr + 11,invbuf.capacity() * sizeOf(Item));
+		for (Item& item : invbuf){
+			items.push_back(item.id) = item;
+		}
+	}
 		
 	vector<WorldStruct> tile;
 
@@ -910,7 +923,13 @@ public:
 		case 0x23u:
 			break;
 		case 3:
+		{	
 			break;
+		}
+		case 9:
+		{
+			SerializeItem(packets);
+		}
 		case 4:
 		{
 			floatItem.clear();
