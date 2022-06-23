@@ -118,6 +118,7 @@ public:
 	int accountblockcount = 0;
 	int last_time = 0;
 	int range = 0;
+	bool collectgems = true;
 
 	// Auto Spam
 	char spamtext1[500];
