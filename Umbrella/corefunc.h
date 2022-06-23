@@ -189,6 +189,12 @@ public:
 		uint8_t flags;
 		uint32_t uid;
 	};
+	struct InventoryItem {
+	    uint16_t id;
+	    uint8_t amount;
+	    //uint8_t type;
+	};
+	vector<Item> Items;
 	vector<DroppedItem> FloatingItem;
 	/*********** structs declaration *********/
 
@@ -700,7 +706,7 @@ public:
 				if (floatItem[i].oid == packet->m_int_data) {
 
 					// add to inventory if netid same like local netid
-					/*if (packet->m_player_flags == localnetid) { // netid = local player netid
+					if (packet->m_player_flags == localnetid) { // netid = local player netid
 						if (floatItem[i].id == 112) {
 							gems += floatItem[i].amount; // gems
 						}
@@ -718,14 +724,14 @@ public:
 								}
 							}
 							if (!added) {
-								//InventoryItem item;
-								//item.id = floatItem[i].id;
-								//item.amount = floatItem[i].amount;
-								//items.push_back(item); // inventory
+								InventoryItem item;
+								item.id = floatItem[i].id;
+								item.amount = floatItem[i].amount;
+								items.push_back(item); // inventory
 							}
 						}
 					}
-					*/
+					
 					// erase
 					floatItem.erase(floatItem.begin() + i);
 					break;
@@ -758,6 +764,7 @@ public:
 			floatItem.push_back(obj);
 		}
 	}
+		
 	vector<WorldStruct> tile;
 
 	BYTE* packPlayerMoving(PlayerMoving* dataStruct)
