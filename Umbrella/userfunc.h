@@ -93,12 +93,26 @@ void GrowtopiaBot::Collect(int range) {
         int rangex = abs((obj.x + 9) / 32 - (localx + 10) / 32);
         int rangey = abs((obj.y + 9) / 32 - (localy + 15) / 32);
         if (rangex <= range && rangey <= range) {
-            gameupdatepacket_t packet{ 0 };
-            packet.m_type = 11;
-            packet.m_vec_x = obj.x;
-            packet.m_vec_y = obj.y;
-            packet.m_int_data = obj.oid;
-            SendPacketRaw(4, &packet, 56, NULL, peer, 1);
+		if (obj.oid == 112){
+			if (collectgems){
+				    gameupdatepacket_t packet{ 0 };
+				    packet.m_type = 11;
+				    packet.m_vec_x = obj.x;
+				    packet.m_vec_y = obj.y;
+				    packet.m_int_data = obj.oid;
+				    SendPacketRaw(4, &packet, 56, NULL, peer, 1);
+			}else{
+			 cout << "cant collect gems..." << endl;	
+			}
+		}else{
+		    gameupdatepacket_t packet{ 0 };
+		    packet.m_type = 11;
+		    packet.m_vec_x = obj.x;
+		    packet.m_vec_y = obj.y;
+		    packet.m_int_data = obj.oid;
+		    SendPacketRaw(4, &packet, 56, NULL, peer, 1);
+		}
+            
         }
     }
 }
