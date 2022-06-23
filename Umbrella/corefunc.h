@@ -191,11 +191,11 @@ public:
 		uint32_t uid;
 	};
 	struct Item {
-	uint16_t id;
-	uint8_t count;
-	uint8_t type;
+		uint16_t id;
+		uint8_t count;
+		uint8_t type;
 	};
-	vector<InventoryItem> Items;
+	vector<Item> Items;
 	vector<DroppedItem> FloatingItem;
 	/*********** structs declaration *********/
 
@@ -767,7 +767,7 @@ public:
 	}
 	
 	void SerializeInventory(ENetPacket* packet){
-		items.clear();
+		Items.clear();
 		BYTE* extended_ptr = get_extended(packet);
 		vector<Item> invbuf;
 		memcpy(&localslot_count, extended_ptr + 5,4);
@@ -775,9 +775,15 @@ public:
 		invbuf.resize(localitem_count);
 		memcpy(invbuf.data(), extended_ptr + 11,invbuf.capacity() * sizeOf(Item));
 		for (Item& item : invbuf){
-			items.push_back(item.id) = item;
+			Items.push_back(item.id) = item;
 		}
 	}
+	
+	/*void UpdateInventory(gameupdatepacket_t* packet) {
+		auto data = Items;
+		if (data.
+	}*/
+	
 		
 	vector<WorldStruct> tile;
 
