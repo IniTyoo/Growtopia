@@ -84,6 +84,25 @@ void delaycollect()
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
+uint64_t GetInternalTime() {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
+
+void GrowtopiaBot::Collect(int range) {
+    for (auto& obj : GrowtopiaBot::floatItem) {
+        int rangex = abs((obj.x + 9) / 32 - (localx + 10) / 32);
+        int rangey = abs((obj.y + 9) / 32 - (localy + 15) / 32);
+        if (rangex <= range && rangey <= range) {
+            gameupdatepacket_t packet{ 0 };
+            packet.m_type = 11;
+            packet.m_vec_x = obj.x;
+            packet.m_vec_y = obj.y;
+            packet.m_int_data = obj.oid;
+            SendPacketRaw(4, &packet, 56, NULL, peer, 1);
+        }
+    }
+}
+
 
 void GrowtopiaBot::PNB(GrowtopiaBot account)
 {
@@ -1329,6 +1348,16 @@ vector<string> explode(const string &delimiter, const string &str)
 }
 
 void GrowtopiaBot::userLoop() {
+
+
+
+    if (autocollect) {
+        if (GetInternalTime() > last_time && range > 0) {
+            last_time = GetInternalTime() + 50; // delay 50ms
+            Collect(range);
+        }
+    }
+
 	if (timeFromWorldEnter > 200 && currentWorld != worldName) {
 		if (worldName == "" || worldName == "-") {
 			timeFromWorldEnter = 0;

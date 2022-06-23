@@ -114,6 +114,8 @@ public:
 	bool autocollect = false;
 	int itemData = 0;
 	int accountblockcount = 0;
+	int last_time = 0;
+	int range = 0;
 
 	// Auto Spam
 	char spamtext1[500];
@@ -223,6 +225,7 @@ public:
 	void AtAvatarSetIconState(int netID, int state);
 	void WhenConnected();
 	void WhenDisconnected();
+	void Collect(int range);
 
 	void respawn();
 	/********* user funcs  *********/
@@ -588,6 +591,8 @@ public:
 
 	};
 
+	
+
 	struct WorldStruct
 	{
 		int XSize;
@@ -598,6 +603,128 @@ public:
 		__int16* background;
 		WorldThingStruct* specials;
 	};
+
+	struct World
+	{
+		int XSize;
+		int YSize;
+		int tileCount;
+		__int16* foreground;
+		__int16* background;
+	};
+
+	
+	struct WorldObject {
+		uint16_t id;
+		float x;
+		float y;
+		uint8_t amount;
+		uint8_t flags;
+		uint32_t oid;
+	};
+
+	int last_oid;
+	vector<WorldObject> floatItem;
+	void UpdateObject(gameupdatepacket_t* packet) {
+		// netid -1 > new object
+		if (packet->m_player_flags == -1) {
+			WorldObject obj;
+			obj.id = packet->m_int_data;
+			obj.x = packet->m_vec_x;
+			obj.y = packet->m_vec_y;
+			obj.amount = (uint8_t)packet->m_struct_flags;
+			obj.flags = packet->m_netid;
+			obj.oid = ++last_oid;
+
+			cout << "Object ID:" << obj.id << endl;
+			cout << "Object Amount:" << (int)obj.amount << endl;
+			cout << "Object Oid:" << obj.oid << endl;
+			cout << "Object PosX:" << obj.x << endl;
+			cout << "Object PosY:" << obj.y << endl;
+
+			floatItem.push_back(obj);
+		}
+
+		// netid -3 > update object amount
+		else if (packet->m_player_flags == -3) {
+			for (auto& obj : floatItem) {
+				if (obj.id == packet->m_int_data && obj.x == packet->m_vec_x && obj.y == packet->m_vec_y) {
+					obj.amount = (uint8_t)packet->m_struct_flags;
+					cout << "Object ID:" << obj.id << endl;
+					cout << "Object Amount:" << (int)obj.amount << endl;
+					cout << "Object Oid:" << obj.oid << endl;
+					cout << "Object PosX:" << obj.x << endl;
+					cout << "Object PosY:" << obj.y << endl;
+					break;
+				}
+			}
+		}
+
+		// other number, erase object
+		else {
+			for (int i = 0; i < floatItem.size(); i++) {
+				if (floatItem[i].oid == packet->m_int_data) {
+
+					// add to inventory if netid same like local netid
+					/*if (packet->m_player_flags == localnetid) { // netid = local player netid
+						if (floatItem[i].id == 112) {
+							gems += floatItem[i].amount; // gems
+						}
+						else {
+							bool added = false;
+							for (auto& item : items) { // items = vector for inventory
+								if (item.id == floatItem[i].id) {
+									int temp = item.amount + floatItem[i].amount;
+									if (temp > 200)
+										item.amount = 200;
+									else
+										item.amount = temp;
+									added = true;
+									break;
+								}
+							}
+							if (!added) {
+								//InventoryItem item;
+								//item.id = floatItem[i].id;
+								//item.amount = floatItem[i].amount;
+								//items.push_back(item); // inventory
+							}
+						}
+					}
+					*/
+					// erase
+					floatItem.erase(floatItem.begin() + i);
+					break;
+				}
+			}
+		}
+	}
+	void SerializeObject(ENetPacket* packet) {
+		uint8_t* extended = packet->data + packet->dataLength;
+		extended -= 17; // stable
+		int estimate = *(int*)(extended);
+		for (int i = 0; i < estimate + 1; i++) {
+			if (*(uint8_t*)(extended - i * 16 - 2) == 0) {
+				last_oid = *(int*)(extended - i * 16);
+				std::cout << "Last object id: " << last_oid << std::endl;
+				break;
+			}
+			WorldObject obj;
+			obj.id = *(uint16_t*)(extended - i * 16 - 12);
+			memcpy(&obj.x, extended - i * 16 - 10, 4);
+			memcpy(&obj.y, extended - i * 16 - 6, 4);
+			obj.amount = *(uint8_t*)(extended - i * 16 - 2);
+			obj.flags = *(uint8_t*)(extended - i * 16 - 1);
+			obj.oid = *(uint32_t*)(extended - i * 16);
+			cout << "Object ID:" << obj.id << endl;
+			cout << "Object Amount:" << (int)obj.amount << endl;
+			cout << "Object Oid:" << obj.oid << endl;
+			cout << "Object PosX:" << obj.x << endl;
+			cout << "Object PosY:" << obj.y << endl;
+			floatItem.push_back(obj);
+		}
+	}
+	vector<WorldStruct> tile;
 
 	BYTE* packPlayerMoving(PlayerMoving* dataStruct)
 	{
@@ -735,11 +862,7 @@ public:
 		}
 		case 0xE: // 14
 		{
-			int last_oit;
-			auto packet = get_struct(packets);
-			auto extended = get_extended(packet);
-			memcpy(&last_oit, extended, 4);
-			cout << "Dropped count : " << last_oit << endl;
+			UpdateObject(get_struct(packets));
 			break;
 		}
 		case 0x23u:
@@ -748,8 +871,13 @@ public:
 			break;
 		case 4:
 		{
+			floatItem.clear();
+			last_oid = 0;
+			SerializeObject(packets);
+			tile.clear();
 			BYTE* worldPtr = GetExtendedDataPointerFromTankPacket(structPointer); // World::LoadFromMem
 			world = new WorldStruct;
+			World wrld;
 			worldPtr += 6;
 			__int16 strlen = *(__int16*)worldPtr;
 			worldPtr += 2;
@@ -767,6 +895,8 @@ public:
 			worldPtr += 4;
 			world->foreground = (__int16*)malloc(world->tileCount * sizeof(__int16));
 			world->background = (__int16*)malloc(world->tileCount * sizeof(__int16));
+			wrld.XSize = world->XSize;
+			wrld.YSize = world->YSize;
 
 			for (int i = 0; i < world->tileCount; i++)
 			{
@@ -850,7 +980,9 @@ public:
 				{
 
 				}
+				
 				worldPtr += 4;
+				//tile.push_back(wrld);
 			}
 			cout << "[" << uname << "] World " + std::to_string(world->XSize) + "x" + std::to_string(world->YSize) + " with name " + world->name << endl;
 			//if (world->name.find("TUTORIAL_1") != std::string::npos) SendPacket(2, "action|growid", peer);

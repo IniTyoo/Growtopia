@@ -40,6 +40,24 @@ extern "C" {
 #include "xorstr.hpp"
 #include "proton/variant.hpp"
 
+
+#include "auth.hpp"
+#include "skStr.h"
+#define CURL_STATICLIB
+std::string tm_to_readable_time(tm ctx);
+static std::time_t string_to_timet(std::string timestamp);
+static std::tm timet_to_tm(time_t timestamp);
+
+using namespace KeyAuth;
+
+std::string sslPin = "ssl pin key (optional)"; // don't change unless you intend to pin public certificate key. you can get here in the "Pin SHA256" field https://www.ssllabs.com/ssltest/analyze.html?d=keyauth.win&latest. If you do this you need to be aware of when SSL key expires so you can update it
+std::string namex = "payung"; // application name. right above the blurred text aka the secret on the licenses tab among other tabs
+std::string ownerid = "MCbJ0h8d3p"; // ownerid, found in account settings. click your profile picture on top right of dashboard and then account settings.
+std::string secret = "2e013a6ac7c57740f8ad0ecab08f7c7bf0af0d0aad7b5812e18fe082baf41b65"; // app secret, the blurred text on licenses tab and other tabs
+std::string version = "1.0"; // leave alone unless you've changed version on website
+std::string url = "https://umberella-server.000webhostapp.com/api/1.1/"; // change if you're self-hosting
+api KeyAuthApp(namex, ownerid, secret, version, url, sslPin);
+
 using namespace std;
 using json = nlohmann::json;
 
@@ -50,6 +68,9 @@ static bool selected[60] = { false };
 static bool open = true;
 static char usernamebot[120];
 static char passwordbot[120];
+static char usernamelogin[120];
+static char passwordlogin[120];
+static char license[120];
 
 static char worldName[60];
 char namaFile[40] = "Script.lua";
@@ -71,6 +92,7 @@ bool set = true;
 static int speed = 1;
 bool follow = false;
 bool autoacc = false;
+bool asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = false;
 
 string word = "";
 string name = "";
@@ -93,10 +115,30 @@ GrowtopiaBot create(string username, string password) {
     return bot;
 }
 
+std::string tm_to_readable_time(tm ctx) {
+    char buffer[80];
 
+    strftime(buffer, sizeof(buffer), "%a %m/%d/%y %H:%M:%S %Z", &ctx);
+
+    return std::string(buffer);
+}
+
+static std::time_t string_to_timet(std::string timestamp) {
+    auto cv = strtol(timestamp.c_str(), NULL, 10); // long
+
+    return (time_t)cv;
+}
+
+static std::tm timet_to_tm(time_t timestamp) {
+    std::tm context;
+
+    localtime_s(&context, &timestamp);
+
+    return context;
+}
 void execute_thread(lua_State* state, std::string text) {
 	luaL_dostring(state, text.c_str());
-	
+    lua_close(state);
 }
 
 
@@ -112,14 +154,15 @@ static int lua_sendpacket(lua_State* L) {
 }
 
 
+
 static int lua_getbot(lua_State* L) {
-				    	lua_newtable(L);
+				    lua_newtable(L);
 					lua_pushliteral(L, "x"); // assign table.x
-					lua_pushnumber(L, atoi(bots.at(current_item).localx)); // misal value 1000
+					lua_pushnumber(L, bots.at(current_item).localx); // misal value 1000
 					lua_settable(L, -3); // wajib -3
 					    
 					lua_pushliteral(L, "y"); // assign table.x
-					lua_pushnumber(L, atoi(bots.at(current_item).localy)); // misal value 1000
+					lua_pushnumber(L, bots.at(current_item).localy); // misal value 1000
 					lua_settable(L, -3); // wajib -3
 
 					lua_pushliteral(L, "world"); // assign table.x
@@ -136,22 +179,25 @@ static int lua_getbot(lua_State* L) {
 					lua_settable(L, -3); // wajib -3
 					    //.statusbot.c_str()
 
-					...
+					//...
 					return 1;
 					}
 
 void executelua(string text){
-				    lua_State* state = luaL_newstate();
-                                    luaL_openlibs(state);
+                if (bots.size() > 0) {
+                    lua_State* state = luaL_newstate();
+                    luaL_openlibs(state);
 
-                                    lua_newtable(state);
-                                    lua_setglobal(state, "imgui");
+                    //lua_newtable(state);
+                    lua_setglobal(state, "imgui");
 
-                                    lua_register(state, "SendPacket", lua_sendpacket);
-				    lua_register(state, "GetBot", lua_getbot);
-                                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n\n\n" + text;
-                                    std::thread thr(execute_thread, state, script);
-                                    thr.detach();	
+                    lua_register(state, "SendPacket", lua_sendpacket);
+                    lua_register(state, "GetBot", lua_getbot);
+                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n\n\n" + text;
+                    std::thread thr(execute_thread, state, script);
+                    thr.detach();
+
+                }
 }
 
 inline bool exists_test(const string& name) {
@@ -172,6 +218,22 @@ void spamthread(std::string text1)
                 bot.SendPacket(2, "action|input\n|text|" + text1, bot.peer);
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(bot.intervalspam));
+        }
+    }
+}
+
+void autocollecting(int range)
+{
+    using namespace std::literals::chrono_literals;
+    for (auto& bot : bots)
+    {
+        while (bot.autocollect)
+        {
+            for (auto& bot : bots)
+            {
+                bot.Collect(bot.range);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
     }
 }
@@ -204,6 +266,59 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 //int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 int main()
 {
+    SetConsoleTitleA(skCrypt("Loader"));
+    std::cout << skCrypt("\n\n Connecting..");
+    KeyAuthApp.init();
+    if (!KeyAuthApp.data.success)
+    {
+        std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+        Sleep(1500);
+        exit(0);
+    }
+
+
+
+
+    /*
+    KeyAuthApp.web_login();
+    std::cout << "\n Waiting for button to be clicked";
+    KeyAuthApp.button("close");
+    */
+
+    /*
+    for (std::string subs : KeyAuthApp.data.subscriptions)
+    {
+        if (subs == "default")
+        {
+            std::cout << skCrypt("\n User has subscription with name: default");
+        }
+    }
+    */
+
+    /*
+    // download file, change file.exe to whatever you want.
+    // remember, certain paths like windows folder will require you to turn on auto run as admin https://stackoverflow.com/a/19617989
+    std::vector<std::uint8_t> bytes = KeyAuthApp.download("167212");
+    std::ofstream file("file.exe", std::ios_base::out | std::ios_base::binary);
+    file.write((char*)bytes.data(), bytes.size());
+    file.close();
+    */
+
+    // KeyAuthApp.setvar("discord", "test#0001"); // set the variable 'discord' to 'test#0001'
+    // std::cout << "\n\n User variable data: " + KeyAuthApp.getvar("discord"); // display the user variable witn name 'discord'
+
+    // let's say you want to send request to https://keyauth.win/api/seller/?sellerkey=f43795eb89d6060b74cdfc56978155ef&type=black&ip=1.1.1.1&hwid=abc
+    // but doing that from inside the loader is a bad idea as the link could get leaked.
+    // Instead, you should create a webhook with the https://keyauth.win/api/seller/?sellerkey=f43795eb89d6060b74cdfc56978155ef part as the URL
+    // then in your loader, put the rest of the link (the other paramaters) in your loader. And then it will send request from KeyAuth server and return response in string resp
+
+    // you have to encode the & sign with %26
+    // std::string resp = KeyAuthApp.webhook("P5NHesuZyf", "%26type=black%26ip=1.1.1.1%26hwid=abc");
+    // std::cout << "\n Response recieved from webhook request: " + resp;
+
+    // KeyAuthApp.log("user logged in"); // send event to logs. if you set discord webhook in app settings, it will send there too
+    // KeyAuthApp.ban(); // ban the current user, must be logged in
+
     // Create application window
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("UMBRELLA"), NULL };
     ::RegisterClassEx(&wc);
@@ -289,7 +404,8 @@ int main()
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
         {
-            const char* window_title = "Umbrella BETA 1.0 By Dr. Aseppp Of Beban#8307";
+            //auto nama = KeyAuthApp.data.username;
+            auto window_title = "Umbrella BETA 1.0 By Dr. Aseppp Of Beban#8307";//+ KeyAuthApp.data.username;
             ImVec2 window_size{ 650, 415 };
 
             DWORD window_flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize;
@@ -301,6 +417,70 @@ int main()
                 ImGui::PushFont(font);
                 {
                     ImGui::Begin(window_title, &globals.active, window_flags);
+                    if (asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd == false) {
+                        //std::cout << skCrypt("\n\n Connecting..");
+                       // KeyAuthApp.init();
+                        ImGui::BeginTabBar("##Tahggb 1");
+                        if (ImGui::BeginTabItem("Login"))
+                        {
+                            //string usernamelogin;
+                            ImGui::InputTextWithHint("##worldsd3", "Username", usernamelogin, sizeof(usernamelogin), 0);
+                            ImGui::InputTextWithHint(XorStr("##wosdrld2").c_str(), "Password", passwordlogin, sizeof(passwordlogin), ImGuiInputTextFlags_Password);
+                            if (ImGui::Button("Login", ImVec2(sizeof(usernamelogin), 20)))
+                            {
+                                //KeyAuthApp.login(usernamelogin, passwordlogin);
+                               // asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+                                KeyAuthApp.login(usernamelogin, passwordlogin);
+                                if (!KeyAuthApp.data.success)
+                                {
+                                    std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+                                    Sleep(1500);
+                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                                    ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+                                }
+                                else {
+                                    cout << "Sukses" << endl;
+                                    asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                                    ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+                                }
+                                //break;
+                            }
+                            //ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                            ImGui::EndTabItem();
+                        }
+                        if (ImGui::BeginTabItem("Register"))
+                        {
+                            //string usernamelogin;
+                            ImGui::InputTextWithHint("##wosdsdrsdsdldsd3", "License", license, sizeof(license), 0);
+                            ImGui::InputTextWithHint("##worsdsdldsd3", "Username", usernamelogin, sizeof(usernamelogin), 0);
+                            ImGui::InputTextWithHint(XorStr("##wosdrld2").c_str(), "Password", passwordlogin, sizeof(passwordlogin), ImGuiInputTextFlags_Password);
+                            if (ImGui::Button("Register", ImVec2(sizeof(usernamelogin), 20)))
+                            {
+                                KeyAuthApp.regstr(usernamelogin, passwordlogin, license);
+                                if (!KeyAuthApp.data.success)
+                                {
+                                    std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+                                    Sleep(1500);
+                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                                }
+                                else {
+                                    cout << "Sukses" << endl;
+                                    asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                                    ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+                                }
+                                //asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+                                //break;
+
+                            }/*bool success;
+			std::string message;*/
+                            //ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                            ImGui::EndTabItem();
+                        }
+                        ImGui::EndTabBar();
+                    }else{
+
                     ImGui::BeginTabBar("##Tab 1");
                     if (ImGui::BeginTabItem("Multibot"))
                     {
@@ -310,6 +490,17 @@ int main()
                     if (ImGui::BeginTabItem("Item DB"))
                     {
                         active_tab = 2;
+                        ImGui::EndTabItem();
+                    }
+                    if (ImGui::BeginTabItem("Executor"))
+                    {
+                        active_tab = 3;
+                        ImGui::EndTabItem();
+                    }
+                    
+                    if (ImGui::BeginTabItem("Account Info"))
+                    {
+                        active_tab = 300;
                         ImGui::EndTabItem();
                     }
 
@@ -362,8 +553,16 @@ int main()
                             ImGui::InputTextWithHint(XorStr("##world2").c_str(), "Password", passwordbot, sizeof(passwordbot), ImGuiInputTextFlags_Password);
                             if (ImGui::Button("Add", ImVec2(85, 20)))
                             {
-                                create(usernamebot, passwordbot);
-                                loginpacket = true;
+                                if (bots.size() == 0) {
+                                    create(usernamebot, passwordbot);
+                                    loginpacket = true;
+                                    current_item = 0;
+                                }
+                                else {
+                                    create(usernamebot, passwordbot);
+                                    loginpacket = true;
+
+                                }
                             }
                             ImGui::SameLine();
                             if (ImGui::Button("Remove", ImVec2(85, 20)))
@@ -608,10 +807,11 @@ int main()
                                             ImGui::SameLine();
                                             ImGui::Checkbox("Auto Place", &bot.enableautoput);
                                             ImGui::InputInt("Items ID", &bot.itemData);
-                                            /*if (ImGui::Checkbox("Auto Collect", &bot.autocollect))
+                                            if (ImGui::Checkbox("Auto Collect", &bots.at(current_item).autocollect))
                                             {
-                                                bot.GrowtopiaBot::collecting(range);
-                                            }*/
+                                                std::thread collecting(autocollecting, bot.range);
+                                                collecting.detach();
+                                            };
                                         }
                                         i++;
                                     }
@@ -1128,7 +1328,7 @@ int main()
                                         }
                                     }
                                     ImGui::Spacing();
-                                    ImGui::SliderInt("##autocollect", &range, 0, 10, "%d Range");
+                                    ImGui::SliderInt("##autocollect", &bots.at(current_item).range, 0, 10, "%d Range");
                                 }
                                 else {
                                     ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "Add Bot First.");
@@ -1238,34 +1438,6 @@ int main()
                                 }
                             }
 
-                            if (active_tab == 11) {
-                                
-                                ImGui::Text("%d lines | %s", editor.GetTotalLines(), editor.GetCurrentLineText().c_str());
-                                ImGui::InputTextWithHint("##Script", "Script.lua", namaFile, 40, 0);
-                                ImGui::SameLine();
-                                
-                                
-                                if (ImGui::Button("Save", ImVec2(40, 20))) {}
-                                
-                                
-                                ImGui::SameLine();
-                                
-                                
-                                if (ImGui::Button("Load", ImVec2(40, 20))) {}
-                                
-                                
-                                editor.Render("", ImVec2(400, 265), true); //height - 30
-                                
-                                
-                                if (ImGui::Button("Execute", ImVec2(85, 20))) {
-					executelua(editor.GetText());
-                                }
-                                ImGui::SameLine();
-                                if (ImGui::Button("Stop", ImVec2(85, 20))) {
-                                    	executelua("os.exit()");
-                                }
-                                
-                            }
 
                             ImGui::EndChild();
                         }
@@ -1304,7 +1476,134 @@ int main()
                             ImGui::EndChild();
                         }
                     }
-                }
+                    if (active_tab == 3)
+                    {
+                        ImGui::Spacing();
+                        if (ImGui::BeginChild(XorStr("#Acc").c_str(), ImVec2(200, 347), true, 0))
+                        {
+                                if (ImGui::Checkbox("Select All", &selectall))
+                                {
+                                    if (selectall)
+                                    {
+                                        for (int i = 0; GrowtopiaBot bot : bots)
+                                        {
+                                            selected[i] = { true };
+                                            bot.uname = bot.uname;
+                                            i++;
+                                        }
+                                    }
+                                    else {
+                                        for (int i = 0; i < bots.size(); i++)
+                                        {
+                                            selected[i] = { false };
+                                        }
+                                    }
+                                }
+                                const char* names[1000] = { "none" };
+                                if (ImGui::BeginListBox("##Acclist", ImVec2(ImGui::GetWindowWidth() - 20, 227.f)))
+                                {
+                                    for (int i = 0;GrowtopiaBot account : bots)
+                                    {
+                                        if (ImGui::Selectable(account.uname.c_str(), &selected[i], 0))
+                                        {
+                                            for (int i = 0; i < bots.size(); i++)
+                                            {
+                                                names[i] = bots.at(i).uname.c_str();
+                                                selectall = false;
+                                                selected[i] = { false };
+                                            }
+                                            selected[i] = true;
+                                        }
+                                        i++;
+                                    }
+                                    ImGui::EndListBox();
+                                }
+                                ImGui::SetNextItemWidth(180.0f);
+                                ImGui::InputTextWithHint(XorStr("##world1").c_str(), "Grow ID", usernamebot, sizeof(usernamebot), 0);
+                                ImGui::SetNextItemWidth(180.0f);
+                                ImGui::InputTextWithHint(XorStr("##world2").c_str(), "Password", passwordbot, sizeof(passwordbot), ImGuiInputTextFlags_Password);
+                                if (ImGui::Button("Add", ImVec2(85, 20)))
+                                {
+                                    if (bots.size() == 0) {
+                                        create(usernamebot, passwordbot);
+                                        loginpacket = true;
+                                        current_item = 0;
+                                    }
+                                    else {
+                                        create(usernamebot, passwordbot);
+                                        loginpacket = true;
+
+                                    }
+                                }
+                                ImGui::SameLine();
+                                if (ImGui::Button("Remove", ImVec2(85, 20)))
+                                {
+                                    if (!selectall)
+                                    {
+                                        for (int i = 0; GrowtopiaBot const& account : bots)
+                                        {
+                                            if (selected[i])
+                                            {
+                                                bots.erase(bots.begin() + i);
+                                                bot.WhenDisconnected();
+                                            }
+                                            i++;
+                                        }
+                                    }
+                                }
+
+                            ImGui::EndChild();
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::BeginChild("#2 BegizxczxcnChild", ImVec2(420, 347), true, 0))
+                        {
+                        ImGui::Text("%d lines | %s", editor.GetTotalLines(), editor.GetCurrentLineText().c_str());
+                        ImGui::InputTextWithHint("##Script", "Script.lua", namaFile, 40, 0);
+                        ImGui::SameLine();
+
+
+                        if (ImGui::Button("Save", ImVec2(40, 20))) {}
+
+
+                        ImGui::SameLine();
+
+
+                        if (ImGui::Button("Load", ImVec2(40, 20))) {}
+
+
+                        editor.Render("", ImVec2(400, 265), true); //height - 30
+
+
+                        if (ImGui::Button("Execute", ImVec2(85, 20))) {
+                            executelua(editor.GetText());
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::Button("Stop", ImVec2(85, 20))) {
+                            executelua("os.exit()");
+                        }
+
+                    }
+
+                    ImGui::EndChild();
+                    }
+                    if (active_tab == 300)
+                    {
+                        ImGui::Spacing();
+                        if (ImGui::BeginChild("#2 BegizxcdsdszxcnChild", ImVec2(420, 347), true, 0))
+                        {
+                            ImGui::Text("Username: %s", KeyAuthApp.data.username.c_str());
+                            ImGui::Text("IP address: %s", KeyAuthApp.data.ip.c_str());
+                            ImGui::Text("Hardware-Id: %s", KeyAuthApp.data.hwid.c_str());
+                            ImGui::Text("Subscription expiry: %s", tm_to_readable_time(timet_to_tm(string_to_timet(KeyAuthApp.data.expiry))).c_str());
+                            ImGui::Text("Create date: %s", tm_to_readable_time(timet_to_tm(string_to_timet(KeyAuthApp.data.createdate))).c_str());
+
+
+                        }
+
+                        ImGui::EndChild();
+                    }
+                    }
+                 }
                 ImGui::End();
                 ImGui::PopFont();
                 ImGui::EndFrame();
