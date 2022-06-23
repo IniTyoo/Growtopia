@@ -3129,7 +3129,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Lua()
 			"pow", "frexp", "ldexp", "log10", "pi", "huge", "maxinteger", "mininteger", "loadlib", "searchpath", "seeall", "preload", "cpath", "path", "searchers", "loaded", "module", "require", "clock",
 			"date", "difftime", "execute", "exit", "getenv", "remove", "rename", "setlocale", "time", "tmpname", "byte", "char", "dump", "find", "format", "gmatch", "gsub", "len", "lower", "match", "rep",
 			"reverse", "sub", "upper", "pack", "packsize", "unpack", "concat", "maxn", "insert", "pack", "unpack", "remove", "move", "sort", "offset", "codepoint", "char", "len", "codes", "charpattern",
-			"coroutine", "table", "io", "os", "string", "utf8", "bit32", "math", "debug", "package", "SendPacket", "Sleep"
+			"coroutine", "table", "io", "os", "string", "utf8", "bit32", "math", "debug", "package", "SendPacket", "Sleep","GetBot"
 		};
 		
 		
