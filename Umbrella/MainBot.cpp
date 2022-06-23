@@ -870,6 +870,7 @@ int main()
                                                 std::thread collecting(autocollecting, bot.range);
                                                 collecting.detach();
                                             };
+					    ImGui::Checkbox("Collect Gems", &bots.at(current_item).collectgems)
                                         }
                                         i++;
                                     }
