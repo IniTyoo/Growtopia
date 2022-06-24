@@ -668,12 +668,11 @@ int main()
                                 active_tab = 8;
                                 ImGui::EndTabItem();
                             }
-                            /*
                             if (ImGui::BeginTabItem("Inventory")) {
                                 active_tab = 9;
                                 ImGui::EndTabItem();
                             }
-                            */
+                            
                             if (ImGui::BeginTabItem("Debug")) {
                                 active_tab = 10;
                                 ImGui::EndTabItem();
@@ -1431,6 +1430,7 @@ int main()
 					    
 					if (ImGui::BeginTabItem(XorStr("GrowScan").c_str()))
                                         {
+						/*
                                             if (loginpacket)
                                             {
                                                 if (bots.at(current_item).currentWorld != XorStr("EXIT").c_str()) {
@@ -1442,7 +1442,7 @@ int main()
 							for (auto& object : lastMap) {
 							ImGui::Text("Item id: %d, amount: %d", object.first, object.second);
 							}
-                                                }
+                                                }*/
                                             }
                                             ImGui::EndTabItem();
                                         }
@@ -1455,12 +1455,29 @@ int main()
                             }
 
                             // TAB 1.6 (Inventory)
-                            /*
+                            
                             if (active_tab == 9)
                             {
-                                ImGui::Spacing();
+                                if (bots.size() > 0) {
+                                    if (ImGui::BeginTabBar(XorStr("##tabbasdsdsdr222").c_str())) {
+                                        if (ImGui::BeginTabItem(XorStr("##Item").c_str()))
+                                        {
+                                            if (loginpacket)
+                                            {
+                                                for (int i = 0; i < bots.at(current_item).inventory.size(); i++) {
+                                                                ImGui::Text("ItemID X: %d, Amount: %d", (int)bots.at(current_item).inventory.at(i).id.c_str(), (int)bots.at(current_item).inventory.at(i).amount.c_str());
+                                                    }
+                                            }
+                                            ImGui::EndTabItem();
+                                   
+                                        }
+                                    }
+                                    ImGui::EndTabBar();
+                                }
+                                else {
+                                    ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "Add Bot First.");
+                                }
                             }
-                            */
 
                             // TAB 1.7 (Debug)
                             if (active_tab == 10)
