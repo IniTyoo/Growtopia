@@ -186,6 +186,14 @@ public:
 	std::vector<InventoryItem> inventory;
 	vector<ObjectData> objects;
 	vector<Debug> debug;
+	
+	std::map<int, int> GetAllObject() {
+	std::map<int, int> ret;
+	for (auto obj : floatItem) {
+	ret[obj.id] += obj.amount;
+	}
+	return ret;
+	}
 
 	string uname;
 	string upass;
