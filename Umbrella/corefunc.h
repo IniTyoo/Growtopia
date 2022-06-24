@@ -720,11 +720,11 @@ public:
 							bool added = false;
 							for (auto& item : Items) { // items = vector for inventory
 								if (item.id == floatItem[i].id) {
-									int temp = item.amount + floatItem[i].amount;
+									int temp = item.count + floatItem[i].amount;
 									if (temp > 200)
-										item.amount = 200;
+										item.count = 200;
 									else
-										item.amount = temp;
+										item.count = temp;
 									added = true;
 									break;
 								}
@@ -732,7 +732,7 @@ public:
 							if (!added) {
 								InventoryItem item;
 								item.id = floatItem[i].id;
-								item.amount = floatItem[i].amount;
+								item.count = floatItem[i].amount;
 								items.push_back(item); // inventory
 							}
 						}
