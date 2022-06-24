@@ -1459,20 +1459,9 @@ int main()
                             if (active_tab == 9)
                             {
                                 if (bots.size() > 0) {
-                                    if (ImGui::BeginTabBar(XorStr("#tabbasdsdsdr222").c_str())) {
-                                        if (ImGui::BeginTabItem(XorStr("##Item").c_str()))
-                                        {
-                                            if (loginpacket)
-                                            {
-                                                for (int i = 0; i < bots.at(current_item).inventory.size(); i++) {
-                                                                ImGui::Text("ItemID X: %d, Amount: %d", (int)bots.at(current_item).inventory.at(i).id.c_str(), (int)bots.at(current_item).inventory.at(i).amount.c_str());
-                                                    }
-                                            }
-                                            ImGui::EndTabItem();
-                                   
-                                        }
-                                    }
-                                    ImGui::EndTabBar();
+                                    for (int i = 0; i < bots.at(current_item).inventory.size(); i++) {
+					    ImGui::Text("ItemID: %d, Count: %d", (int)bots.at(current_item).inventory.at(i).id, (int)bots.at(current_item).inventory.at(i).amount);
+				    }
                                 }
                                 else {
                                     ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "Add Bot First.");
