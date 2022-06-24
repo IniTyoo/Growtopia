@@ -101,7 +101,6 @@ public:
 	string DoorID;
 
 	bool Selected = false;
-	bool isFollowing = false;
 	bool backwardWalk = false;
 	bool autoAccess = false;
 	string statusautostartopia;
