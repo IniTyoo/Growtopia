@@ -546,6 +546,8 @@ public:
 							int y = atoi(act.substr(act.find("|") + 1, act.length() - act.find("|") - 1).c_str());
 							objectData.x = x;
 							objectData.y = y;
+							localnetid = objectData.netId;
+							localuserid = objectData.userId;
 						}
 						else if (id == "type")
 						{
