@@ -939,7 +939,7 @@ public:
 		}
 		case 9:
 		{
-			SerializeItem(packets);
+			//SerializeItem(packets);
 		}
 		case 4:
 		{
