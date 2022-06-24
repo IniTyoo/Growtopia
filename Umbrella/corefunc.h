@@ -183,7 +183,7 @@ public:
 	
 	// vector
 	vector<WorldObject> floatItem;
-	vector<Item> inventory;
+	std::vector<InventoryItem> inventory
 	vector<ObjectData> objects;
 	vector<Debug> debug;
 
@@ -761,18 +761,21 @@ public:
 		}
 	}
 	
-	void SerializeInventory(gameupdatepacket_t* packet){
-		//Items.clear();
-		 inventory.clear();
-                        auto extended_ptr = get_extended(packet);
-                        inventory.resize(*reinterpret_cast<short*>(extended_ptr + 9));
-                        memcpy(inventory.data(), extended_ptr + 11, inventory.capacity() * sizeof(Item));
-                        for (Item& item : inventory) {
-                            std::cout << "Id: "<< (int)item.id << std::endl;
-                            std::cout << "Count: "<< (int)item.count << std::endl;
-                            std::cout << "type: "<< (int)item.type << std::endl;
-                        }
-	}
+	void SerializeInventory(ENetPacket* packet) {
+        uint8_t* extended = packet->data + 60;
+        extended += 5;
+
+        uint8_t size = *(extended);
+        for (uint8_t i = 0; i < size; i++) {
+            InventoryItem item;
+            extended += 2;
+            item.id = *(uint16_t*)(extended);
+            extended += 2;
+            item.amount = *(extended);
+            inventory.push_back(item);
+            //std::cout << "Added item: " << item.id << "|" << item.amount << std::endl;
+        }
+    }
 	
 		
 	vector<WorldStruct> tile;
