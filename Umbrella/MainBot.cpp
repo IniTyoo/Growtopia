@@ -296,13 +296,7 @@ void autocollecting(int range)
     }
 }
 
-std::map<int, int> GetAllObject() {
-std::map<int, int> ret;
-for (auto obj : floatItem) {
-ret[obj.id] += obj.amount;
-}
-return ret;
-}
+
 
 static void HelpMarker(const char* desc)
 {
