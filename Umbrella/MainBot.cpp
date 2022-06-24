@@ -676,10 +676,6 @@ int main()
                                 active_tab = 10;
                                 ImGui::EndTabItem();
                             }
-                            if (ImGui::BeginTabItem("Executor")) {
-                                active_tab = 11;
-                                ImGui::EndTabItem();
-                            }
 
                             // TAB 1.1 (INFO)
                             if (active_tab == 4)
