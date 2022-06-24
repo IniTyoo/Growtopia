@@ -738,38 +738,6 @@ int main()
                                     ImGui::SameLine();
                                     ImGui::PushItemWidth(190);
                                     ImGui::SliderInt(XorStr("##Speed").c_str(), &speed, 1, 5, "%d Tile");
-                                    ImGui::PushItemWidth(140);
-                                    ImGui::InputTextWithHint("##world4", "Follow Player", growid, sizeof(growid), 0);
-                                    ImGui::SameLine();
-                                    if (ImGui::Button("Set", ImVec2(50, 0)))
-                                    {
-                                        for (int i = 0;auto & bot : bots)
-                                        {
-                                            if (selected[i]) {
-                                                bot.userInit();
-                                                bot.ownerUsername = growid;
-                                            }
-                                            i++;
-                                        }
-                                    }
-
-                                    /*ImGui::Checkbox("Follow", &follow);
-                                    for (int i = 0;auto & bot : bots)
-                                    {
-                                        if (selected[i])
-                                        {
-                                            if (follow)
-                                            {
-                                                bot.isFollowing = true;
-                                            }
-                                            else
-                                            {
-                                                bot.isFollowing = false;
-                                            }
-                                        }
-                                        i++;
-                                    }*/
-
                                     if (ImGui::Checkbox("Auto Access", &autoacc)) {
                                         for (int i = 0;auto & bot : bots) {
                                             if (selected[i])
@@ -782,7 +750,6 @@ int main()
                                     else {
                                         bot.autoAccess = false;
                                     }
-
                                     ImGui::SetCursorPosX(286.0f);
                                     ImGui::SetCursorPosY(70.0f);
                                     if (ImGui::Button("Up", ImVec2(50, 50)))
