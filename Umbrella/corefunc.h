@@ -514,47 +514,52 @@ public:
 				}
 				else if (func == "OnSpawn") {
 					auto data = varlist[1].get_string();
-					var2 = rtvar::parse(data);
-					auto gg = explode("|", explode("\n", explode("posXY|", data)[1])[0]);//posXY|320|736
-
+					std::stringstream ss(data.c_str());
+					std::string to;
+					cout << data;
 					ObjectData objectData;
 					bool actuallyOwner = false;
 
-					auto name = var2.find(XorStr("name"));
-					auto netid = var2.find(XorStr("netID"));
-
-
-					objectData.country = var2.get(XorStr("country"));
-
-					if (stripMessage(var2.get(XorStr("name"))) == ownerUsername) actuallyOwner = true;
-					objectData.name = var2.get(XorStr("name"));
-
-					if (actuallyOwner) owner = var2.get_int(XorStr("netID"));
-					objectData.netId = var2.get_int(XorStr("netID"));
-					objectData.userId = var2.get_int(XorStr("userID"));
-
-
-					auto posx = atoi(gg[0].c_str());
-					auto posy = atoi(gg[1].c_str());
-					objectData.x = posx;
-					objectData.y = posy;
-
-
-					if (data.find(XorStr("type|local")) != -1) {
-						objectData.isLocal = true;
-						localx = objectData.x;
-						localy = objectData.y;
-						localnetid = objectData.netId;
-						localuserid = objectData.userId;
+					while (std::getline(ss, to, '\n')) {
+						string id = to.substr(0, to.find("|"));
+						string act = to.substr(to.find("|") + 1, to.length() - to.find("|") - 1);
+						if (id == "country")
+						{
+							objectData.country = act;
+						}
+						else if (id == "name")
+						{
+							if (stripMessage(act) == ownerUsername) actuallyOwner = true;
+							objectData.name = act;
+						}
+						else if (id == "netID")
+						{
+							if (actuallyOwner) owner = atoi(act.c_str());
+							objectData.netId = atoi(act.c_str());
+						}
+						else if (id == "userID")
+						{
+							objectData.userId = atoi(act.c_str());
+						}
+						else if (id == "posXY")
+						{
+							int x = atoi(act.substr(0, to.find("|")).c_str());
+							int y = atoi(act.substr(act.find("|") + 1, act.length() - act.find("|") - 1).c_str());
+							objectData.x = x;
+							objectData.y = y;
+						}
+						else if (id == "type")
+						{
+							if (act == "local")
+								objectData.isLocal = true;
+						}
+						else if (act != "0" && (id == "invis" || id == "mstate" || id == "smstate"))
+						{
+							cout << "Some fishy boy is here: " << objectData.name << "; " << objectData.country << "; " << objectData.userId << "; " << objectData.netId << "; " << endl;
+							objectData.isMod = true;
+						}
 					}
-					if (var2.get(XorStr("mstate")) == "1" || var2.get(XorStr("smstate")) == "1" || var2.get(XorStr("invis")) == "1") {
-
-						objectData.isMod = true;
-					}
-
-					objectData.isGone = false;
-
-
+					
 					objects.push_back(objectData);
 
 
@@ -585,18 +590,19 @@ public:
 					while (std::getline(ss, to, '\n')) {
 						string id = to.substr(0, to.find("|"));
 						string act = to.substr(to.find("|") + 1, to.length() - to.find("|"));
-						if (id == XorStr("netID"))
+						if (id == "netID")
 						{
 							netID = atoi(act.c_str());
 						}
 						else {
-
+							dbgPrint(id + "!!!!!!!!!!!" + act);
 						}
 					}
-					for (int i = 0; i < objects.size(); i++) {
-						if (objects.at(i).netId == netID) {
-							objects.at(i).isGone = true;
-							objects.erase(objects.begin() + i - 1);
+					for (ObjectData& objectData : objects)
+					{
+						if (objectData.netId == netID)
+						{
+							objectData.isGone = true;
 						}
 					}
 				}
@@ -858,19 +864,6 @@ public:
 		return gamepacket;
 	}
 
-	void sendPunch(int x, int y, int x2, int y2, int net) {
-		PlayerMoving data;
-		data.packetType = 0x3;
-		data.x = x2;
-		data.y = y2;
-		data.punchX = x;
-		data.punchY = y;
-		data.netID = net;
-		data.plantingTree = 18;
-		auto datas = packPlayerMoving(&data);
-		SendPacketRaw(4, datas, 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
-	}
-
 	void ProcessTankUpdatePacket(float someVal, EntityComponent* entityComponent, BYTE* structPointer, ENetPacket* packets)
 	{
 		cout << "Processing tank packet with id of: " << +(*(char*)structPointer) << " Where first byte is " << std::to_string(structPointer[0]) << endl;
@@ -1068,15 +1061,7 @@ public:
 		case 0: // AvatarPacketReceiver::LerpState
 		{
 			PlayerMoving* datak = unpackPlayerMoving(structPointer);
-			if (datak->packetType == 0 && datak->netID == owner && owner != -1) {
-				if (datak->punchX != -1 && datak->punchY != -1) sendPunch(datak->punchX, datak->punchY, datak->x, datak->y, datak->netID);
-				SendPacketRaw(4, packPlayerMoving(datak), 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
-			}
-			if (datak->packetType == 0 && datak->netID == localnetid) {
-				localx = datak->x;
-				localy = datak->y;
-			}
-
+			AtPlayerMoving(datak);
 			free(datak);
 			break;
 		}
