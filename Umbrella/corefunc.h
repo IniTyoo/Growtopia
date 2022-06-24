@@ -184,7 +184,7 @@ public:
 	
 	// vector
 	vector<WorldObject> floatItem;
-	vector<Item> Items;
+	vector<Item> inventory;
 	vector<ObjectData> objects;
 	vector<Debug> debug;
 
@@ -783,23 +783,18 @@ public:
 		}
 	}
 	
-	void SerializeInventory(ENetPacket* packet){
-		Items.clear();
-		/*uint8_t* extended_ptr = packet->data + packet->dataLength;
-		vector<Item> invbuf;
-		memcpy(&localslot_count, extended_ptr + 5,4);
-		memcpy(&localitem_count, extended_ptr + 9,2);
-		invbuf.resize(localitem_count);
-		memcpy(invbuf.data(), extended_ptr + 11,invbuf.capacity() * sizeOf(Item));
-		for (Item& item : invbuf){
-			Items.push_back(item.id) = item;
-		}*/
+	void SerializeInventory(gameupdatepacket_t* packet){
+		//Items.clear();
+		 :inventory.clear();
+                        auto extended_ptr = get_extended(packet);
+                        inventory.resize(*reinterpret_cast<short*>(extended_ptr + 9));
+                        memcpy(inventory.data(), extended_ptr + 11, inventory.capacity() * sizeof(Item));
+                        for (Item& item : inventory) {
+                            std::cout << "Id: "<< (int)item.id << std::endl;
+                            std::cout << "Count: "<< (int)item.count << std::endl;
+                            std::cout << "type: "<< (int)item.type << std::endl;
+                        }
 	}
-	
-	/*void UpdateInventory(gameupdatepacket_t* packet) {
-		auto data = Items;
-		if (data.
-	}*/
 	
 		
 	vector<WorldStruct> tile;
@@ -938,7 +933,8 @@ public:
 		}
 		case 9:
 		{
-			//SerializeItem(packets);
+			auto packet = get_struct(packets);
+			SerializeInventory(packet);
 			break;
 		}
 		case 4:
