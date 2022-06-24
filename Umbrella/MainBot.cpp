@@ -753,7 +753,7 @@ int main()
                                         }
                                     }
 
-                                    ImGui::Checkbox("Follow", &follow);
+                                    /*ImGui::Checkbox("Follow", &follow);
                                     for (int i = 0;auto & bot : bots)
                                     {
                                         if (selected[i])
@@ -768,7 +768,7 @@ int main()
                                             }
                                         }
                                         i++;
-                                    }
+                                    }*/
 
                                     if (ImGui::Checkbox("Auto Access", &autoacc)) {
                                         for (int i = 0;auto & bot : bots) {
