@@ -730,7 +730,7 @@ public:
 								}
 							}
 							if (!added) {
-								InventoryItem item;
+								Item item;
 								item.id = floatItem[i].id;
 								item.count = floatItem[i].amount;
 								items.push_back(item); // inventory
