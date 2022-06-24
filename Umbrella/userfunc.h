@@ -1297,20 +1297,6 @@ void GrowtopiaBot::AtPlayerMoving(PlayerMoving* data)
 		objects[object].x = data->x;
 		objects[object].y = data->y;
 	}
-	if (isFollowing && data->netID == owner && data->punchX == -1 && data->punchY == -1 && data->plantingTree == 0)
-	{
-		if (backwardWalk)
-			data->characterState ^= 0x10;
-		if ((data->characterState & 0x800) && (data->characterState & 0x100)) {
-			SendPacket(2, "action|respawn", peer);
-		}
-		for (int i = 0; i < objects.size(); i++)
-			if (objects.at(i).isLocal) {
-				objects.at(i).x = data->x;
-				objects.at(i).y = data->y;
-			}
-		SendPacketRaw(4, packPlayerMoving(data), 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
-	}
 }
 
 void GrowtopiaBot::AtAvatarSetIconState(int netID, int state)
