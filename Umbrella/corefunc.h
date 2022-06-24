@@ -698,43 +698,42 @@ public:
 
 		// other number, erase object
 		else {
-			for (int i = 0; i < floatItem.size(); i++) {
-				if (floatItem[i].oid == packet->m_int_data) {
-
-					// add to inventory if netid same like local netid
-					if (packet->m_player_flags == localnetid) { // netid = local player netid
-						if (floatItem[i].id == 112) {
-							gems += floatItem[i].amount; // gems
-						}
-						else {
-							bool added = false;
-							for (auto& item : inventory) { // items = vector for inventory
-								if (item.id == floatItem[i].id) {
-									int temp = item.count + floatItem[i].amount;
-									if (temp > 200)
-										item.count = 200;
-									else
-										item.count = temp;
-									added = true;
-									break;
-								}
-							}
-							if (!added) {
-								Item item;
-								item.id = floatItem[i].id;
-								item.count = floatItem[i].amount;
-								inventory.push_back(item); // inventory
-							}
-						}
-					}
-					
-					// erase
-					floatItem.erase(floatItem.begin() + i);
-					break;
-				}
-			}
-		}
-	}
+            for (int i = 0; i < floatItem.size(); i++) {
+                if (floatItem[i].oid == packet->m_int_data) {
+                    
+                    // add to inventory if netid same like local netid
+                    if (packet->m_player_flags == netid) { // netid = local player netid
+                        if (floatItem[i].id == 112) {
+                            gems += floatItem[i].amount; // gems
+                        } else {
+                            bool added = false;
+                            for (auto& item : inventory) { // inventory = vector for inventory
+                                if (item.id == floatItem[i].id) {
+                                    int temp = item.amount + floatItem[i].amount;
+                                    if (temp > 200)
+                                        item.amount = 200;
+                                    else
+                                        item.amount = temp;
+                                    added = true;
+                                    break;
+                                }
+                            }
+                            if (!added) {
+                                InventoryItem item;
+                                item.id = floatItem[i].id;
+                                item.amount = floatItem[i].amount;
+                                inventory.push_back(item); // inventory
+                            }
+                        }
+                    }
+                    
+                    // erase
+                    floatItem.erase(floatItem.begin() + i);
+                    break;
+                }
+            }
+        }
+    }
 	void SerializeObject(ENetPacket* packet) {
 		uint8_t* extended = packet->data + packet->dataLength;
 		extended -= 17; // stable
@@ -903,7 +902,7 @@ public:
 		}
 		case 13:
 		{
-			 UpdateInventory(get_struct(packets));
+			UpdateInventory(get_struct(packets));
 			break;
 		}
 		case 0x16:
@@ -940,6 +939,12 @@ public:
 		case 3:
 		{	
 			UpdateInventory3(get_struct(packets));
+			break;
+		}
+		case 9:
+		{
+			inventory.clear();
+			SerializeInventory(packets);
 			break;
 		}
 		case 4:
