@@ -58,7 +58,12 @@ public:
 	int gems;
 	
 	//int worldplayercount=0;
-
+	
+	
+	
+	
+	
+	// seturuktur
 	struct ObjectData
 	{
 		int netId = -1;	 // used to interact with stuff in world
@@ -77,12 +82,110 @@ public:
 		bool isLocal = false;
 	};
 
-	vector<ObjectData> objects;
-	
 	struct Debug
 	{
 		string text = "";
 	};
+	
+	struct PlayerMoving {
+		int packetType = 0;
+		int netID;
+		float x;
+		float y;
+		int characterState;
+		int plantingTree;
+		float XSpeed;
+		float YSpeed;
+		int punchX;
+		int punchY;
+	};
+	struct GamePacket {
+		char type;
+		char objtype;
+		char count1;
+		char count2;
+		int netid;
+		int item;
+		int flags;
+		float float1;
+		int int_data;
+		vec2 pos;
+		vec2 pos2;
+		float float2;
+		vec2i tile;
+		unsigned int data_size;
+		unsigned int data;
+	};
+	struct TankPacketStruct {
+#pragma pack (push,1)
+		uint8_t packetType = 0;
+		uint8_t padding1 = 0, padding2 = 0, padding3 = 0;
+		int NetID = 0;
+		int secondaryNetID = 0;
+		int characterState = 0;
+		float padding4 = 0;
+		int value = 0;
+		float x = 0, y = 0;
+		float XSpeed = 0, YSpeed = 0;
+		float ptime = 0;
+		int punchX = 0, punchY = 0;
+		uint32_t extDataSize = 0;
+#pragma pack (pop)
+	};
+	struct Item {
+		uint16_t id;
+		uint8_t count;
+		uint8_t type;
+	};
+	
+	
+	
+	struct WorldThingStruct
+	{
+
+	};
+
+	
+
+	struct WorldStruct
+	{
+		int XSize;
+		int YSize;
+		int tileCount;
+		string name;
+		__int16* foreground;
+		__int16* background;
+		WorldThingStruct* specials;
+	};
+
+	struct World
+	{
+		int XSize;
+		int YSize;
+		int tileCount;
+		__int16* foreground;
+		__int16* background;
+	};
+
+	
+	struct WorldObject {
+		uint16_t id;
+		float x;
+		float y;
+		uint8_t amount;
+		uint8_t flags;
+		uint32_t oid;
+	};
+
+	int last_oid;
+	
+	
+	
+	
+	// vector
+	vector<WorldObject> floatItem;
+	vector<Item> Items;
+	vector<ObjectData> objects;
 	vector<Debug> debug;
 
 	string uname;
@@ -140,66 +243,6 @@ public:
 	/********** user sutff ***************/
 
 	/*********** structs declaration *********/
-	struct PlayerMoving {
-		int packetType = 0;
-		int netID;
-		float x;
-		float y;
-		int characterState;
-		int plantingTree;
-		float XSpeed;
-		float YSpeed;
-		int punchX;
-		int punchY;
-	};
-	struct GamePacket {
-		char type;
-		char objtype;
-		char count1;
-		char count2;
-		int netid;
-		int item;
-		int flags;
-		float float1;
-		int int_data;
-		vec2 pos;
-		vec2 pos2;
-		float float2;
-		vec2i tile;
-		unsigned int data_size;
-		unsigned int data;
-	};
-	struct TankPacketStruct {
-#pragma pack (push,1)
-		uint8_t packetType = 0;
-		uint8_t padding1 = 0, padding2 = 0, padding3 = 0;
-		int NetID = 0;
-		int secondaryNetID = 0;
-		int characterState = 0;
-		float padding4 = 0;
-		int value = 0;
-		float x = 0, y = 0;
-		float XSpeed = 0, YSpeed = 0;
-		float ptime = 0;
-		int punchX = 0, punchY = 0;
-		uint32_t extDataSize = 0;
-#pragma pack (pop)
-	};
-
-	struct DroppedItem {
-		uint16_t itemID;
-		vector2_t pos;
-		uint8_t count;
-		uint8_t flags;
-		uint32_t uid;
-	};
-	struct Item {
-		uint16_t id;
-		uint8_t count;
-		uint8_t type;
-	};
-	vector<Item> Items;
-	vector<DroppedItem> FloatingItem;
 	/*********** structs declaration *********/
 
 	/********* user funcs  *********/
@@ -639,45 +682,7 @@ public:
 		}
 	}
 
-	struct WorldThingStruct
-	{
-
-	};
-
 	
-
-	struct WorldStruct
-	{
-		int XSize;
-		int YSize;
-		int tileCount;
-		string name;
-		__int16* foreground;
-		__int16* background;
-		WorldThingStruct* specials;
-	};
-
-	struct World
-	{
-		int XSize;
-		int YSize;
-		int tileCount;
-		__int16* foreground;
-		__int16* background;
-	};
-
-	
-	struct WorldObject {
-		uint16_t id;
-		float x;
-		float y;
-		uint8_t amount;
-		uint8_t flags;
-		uint32_t oid;
-	};
-
-	int last_oid;
-	vector<WorldObject> floatItem;
 	void UpdateObject(gameupdatepacket_t* packet) {
 		// netid -1 > new object
 		if (packet->m_player_flags == -1) {
