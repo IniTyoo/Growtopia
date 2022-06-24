@@ -940,6 +940,7 @@ public:
 		case 9:
 		{
 			//SerializeItem(packets);
+			break;
 		}
 		case 4:
 		{
