@@ -1459,7 +1459,7 @@ int main()
                             if (active_tab == 9)
                             {
                                 if (bots.size() > 0) {
-                                    if (ImGui::BeginTabBar(XorStr("##tabbasdsdsdr222").c_str())) {
+                                    if (ImGui::BeginTabBar(XorStr("#tabbasdsdsdr222").c_str())) {
                                         if (ImGui::BeginTabItem(XorStr("##Item").c_str()))
                                         {
                                             if (loginpacket)
