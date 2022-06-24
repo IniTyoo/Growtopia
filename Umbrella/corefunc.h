@@ -777,6 +777,19 @@ public:
         }
     }
 	
+	void UpdateInventory(gameupdatepacket_t* packet) {
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory[i].id == packet->m_int_data) {
+                int temp = inventory[i].amount - packet->m_jump_amount;
+                if (temp < 1)
+                    inventory.erase(inventory.begin() + i);
+                else
+                    inventory[i].amount = temp;
+                break;
+            }
+        }
+    }
+	
 		
 	vector<WorldStruct> tile;
 
@@ -877,6 +890,9 @@ public:
 			int itemsCount = *(int*)(itemsData + 2);
 			break;
 		}
+		case 13:{
+			 UpdateInventory(get_struct(packets));
+		}
 		case 0x16:
 		{
 			PlayerMoving* datak = unpackPlayerMoving(structPointer);
@@ -910,12 +926,6 @@ public:
 			break;
 		case 3:
 		{	
-			break;
-		}
-		case 9:
-		{
-			auto packet = get_struct(packets);
-			SerializeInventory(packet);
 			break;
 		}
 		case 4:
