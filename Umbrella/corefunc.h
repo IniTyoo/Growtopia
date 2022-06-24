@@ -718,7 +718,7 @@ public:
 						}
 						else {
 							bool added = false;
-							for (auto& item : items) { // items = vector for inventory
+							for (auto& item : Items) { // items = vector for inventory
 								if (item.id == floatItem[i].id) {
 									int temp = item.amount + floatItem[i].amount;
 									if (temp > 200)
