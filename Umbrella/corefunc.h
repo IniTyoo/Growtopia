@@ -773,7 +773,7 @@ public:
 	
 	void SerializeInventory(ENetPacket* packet){
 		Items.clear();
-		uint8_t* extended_ptr = packet->data + packet->dataLength;
+		/*uint8_t* extended_ptr = packet->data + packet->dataLength;
 		vector<Item> invbuf;
 		memcpy(&localslot_count, extended_ptr + 5,4);
 		memcpy(&localitem_count, extended_ptr + 9,2);
@@ -781,7 +781,7 @@ public:
 		memcpy(invbuf.data(), extended_ptr + 11,invbuf.capacity() * sizeOf(Item));
 		for (Item& item : invbuf){
 			Items.push_back(item.id) = item;
-		}
+		}*/
 	}
 	
 	/*void UpdateInventory(gameupdatepacket_t* packet) {
