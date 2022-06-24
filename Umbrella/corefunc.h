@@ -256,32 +256,11 @@ public:
 	void packet_type6(string text);
 	void packet_unknown(ENetPacket* packet);
 	void move(std::string to, int blocks);
-	void OnConsoleMessage(string message);
-	void onShowCaptcha(string text);
-	void OnDialogRequest(string text);
 	void use();
-	void solve_captcha(std::string text);
-	void OnPlayPositioned(string sound);
-	void OnSetFreezeState(int state);
-	void OnRemove(string data);
-	void OnSpawn(string data);
-	void OnAction(string command);
-	void SetHasGrowID(int state, string name, string password);
-	void SetHasAccountSecured(int state);
-	void OnTalkBubble(int netID, string bubbleText, int type);
-	void SetRespawnPos(int respawnPos);
-	void OnEmoticonDataChanged(int val1, string emoticons);
-	void OnSetPos(float x, float y);
-	void OnAddNotification(string image, string message, string audio, int val1);
-	void AtApplyTileDamage(int x, int y);
-	void AtApplyLock(int x, int y, int itemId);
 	void AtPlayerMoving(PlayerMoving* data);
-	void AtAvatarSetIconState(int netID, int state);
 	void WhenConnected();
 	void WhenDisconnected();
 	void Collect(int range);
-
-	void respawn();
 	/********* user funcs  *********/
 
 	/***************    debug stuff   ***************/
