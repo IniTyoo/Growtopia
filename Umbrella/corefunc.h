@@ -132,10 +132,9 @@ public:
 		uint32_t extDataSize = 0;
 #pragma pack (pop)
 	};
-	struct Item {
-		uint16_t id;
-		uint8_t count;
-		uint8_t type;
+	struct InventoryItem {
+	    uint16_t id;
+	    uint8_t amount;
 	};
 	
 	
