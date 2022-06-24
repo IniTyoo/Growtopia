@@ -789,7 +789,18 @@ public:
             }
         }
     }
-	
+	void UpdateInventory3(gameupdatepacket_t* packet) {
+        if (packet->m_player_flags == localnetid) {
+            for (int i = 0; i < inventory.size(); i++) {
+                if (inventory[i].id == packet->m_int_data) {
+                    inventory[i].amount --;
+                    if (inventory[i].amount < 1)
+                        inventory.erase(inventory.begin() + i);
+                    break;
+                }
+            }
+        }
+    }
 		
 	vector<WorldStruct> tile;
 
@@ -890,8 +901,10 @@ public:
 			int itemsCount = *(int*)(itemsData + 2);
 			break;
 		}
-		case 13:{
+		case 13:
+		{
 			 UpdateInventory(get_struct(packets));
+			break;
 		}
 		case 0x16:
 		{
@@ -926,6 +939,7 @@ public:
 			break;
 		case 3:
 		{	
+			UpdateInventory3(get_struct(packets));
 			break;
 		}
 		case 4:
