@@ -494,13 +494,13 @@ int main()
                                     std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
                                     Sleep(1500);
                                     ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
-                                    ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+                                   // ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
                                 }
                                 else {
                                     cout << "Sukses" << endl;
                                     asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
                                     ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
-                                    ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+                                    //::ShowWindow(::GetConsoleWindow(), SW_HIDE);
                                 }
                                 //break;
                             }
@@ -526,7 +526,7 @@ int main()
                                     cout << "Sukses" << endl;
                                     asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
                                     ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
-                                    ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+                                   // ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
                                 }
                                 //asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
                                 //break;
