@@ -296,6 +296,14 @@ void autocollecting(int range)
     }
 }
 
+std::map<int, int> GetAllObject() {
+std::map<int, int> ret;
+for (auto obj : floatItem) {
+ret[obj.id] += obj.amount;
+}
+return ret;
+}
+
 static void HelpMarker(const char* desc)
 {
     ImGui::TextDisabled(XorStr("(?)").c_str());
@@ -1420,6 +1428,26 @@ int main()
                                                             }
                                                         }
                                                     }
+                                                }
+                                            }
+                                            ImGui::EndTabItem();
+                                        }
+					 
+
+					    
+					if (ImGui::BeginTabItem(XorStr("GrowScan").c_str()))
+                                        {
+                                            if (loginpacket)
+                                            {
+                                                if (bots.at(current_item).currentWorld != XorStr("EXIT").c_str()) {
+                                                    	static std::map<int, int> lastMap;
+							if (ImGui::Button("Re Scan")) {
+							lastMap = bot->GetAllObject();
+							}
+
+							for (auto& object : lastMap) {
+							ImGui::Text("Item id: %d, amount: %d", object.first, object.second);
+							}
                                                 }
                                             }
                                             ImGui::EndTabItem();
