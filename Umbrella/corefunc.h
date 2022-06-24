@@ -12,6 +12,7 @@
 #include "proton/rtparam.hpp"
 #include <regex>
 #include "utilsfunc.h"
+#include <map>
 using namespace std;
 
 
