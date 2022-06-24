@@ -730,7 +730,7 @@ public:
 						}
 						else {
 							bool added = false;
-							for (auto& item : Items) { // items = vector for inventory
+							for (auto& item : inventory) { // items = vector for inventory
 								if (item.id == floatItem[i].id) {
 									int temp = item.count + floatItem[i].amount;
 									if (temp > 200)
@@ -745,7 +745,7 @@ public:
 								Item item;
 								item.id = floatItem[i].id;
 								item.count = floatItem[i].amount;
-								Items.push_back(item); // inventory
+								inventory.push_back(item); // inventory
 							}
 						}
 					}
@@ -785,7 +785,7 @@ public:
 	
 	void SerializeInventory(gameupdatepacket_t* packet){
 		//Items.clear();
-		 :inventory.clear();
+		 inventory.clear();
                         auto extended_ptr = get_extended(packet);
                         inventory.resize(*reinterpret_cast<short*>(extended_ptr + 9));
                         memcpy(inventory.data(), extended_ptr + 11, inventory.capacity() * sizeof(Item));
