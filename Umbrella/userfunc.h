@@ -80,10 +80,6 @@ void delaybreak()
     std::this_thread::sleep_for(std::chrono::milliseconds(120));
 }
 
-void delaycollect()
-{
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-}
 uint64_t GetInternalTime() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
@@ -1045,18 +1041,6 @@ void GrowtopiaBot::packet_unknown(ENetPacket* packet)
 	dbgPrint("Packet size is " + std::to_string(packet->dataLength));
 }
 
-void GrowtopiaBot::OnDialogRequest(string text) {
-    // Auto Access
-    if (text.find("end_dialog|popup||Continue|") != std::string::npos) {
-        if (text.find("acceptlock") != std::string::npos) {
-            SendPacket(2, "action|dialog_return\ndialog_name|popup\nnetID|" + to_string(localnetid) + "|\nbuttonClicked|acceptlock", peer);
-        }
-    }
-    else if (text.find("end_dialog|acceptaccess|No|Yes|") != std::string::npos) {
-            SendPacket(2, "action|dialog_return\ndialog_name|acceptaccess", peer);
-    }
-}
-
 void GrowtopiaBot::use() {
 	GamePacket pkt{ 0 };
 	pkt.type = 7;
@@ -1108,64 +1092,6 @@ void GrowtopiaBot::move(std::string to, int blocks) {
 	}
 }
 
-void GrowtopiaBot::OnConsoleMessage(string message) 
-{
-    string strippedMessage = stripMessage(message);
-    cout << strippedMessage << endl;
-
-    if (autoAccess) {
-        if (message.find("wants to add you to a") != std::string::npos && message.find("Wrench yourself to accept.") != std::string::npos && localnetid != 0) {
-            SendPacket(2, "action|wrench\n|netid|" + to_string(localnetid), peer);
-        }
-    }
-
-	if (automsgg) {
-		if (message.find("`` entered, `w") != string::npos) {
-			string::size_type loc = message.find("`` entered,", 0);
-			SendPacket(2, "action|input\n|text|/msg" + colorstr2(message.substr(3, loc) + msgtextt), peer);
-		}
-		if (message.find("`` left, `w") != string::npos) {
-			string::size_type loc = message.find("`` left,", 0);
-			SendPacket(2, "action|input\n|text|/msg" + colorstr2(message.substr(3, loc) + msgtexttt), peer);
-		}
-	}
-}
-
-void GrowtopiaBot::OnPlayPositioned(string sound)
-{
-
-}
-
-void GrowtopiaBot::OnSetFreezeState(int state)
-{
-
-}
-
-void GrowtopiaBot::OnRemove(string data) // "netID|x\n"
-{
-	std::stringstream ss(data.c_str());
-	std::string to;
-	int netID = -1;
-	while (std::getline(ss, to, '\n')) {
-		string id = to.substr(0, to.find("|"));
-		string act = to.substr(to.find("|") + 1, to.length() - to.find("|"));
-		if (id == "netID")
-		{
-			netID = atoi(act.c_str());
-		}
-		else {
-			dbgPrint(id + "!!!!!!!!!!!" + act);
-		}
-	}
-	for (ObjectData& objectData : objects)
-	{
-		if (objectData.netId == netID)
-		{
-			objectData.isGone = true;
-		}
-	}
-}
-
 bool Wait(const unsigned long& Time)
 {
 	clock_t Tick = clock_t(float(clock()) / float(CLOCKS_PER_SEC) * 1000.f);
@@ -1181,105 +1107,6 @@ bool Wait(const unsigned long& Time)
 			return 0;
 	}
 	return 1;
-}
-
-rtvar var2;
-
-void GrowtopiaBot::OnSpawn(string data)
-{
-	var2 = rtvar::parse(data);
-
-	ObjectData objectData;
-	bool actuallyOwner = false;
-
-	   auto name = var2.find(XorStr("name"));
-            auto netid = var2.find(XorStr("netID"));
-	
-			objectData.country = var2.get(XorStr("country"));
-		 
-			if (stripMessage(var2.get(XorStr("name"))) == ownerUsername) actuallyOwner = true;
-			objectData.name = var2.get(XorStr("name"));
-		 
-			if (actuallyOwner) owner = var2.get_int(XorStr("netID"));
-			objectData.netId = var2.get_int(XorStr("netID"));
-			objectData.userId = var2.get_int(XorStr("userID"));
-		 
-		
-	auto pos = var2.find(XorStr("posXY"));
-                    if (pos && pos->m_values.size() >= 2) {
-                        auto x = atoi(pos->m_values[0].c_str());
-                        auto y = atoi(pos->m_values[1].c_str());
-                        //ply.pos = vector2_t{ float(x), float(y) };
-			    objectData.x = x;
-			objectData.y = y;
-                    }
-	
-	
-	 if (data.find(XorStr("type|local")) != -1) {
-                   objectData.isLocal = true;
-				localx = objectData.x;
-				localy = objectData.y;
-				localnetid = objectData.netId;
-                localuserid = objectData.userId;
-                }
-	 if (var2.get(XorStr("mstate")) == "1" || var2.get(XorStr("smstate")) == "1" || var2.get(XorStr("invis"))== "1"){
-
-			objectData.isMod = true;
-	 }
-
-	  
-	objects.push_back(objectData);
-
-}
-
-void GrowtopiaBot::OnAction(string command)
-{
-}
-
-void GrowtopiaBot::SetHasGrowID(int state, string name, string password)
-{
-
-}
-
-void GrowtopiaBot::SetHasAccountSecured(int state)
-{
-
-}
-
-void GrowtopiaBot::OnTalkBubble(int netID, string bubbleText, int type)
-{
-	cout << bubbleText << endl;
-}
-
-void GrowtopiaBot::SetRespawnPos(int respawnPos)
-{
-	respawnX = respawnPos % 100; // hacky!!! TODO: get from world data (100)
-	respawnY = respawnPos / 100; // hacky!!! TODO: get from world data (100)
-}
-
-void GrowtopiaBot::OnEmoticonDataChanged(int val1, string emoticons)
-{
-
-}
-
-void GrowtopiaBot::OnSetPos(float x, float y)
-{
-	
-}
-
-void GrowtopiaBot::OnAddNotification(string image, string message, string audio, int val1)
-{
-
-}
-
-void GrowtopiaBot::AtApplyTileDamage(int x, int y)
-{
-
-}
-
-void GrowtopiaBot::AtApplyLock(int x, int y, int itemId)
-{
-	SendPacket(2, "action|input\n|text|Lock " + std::to_string(itemId) + " applied at X:" + std::to_string(x) + " Y: " + std::to_string(y), peer);
 }
 
 void GrowtopiaBot::AtPlayerMoving(PlayerMoving* data)
@@ -1299,11 +1126,6 @@ void GrowtopiaBot::AtPlayerMoving(PlayerMoving* data)
 	}
 }
 
-void GrowtopiaBot::AtAvatarSetIconState(int netID, int state)
-{
-
-}
-
 void GrowtopiaBot::WhenConnected()
 {
 
@@ -1316,48 +1138,7 @@ void GrowtopiaBot::WhenDisconnected()
 
 int counter = 0; // 10ms per step
 
-vector<string> explode(const string &delimiter, const string &str)
-{
-	vector<string> arr;
-
-	int strleng = str.length();
-	int delleng = delimiter.length();
-	if (delleng == 0)
-		return arr;//no change
-
-	int i = 0;
-	int k = 0;
-	while (i < strleng)
-	{
-		int j = 0;
-		while (i + j < strleng && j < delleng && str[i + j] == delimiter[j])
-			j++;
-		if (j == delleng)//found delimiter
-		{
-			arr.push_back(str.substr(k, i - k));
-			i += delleng;
-			k = i;
-		}
-		else
-		{
-			i++;
-		}
-	}
-	arr.push_back(str.substr(k, i - k));
-	return arr;
-}
-
 void GrowtopiaBot::userLoop() {
-
-
-
-    if (autocollect) {
-        if (GetInternalTime() > last_time && range > 0) {
-            last_time = GetInternalTime() + 50; // delay 50ms
-            Collect(range);
-        }
-    }
-
 	if (timeFromWorldEnter > 200 && currentWorld != worldName) {
 		if (worldName == "" || worldName == "-") {
 			timeFromWorldEnter = 0;
@@ -1390,22 +1171,6 @@ void GrowtopiaBot::userLoop() {
 void GrowtopiaBot::userInit() {
 	connectClient();
 	cout << flush;
-}
-
-void GrowtopiaBot::respawn()
-{
-	PlayerMoving data;
-	data.characterState = 0x924;
-	SendPacket(2, "action|respawn", peer);
-	for (int i = 0; i < objects.size(); i++)
-		if (objects.at(i).isLocal)
-		{
-			data.x = objects.at(i).x;
-			data.y = objects.at(i).y;
-			data.netID = objects.at(i).netId;
-			SendPacketRaw(4, packPlayerMoving(&data), 56, 0, peer, ENET_PACKET_FLAG_RELIABLE);
-			break;
-		}
 }
 
 namespace types {
