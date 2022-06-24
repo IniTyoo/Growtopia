@@ -733,7 +733,7 @@ public:
 								Item item;
 								item.id = floatItem[i].id;
 								item.count = floatItem[i].amount;
-								items.push_back(item); // inventory
+								Items.push_back(item); // inventory
 							}
 						}
 					}
@@ -773,7 +773,7 @@ public:
 	
 	void SerializeInventory(ENetPacket* packet){
 		Items.clear();
-		BYTE* extended_ptr = get_extended(packet);
+		uint8_t* extended_ptr = packet->data + packet->dataLength;
 		vector<Item> invbuf;
 		memcpy(&localslot_count, extended_ptr + 5,4);
 		memcpy(&localitem_count, extended_ptr + 9,2);
