@@ -183,7 +183,7 @@ public:
 	
 	// vector
 	vector<WorldObject> floatItem;
-	std::vector<InventoryItem> inventory
+	std::vector<InventoryItem> inventory;
 	vector<ObjectData> objects;
 	vector<Debug> debug;
 
@@ -702,7 +702,7 @@ public:
                 if (floatItem[i].oid == packet->m_int_data) {
                     
                     // add to inventory if netid same like local netid
-                    if (packet->m_player_flags == netid) { // netid = local player netid
+                    if (packet->m_player_flags == localnetid) { // netid = local player netid
                         if (floatItem[i].id == 112) {
                             gems += floatItem[i].amount; // gems
                         } else {
@@ -1076,11 +1076,6 @@ public:
 			AtPlayerMoving(datak);
 			free(datak);
 			break;
-		}
-		case 13:
-		{
-			
-			
 		}
 		default:
 			break;
