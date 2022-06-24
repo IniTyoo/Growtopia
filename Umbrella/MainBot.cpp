@@ -156,12 +156,12 @@ static int lua_sendpacket(lua_State* L) {
 static int lua_moveright(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
-			bots.at(i).move(XorStr("right"), lua_tonumber(L, 1));
+			bots.at(current_item).move(XorStr("right"), lua_tonumber(L, 1));
 		}
 		
 	}else{
 		if (!selectall) {
-			bots.at(i).move(XorStr("right"), 1);
+			bots.at(current_item).move(XorStr("right"), 1);
 		}	
 	}
 	return 0;
@@ -170,12 +170,12 @@ static int lua_moveright(lua_State* L) {
 static int lua_moveleft(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
-			bots.at(i).move(XorStr("left"), lua_tonumber(L, 1));
+			bots.at(current_item).move(XorStr("left"), lua_tonumber(L, 1));
 		}
 		
 	}else{
 		if (!selectall) {
-			bots.at(i).move(XorStr("left"), 1);
+			bots.at(current_item).move(XorStr("left"), 1);
 		}	
 	}
 	return 0;
@@ -184,12 +184,12 @@ static int lua_moveleft(lua_State* L) {
 static int lua_movedown(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
-			bots.at(i).move(XorStr("down"), lua_tonumber(L, 1));
+			bots.at(current_item).move(XorStr("down"), lua_tonumber(L, 1));
 		}
 		
 	}else{
 		if (!selectall) {
-			bots.at(i).move(XorStr("down"), 1);
+			bots.at(current_item).move(XorStr("down"), 1);
 		}	
 	}
 	return 0;
@@ -197,12 +197,12 @@ static int lua_movedown(lua_State* L) {
 static int lua_moveup(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
-			bots.at(i).move(XorStr("up"), lua_tonumber(L, 1));
+			bots.at(current_item).move(XorStr("up"), lua_tonumber(L, 1));
 		}
 		
 	}else{
 		if (!selectall) {
-			bots.at(i).move(XorStr("up"), 1);
+			bots.at(current_item).move(XorStr("up"), 1);
 		}	
 	}
 	return 0;
@@ -870,7 +870,7 @@ int main()
                                                 std::thread collecting(autocollecting, bot.range);
                                                 collecting.detach();
                                             };
-					    ImGui::Checkbox("Collect Gems", &bots.at(current_item).collectgems)
+					    ImGui::Checkbox("Collect Gems", &bots.at(current_item).collectgems);
                                         }
                                         i++;
                                     }
