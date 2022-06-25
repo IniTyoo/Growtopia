@@ -938,10 +938,10 @@ void GrowtopiaBot::onLoginRequested()
     string ver = gameVersion;
     string hash = std::to_string((unsigned int)rand());
     string hash2 = std::to_string((unsigned int)rand());
-    string packet = "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|RyoCloud\nf|1\nprotocol|127\ngame_version|" + ver + "\nfz|5367464\nlmode|1\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\n" + omg.at(11) + "\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|us\nhash|" + hash + "\nmac|" + generateMac() + "\nwk|" + generateRid() + "\nzf|-496303939" + token;
+    string packet = "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|RyoCloud\nf|1\nprotocol|127\ngame_version|" + ver + "\nfz|5367464\nlmode|" + std::to_string(lmode) + "\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\n" + omg.at(11) + "\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|us\nhash|" + hash + "\nmac|" + generateMac() + "\nwk|" + generateRid() + "\nzf|-496303939" + token;
     cout << packet + "\n";
     //cout << "Meta : " + omg.at(11) << endl;
-    SendPacket(2, "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|RyoCloud\nf|1\nprotocol|127\ngame_version|" + ver + "\nfz|5367464\nlmode|1\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\n" + omg.at(11) + "\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|us\nhash|" + hash + "\nmac|" + generateMac() + "\nwk|" + generateRid() + "\nzf|-496303939" + token, peer);
+    SendPacket(2, "tankIDName|" + uname + "\ntankIDPass|" + upass + "\nrequestedName|RyoCloud\nf|1\nprotocol|127\ngame_version|" + ver + "\nfz|5367464\nlmode|" + std::to_string(lmode) + "\ncbits|0\nplayer_age|18\nGDPR|1\nhash2|" + hash2 + "\n" + omg.at(11) + "\nfhash|-716928004\nrid|" + generateRid() + "\nplatformID|0\ndeviceVersion|0\ncountry|us\nhash|" + hash + "\nmac|" + generateMac() + "\nwk|" + generateRid() + "\nzf|-496303939" + token, peer);
     currentWorld = "";
 }
 
