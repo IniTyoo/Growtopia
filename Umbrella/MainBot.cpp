@@ -1430,7 +1430,6 @@ int main()
 					    
 					if (ImGui::BeginTabItem(XorStr("GrowScan").c_str()))
                                         {
-						/*
                                             if (loginpacket)
                                             {
                                                 if (bots.at(current_item).currentWorld != XorStr("EXIT").c_str()) {
@@ -1442,7 +1441,6 @@ int main()
 							for (auto& object : lastMap) {
 							ImGui::Text("Item id: %d, amount: %d", object.first, object.second);
 							}
-                                                }*/
                                             }
                                             ImGui::EndTabItem();
                                         }
