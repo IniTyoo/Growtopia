@@ -1430,6 +1430,7 @@ int main()
 					    
 					if (ImGui::BeginTabItem(XorStr("GrowScan").c_str()))
                                         {
+						/*
                                             if (loginpacket)
                                             {
                                                 if (bots.at(current_item).currentWorld != XorStr("EXIT").c_str()) {
@@ -1443,6 +1444,7 @@ int main()
 							}
                                             }
                                             ImGui::EndTabItem();
+					    */
                                         }
                                     }
                                     ImGui::EndTabBar();
