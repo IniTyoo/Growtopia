@@ -13,6 +13,7 @@
 #include <regex>
 #include "utilsfunc.h"
 #include <map>
+#include "HTTPRequest.hpp"
 using namespace std;
 
 
@@ -26,6 +27,8 @@ struct vec2i {
 	int x;
 	int y;
 };
+
+
 uint8_t* get_extended(gameupdatepacket_t* packet) {
 	return reinterpret_cast<uint8_t*>(&packet->m_data_size);
 }
@@ -470,6 +473,29 @@ public:
 	result.erase(std::remove(result.begin(), result.end(), '`'), result.end());
 	return result;
 }
+
+
+
+string SolveCaptcha(string ID) {
+	http::Request request{"http://api.bolwlproxy.com/api/?api=captcha&id=" + ID};
+    const auto response = request.send("GET");
+    return std::string{response.body.begin(), response.body.end()};
+}
+
+vector<string> string_split(string arg0, string arg1) {
+	size_t pos_start = 0, pos_end, delim_len = arg1.length();
+	string token;
+	vector<string> result;
+	
+	while ((pos_end = arg0.find(arg1, pos_start)) != string::npos) {
+		token = arg0.substr(pos_start, pos_end - pos_start);
+		pos_start = pos_end + delim_len;
+		result.push_back(token);
+	}
+	result.push_back(arg0.substr(pos_start));
+	return result;
+}
+
 	void decPacket(gameupdatepacket_t* packet) {
 		if (packet) {
 			variantlist_t varlist{};
@@ -524,6 +550,17 @@ public:
 						SendPacket(2, "action|dialog_return\ndialog_name|acceptaccess", peer);
 					}
 				}
+				else if (func == "onShowCaptcha") {
+	    			auto ctx = varlist[1].get_string();
+	    			auto Kepo = string_split(ctx, "|");
+	    			auto CaptchaID = string_split(string_split(Kepo.at(1), "/").at(3), "-");
+	    			string RealCaptchaID = CaptchaID.at(0);
+	    			for (int i = 1; i < CaptchaID.size() - 1; i++) {
+	    				RealCaptchaID += "-" + CaptchaID.at(i);
+	    				}
+	    				string CaptchaIDs = Kepo.at(4);
+	    			SendPacket(2, "action|dialog_return\ndialog_name|puzzle_captcha_submit\ncaptcha_answer|" + SolveCaptcha(RealCaptchaID) + "|CaptchaID|" + CaptchaIDs, peer);
+	    			}
 				else if (func == "OnConsoleMessage") {
 					auto ctx = varlist[1].get_string();
 					if (autoAccess) {
