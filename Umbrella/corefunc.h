@@ -649,26 +649,6 @@ public:
 	{
 		return (BYTE*)((intptr_t)(a1 + 56));
 	}
-
-
-	void HandlePacketTileChangeRequest(BYTE* data)
-	{
-		switch ((*(int*)data) - 8)
-		{
-		case 0:
-			AtApplyTileDamage(*(int*)(data + 44), *(int*)(data + 48));
-
-			break;
-		case 4:
-			break;
-		case 7:
-			AtApplyLock(*(int*)(data + 44), *(int*)(data + 48), *(int*)(data + 20));
-			break;
-		default:
-			break;
-		}
-	}
-
 	
 	void UpdateObject(gameupdatepacket_t* packet) {
 		// netid -1 > new object
