@@ -36,7 +36,7 @@ public:
 
 	int login_user = 0;
 	int login_token = 0;
-
+	int lmode = 0;
 	string currentWorld;
 	int timeFromWorldEnter = 0; // in 10mss...
 
@@ -497,6 +497,7 @@ public:
 					auto address = str.substr(0, 15);
 					serveripaddress = address;
 					serverportaddress = port;
+					lmode = varlist[5].get_int32();
 					connectClient(address, port);
 				}
 				else if (func == "onShowCaptcha") {
