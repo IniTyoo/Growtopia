@@ -1435,11 +1435,11 @@ int main()
                                                 if (bots.at(current_item).currentWorld != XorStr("EXIT").c_str()) {
                                                     	static std::map<int, int> lastMap;
 							if (ImGui::Button("Re Scan")) {
-							lastMap = bot->GetAllObject();
+							lastMap = bots.at(current_item).GetAllObject();
 							}
 
-							for (auto& object : lastMap) {
-							ImGui::Text("Item id: %d, amount: %d", object.first, object.second);
+							for (auto& bots.at(current_item).object : lastMap) {
+							ImGui::Text("Item id: %d, amount: %d", bots.at(current_item).object.first, bots.at(current_item).object.second);
 							}
                                             }
                                             ImGui::EndTabItem();
