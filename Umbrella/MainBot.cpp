@@ -1460,7 +1460,7 @@ int main()
                             {
                                 if (bots.size() > 0) {
                                     for (int i = 0; i < bots.at(current_item).inventory.size(); i++) {
-					    ImGui::Text("ItemID: %d, Count: %d", (int)bots.at(current_item).inventory.at(i).id, (int)bots.at(current_item).inventory.at(i).amount);
+					    ImGui::Text("Item: %d, Count: %d", ItemList.at(i), (int)bots.at(current_item).inventory.at(i).amount);
 				    }
                                 }
                                 else {
