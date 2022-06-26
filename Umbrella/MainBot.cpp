@@ -1490,7 +1490,7 @@ int main()
                                         for (int i = 0; i < bots.at(current_item).debug.size(); i++)
                                         {
                                             editor2.SetReadOnly(true);
-                                            editor2.SetText(bots.at(current_item).debug.at(i).text.c_str());
+                                            editor2.InsertText(bots.at(current_item).debug.at(i).text.c_str());
                                         }
                                 } else {
                                     ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "Add Bot First.");
