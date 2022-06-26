@@ -271,6 +271,9 @@ public:
 	void AtPlayerMoving(PlayerMoving* data);
 	void WhenConnected();
 	void WhenDisconnected();
+	void Wear(int itemid);
+	void Drop(int itemid);
+	void Trash(int itemid);
 	void Collect(int range);
 	/********* user funcs  *********/
 
