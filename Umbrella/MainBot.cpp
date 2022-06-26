@@ -40,7 +40,7 @@ extern "C" {
 #include "xorstr.hpp"
 #include "proton/variant.hpp"
 #define CPPHTTPLIB_OPENSSL_SUPPORT
-#include "path/to/httplib.h"
+#include "httplib.h"
 
 #include "auth.hpp"
 #include "skStr.h"
