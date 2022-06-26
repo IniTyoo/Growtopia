@@ -1461,20 +1461,23 @@ int main()
                                 if (bots.size() > 0) {
                                     for (int i = 0; i < bots.at(current_item).inventory.size(); i++) {
 					    ImGui::Text("Item: %d, Count: %d", ItemList.at(i).c_str(), (int)bots.at(current_item).inventory.at(i).amount);
-					    if (ImGui::Button("Wear", ImVec2(45, 0)))
+					    ImGui::SameLine();
+                                        ImGui::PushID(i + 1);
+                                        if (ImGui::Button("Wear", ImVec2(45, 0)))
                                         {
-						    bots.at(current_item).Wear((int)bots.at(current_item).inventory.at(i).id)
+                                            bots.at(current_item).Wear((int)bots.at(current_item).inventory.at(i).id);
                                         }
                                         ImGui::SameLine();
                                         if (ImGui::Button("Drop", ImVec2(45, 0)))
                                         {
-						    bots.at(current_item).Drop((int)bots.at(current_item).inventory.at(i).id)
+                                            bots.at(current_item).Drop((int)bots.at(current_item).inventory.at(i).id, (int)bots.at(current_item).inventory.at(i).amount);
                                         }
                                         ImGui::SameLine();
                                         if (ImGui::Button("Trash", ImVec2(45, 0)))
                                         {
-						   bots.at(current_item).Trash((int)bots.at(current_item).inventory.at(i).id)
+                                            bots.at(current_item).Trash((int)bots.at(current_item).inventory.at(i).id, (int)bots.at(current_item).inventory.at(i).amount);
                                         }
+                                        ImGui::PopID();
 				    }
                                 }
                                 else {
