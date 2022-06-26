@@ -88,12 +88,16 @@ void GrowtopiaBot::Wear(int itemid) {
 
 }
 
-void GrowtopiaBot::Drop(int itemid) {
-
+void GrowtopiaBot::Drop(int itemid, int count) {
+    SendPacket(2, "action|drop\n|itemID|" + to_string(itemid), peer);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    SendPacket(2, "action|dialog_return\ndialog_name|drop_item\nitemID|" + to_string(itemid) + "|\ncount|" + to_string(count), peer);
 }
 
-void GrowtopiaBot::Trash(int itemid) {
-
+void GrowtopiaBot::Trash(int itemid, int count) {
+    SendPacket(2, "action|trash\nitemID|" + to_string(itemid), peer);
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    SendPacket(2, "action|dialog_return\ndialog_name|trash_item\nitemID|" + to_string(itemid) + "|\ncount|" + to_string(count), peer);
 }
 
 void GrowtopiaBot::Collect(int range) {
