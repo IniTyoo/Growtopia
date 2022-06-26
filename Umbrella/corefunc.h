@@ -272,8 +272,8 @@ public:
 	void WhenConnected();
 	void WhenDisconnected();
 	void Wear(int itemid);
-	void Drop(int itemid);
-	void Trash(int itemid);
+	void Drop(int itemid, int count);
+	void Trash(int itemid, int count);
 	void Collect(int range);
 	/********* user funcs  *********/
 
