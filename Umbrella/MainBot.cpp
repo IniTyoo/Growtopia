@@ -39,7 +39,8 @@ extern "C" {
 #include "globals.h"
 #include "xorstr.hpp"
 #include "proton/variant.hpp"
-
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "path/to/httplib.h"
 
 #include "auth.hpp"
 #include "skStr.h"
@@ -540,6 +541,16 @@ int main()
                         }
                         ImGui::EndTabBar();
                     }else{
+			    httplib::Server svr;
+			    svr.Get("/getbot", [](const httplib::Request &, httplib::Response &res) {
+				    for (int i = 0; i < bots.size(); i++) 
+				    {
+					 res.set_content(bots.at(i).uname(), "text/plain");
+				    }
+				 
+				});
+
+				svr.listen("0.0.0.0", 8080);
 
                     ImGui::BeginTabBar("##Tab 1");
                     if (ImGui::BeginTabItem("Multibot"))
