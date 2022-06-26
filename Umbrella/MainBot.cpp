@@ -1463,17 +1463,17 @@ int main()
 					    ImGui::Text("Item: %d, Count: %d", ItemList.at(i).c_str(), (int)bots.at(current_item).inventory.at(i).amount);
 					    if (ImGui::Button("Wear", ImVec2(45, 0)))
                                         {
-						    bots.at(current_item).wear((int)bots.at(current_item).inventory.at(i).amount)
+						    bots.at(current_item).wear((int)bots.at(current_item).inventory.at(i).id)
                                         }
                                         ImGui::SameLine();
                                         if (ImGui::Button("Drop", ImVec2(45, 0)))
                                         {
-						    bots.at(current_item).drop((int)bots.at(current_item).inventory.at(i).amount)
+						    bots.at(current_item).drop((int)bots.at(current_item).inventory.at(i).id)
                                         }
                                         ImGui::SameLine();
                                         if (ImGui::Button("Trash", ImVec2(45, 0)))
                                         {
-						   bots.at(current_item).trash((int)bots.at(current_item).inventory.at(i).amount)
+						   bots.at(current_item).trash((int)bots.at(current_item).inventory.at(i).id)
                                         }
 				    }
                                 }
