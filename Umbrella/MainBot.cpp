@@ -1460,17 +1460,20 @@ int main()
                             {
                                 if (bots.size() > 0) {
                                     for (int i = 0; i < bots.at(current_item).inventory.size(); i++) {
-					    ImGui::Text("Item: %d, Count: %d", ItemList.at(i), (int)bots.at(current_item).inventory.at(i).amount);
+					    ImGui::Text("Item: %d, Count: %d", ItemList.at(i).c_str(), (int)bots.at(current_item).inventory.at(i).amount);
 					    if (ImGui::Button("Wear", ImVec2(45, 0)))
                                         {
+						    bots.at(current_item).wear((int)bots.at(current_item).inventory.at(i).amount)
                                         }
                                         ImGui::SameLine();
                                         if (ImGui::Button("Drop", ImVec2(45, 0)))
                                         {
+						    bots.at(current_item).drop((int)bots.at(current_item).inventory.at(i).amount)
                                         }
                                         ImGui::SameLine();
                                         if (ImGui::Button("Trash", ImVec2(45, 0)))
                                         {
+						   bots.at(current_item).trash((int)bots.at(current_item).inventory.at(i).amount)
                                         }
 				    }
                                 }
@@ -1488,11 +1491,6 @@ int main()
                                         {
                                             editor2.SetReadOnly(true);
                                             editor2.SetText(bots.at(current_item).debug.at(i).text.c_str());
-                                            if (bots.at(current_item).debug.size() > 50)
-                                            {
-                                                bots.at(current_item).debug.erase(bots.at(current_item).debug.begin() + 0);
-                                            }
-                                            
                                         }
                                 } else {
                                     ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "Add Bot First.");
