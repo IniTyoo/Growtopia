@@ -82,7 +82,7 @@ static bool autospam;
 static char spamtext[500];
 float interval = 4;
 
-bool loginpacket = false;
+bool loginpacket = true;
 bool autocollect = false;
 bool autoreconnect = false;
 static int current_item;
@@ -442,11 +442,12 @@ int main()
     {
         if (loginpacket)
         {
-            for (int i = 0; i < bots.size(); i++) 
+	    for (int i = 0; i < bots.size(); i++) 
             {
                 bots.at(i).eventLoop();
                 bots.at(i).userLoop();
             }
+	    std::this_thread::sleep_for(std::chrono::milliseconds(30000));
         }
 
         MSG msg;
@@ -626,7 +627,7 @@ int main()
                             {
                                 if (bots.size() == 0) {
                                     create(usernamebot, passwordbot);
-                                    loginpacket = true;
+                                    //loginpacket = true;
                                     current_item = 0;
                                 }
                                 else {
@@ -715,6 +716,13 @@ int main()
                                                 ImGui::Text("NetID: %d", bot.localnetid);
                                                 ImGui::Text("Position X: %d, Y: %d", (int)bot.localx / 32, (int)bot.localy / 32);
                                             }
+					    if (ImGui::Button("Connect Manualy", ImVec2(50,0))){
+						bots.at(current_item).eventLoop();
+                				bots.at(current_item).userLoop();
+					    }
+					    if (ImGui::Checkbox("Auto connect", &loginpacket)){
+						loginpacket = true;
+					    }
                                         }
                                         i++;
                                     }
