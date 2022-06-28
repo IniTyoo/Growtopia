@@ -148,6 +148,11 @@ static int lua_sendpacket(lua_State* L) {
 	if (lua_isstring(L, 2) && lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).SendPacket(lua_tonumber(L, 1), lua_tostring(L, 2), bots.at(current_item).peer);
+		}else{
+		  for (int i = 0; i < bots.size(); i++) 
+		    {
+			bots.at(i).SendPacket(lua_tonumber(L, 1), lua_tostring(L, 2), bots.at(current_item).peer);
+		    }	
 		}
 		
 	}
@@ -158,11 +163,21 @@ static int lua_moveright(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("right"), lua_tonumber(L, 1));
+		}else{
+		  for (int i = 0; i < bots.size(); i++) 
+		    {
+			bots.at(i).move(XorStr("right"), lua_tonumber(L, 1));
+		    }	
 		}
 		
 	}else{
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("right"), 1);
+		}else{
+		  for (int i = 0; i < bots.size(); i++) 
+		    {
+			bots.at(i).move(XorStr("right"), 1);
+		    }	
 		}	
 	}
 	return 0;
@@ -172,11 +187,21 @@ static int lua_moveleft(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("left"), lua_tonumber(L, 1));
+		}else{
+		  for (int i = 0; i < bots.size(); i++) 
+		    {
+			bots.at(i).move(XorStr("left"), lua_tonumber(L, 1));
+		    }	
 		}
 		
 	}else{
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("left"), 1);
+		}else{
+		  for (int i = 0; i < bots.size(); i++) 
+		    {
+			bots.at(i).move(XorStr("left"), 1);
+		    }	
 		}	
 	}
 	return 0;
@@ -186,11 +211,21 @@ static int lua_movedown(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("down"), lua_tonumber(L, 1));
+		}else{
+		  for (int i = 0; i < bots.size(); i++) 
+		    {
+			bots.at(i).move(XorStr("down"), lua_tonumber(L, 1));
+		    }	
 		}
 		
 	}else{
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("down"), 1);
+		}else{
+		  for (int i = 0; i < bots.size(); i++) 
+		    {
+			bots.at(i).move(XorStr("down"), 1);
+		    }	
 		}	
 	}
 	return 0;
@@ -199,12 +234,22 @@ static int lua_moveup(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("up"), lua_tonumber(L, 1));
+		}else{
+		  for (int i = 0; i < bots.size(); i++) 
+		    {
+			bots.at(i).move(XorStr("up"), lua_tonumber(L, 1));
+		    }	
 		}
 		
 	}else{
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("up"), 1);
-		}	
+		}else{
+		  for (int i = 0; i < bots.size(); i++) 
+		    {
+			bots.at(i).move(XorStr("up"), 1);
+		    }	
+		}
 	}
 	return 0;
 }
