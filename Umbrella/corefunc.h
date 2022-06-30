@@ -798,7 +798,7 @@ vector<string> string_split(string arg0, string arg1) {
         for (uint8_t i = 0; i < size; i++) {
             InventoryItem item;
             extended += 2;
-            item.id = *(uint16_t*)(extended);
+            item.id = *(short*)(extended);
             extended += 2;
             item.amount = *(extended);
             inventory.push_back(item);
@@ -1088,7 +1088,9 @@ vector<string> string_split(string arg0, string arg1) {
 				{
 
 				}
-				
+				if (i < world->XSize){
+				cout << world->foreground[i] << endl;
+				}
 				worldPtr += 4;
 				//tile.push_back(wrld);
 			}

@@ -39,8 +39,8 @@ extern "C" {
 #include "globals.h"
 #include "xorstr.hpp"
 #include "proton/variant.hpp"
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-#include "httplib.h"
+//#define CPPHTTPLIB_OPENSSL_SUPPORT
+//#include "httplib.h"
 
 #include "auth.hpp"
 #include "skStr.h"
@@ -82,7 +82,7 @@ static bool autospam;
 static char spamtext[500];
 float interval = 4;
 
-bool loginpacket = true;
+bool loginpacket = false;
 bool autocollect = false;
 bool autoreconnect = false;
 static int current_item;
@@ -148,11 +148,6 @@ static int lua_sendpacket(lua_State* L) {
 	if (lua_isstring(L, 2) && lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).SendPacket(lua_tonumber(L, 1), lua_tostring(L, 2), bots.at(current_item).peer);
-		}else{
-		  for (int i = 0; i < bots.size(); i++) 
-		    {
-			bots.at(i).SendPacket(lua_tonumber(L, 1), lua_tostring(L, 2), bots.at(current_item).peer);
-		    }	
 		}
 		
 	}
@@ -163,21 +158,11 @@ static int lua_moveright(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("right"), lua_tonumber(L, 1));
-		}else{
-		  for (int i = 0; i < bots.size(); i++) 
-		    {
-			bots.at(i).move(XorStr("right"), lua_tonumber(L, 1));
-		    }	
 		}
 		
 	}else{
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("right"), 1);
-		}else{
-		  for (int i = 0; i < bots.size(); i++) 
-		    {
-			bots.at(i).move(XorStr("right"), 1);
-		    }	
 		}	
 	}
 	return 0;
@@ -187,21 +172,11 @@ static int lua_moveleft(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("left"), lua_tonumber(L, 1));
-		}else{
-		  for (int i = 0; i < bots.size(); i++) 
-		    {
-			bots.at(i).move(XorStr("left"), lua_tonumber(L, 1));
-		    }	
 		}
 		
 	}else{
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("left"), 1);
-		}else{
-		  for (int i = 0; i < bots.size(); i++) 
-		    {
-			bots.at(i).move(XorStr("left"), 1);
-		    }	
 		}	
 	}
 	return 0;
@@ -211,21 +186,11 @@ static int lua_movedown(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("down"), lua_tonumber(L, 1));
-		}else{
-		  for (int i = 0; i < bots.size(); i++) 
-		    {
-			bots.at(i).move(XorStr("down"), lua_tonumber(L, 1));
-		    }	
 		}
 		
 	}else{
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("down"), 1);
-		}else{
-		  for (int i = 0; i < bots.size(); i++) 
-		    {
-			bots.at(i).move(XorStr("down"), 1);
-		    }	
 		}	
 	}
 	return 0;
@@ -234,55 +199,73 @@ static int lua_moveup(lua_State* L) {
 	if (lua_isnumber(L, 1)) {
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("up"), lua_tonumber(L, 1));
-		}else{
-		  for (int i = 0; i < bots.size(); i++) 
-		    {
-			bots.at(i).move(XorStr("up"), lua_tonumber(L, 1));
-		    }	
 		}
 		
 	}else{
 		if (!selectall) {
 			bots.at(current_item).move(XorStr("up"), 1);
-		}else{
-		  for (int i = 0; i < bots.size(); i++) 
-		    {
-			bots.at(i).move(XorStr("up"), 1);
-		    }	
-		}
+		}	
 	}
 	return 0;
 }
 
 
-static int lua_getbot(lua_State* L) {
-				    lua_newtable(L);
-					lua_pushliteral(L, "x"); // assign table.x
-					lua_pushnumber(L, bots.at(current_item).localx); // misal value 1000
-					lua_settable(L, -3); // wajib -3
-					    
-					lua_pushliteral(L, "y"); // assign table.x
-					lua_pushnumber(L, bots.at(current_item).localy); // misal value 1000
-					lua_settable(L, -3); // wajib -3
+void lua_pushbot(lua_State* l, GrowtopiaBot* bot) {
+if (!bot) { lua_pushnil(l); return; }
+lua_newtable(l);
 
-					lua_pushliteral(L, "world"); // assign table.x
-					lua_pushstring(L, bots.at(current_item).currentworld.c_str()); // misal value 1000
-					lua_settable(L, -3); // wajib -3
-					    
-					lua_pushliteral(L, "status"); // assign table.x
-					lua_pushstring(L, bots.at(current_item).statusbot.c_str()); // misal value 1000
-					lua_settable(L, -3); // wajib -3
-					
-					    
-					lua_pushliteral(L, "name"); // assign table.x
-					lua_pushstring(L, bots.at(current_item).uname.c_str()); // misal value 1000
-					lua_settable(L, -3); // wajib -3
-					    //.statusbot.c_str()
+lua_pushliteral(l, "name");
+lua_pushstring(l, bot->uname.c_str());
+lua_settable(l, -3);
 
-					//...
-					return 1;
-					}
 
+lua_pushliteral(l, "world");
+lua_pushstring(l, bot->currentworld.c_str());
+lua_settable(l, -3);
+
+lua_pushliteral(l, "status");
+lua_pushstring(l, bot->statusbot.c_str());
+lua_settable(l, -3);
+
+lua_pushliteral(l, "x");
+lua_pushnumber(l, bot->localx);
+lua_settable(l, -3);
+
+lua_pushliteral(l, "y");
+lua_pushnumber(l, bot->localy);
+lua_settable(l, -3);
+} 
+
+
+
+int L_GETBOT(lua_State* l) {
+int index = luaL_checkinteger(l, 1);
+if (index < bots.size() && index > -1) {
+GrowtopiaBot* bot = &bots.at(index);
+lua_pushbot(l, bot);
+} else {
+lua_pushnil(l);
+}
+return 1;
+}
+
+// Bot[] getBots()
+int L_GETBOTS(lua_State* l) {
+lua_newtable(l);
+for (int i = 0; i < bots.size(); i++) {
+lua_pushinteger(l, i);
+lua_pushbot(l, &bots.at(i));
+lua_settable(l, -3);
+}
+return 1;
+}
+
+
+
+int L_SLEEP(lua_State* l) {
+std::this_thread::sleep_for(std::chrono::milliseconds(luaL_checkinteger(l, 1)));
+return 1;
+}
 void executelua(string text){
                 if (bots.size() > 0) {
                     lua_State* state = luaL_newstate();
@@ -291,13 +274,16 @@ void executelua(string text){
                     //lua_newtable(state);
                     lua_setglobal(state, "imgui");
 
-                    lua_register(state, "SendPacket", lua_sendpacket);
-                    lua_register(state, "GetBot", lua_getbot);
-		    lua_register(state, "MoveRight", lua_moveright);
-		    lua_register(state, "MoveLeft", lua_moveleft);
-		    lua_register(state, "MoveUp", lua_moveup);
-		    lua_register(state, "MoveDown", lua_movedown);
-                    auto script = "local clock = os.clock\nfunction sleep(n)  -- ms kasih .\nlocal t0 = clock()\nwhile clock() - t0 <= n do end\nend\n\n\n" + text;
+                    lua_register(state, "sendPacket", lua_sendpacket);
+                    lua_register(state, "getBot", L_GETBOT);
+            lua_register(state, "getBots", L_GETBOTS);
+            lua_register(state, "moveRight", lua_moveright);
+            lua_register(state, "moveLeft", lua_moveleft);
+            lua_register(state, "moveUp", lua_moveup);
+            lua_register(state, "moveDown", lua_movedown);
+	    lua_register(state, "sleep", L_SLEEP);
+	    lua_register(state, "getObject", L_GETFLOATITEM);
+                    auto script = text;
                     std::thread thr(execute_thread, state, script);
                     thr.detach();
 
@@ -487,12 +473,11 @@ int main()
     {
         if (loginpacket)
         {
-	    for (int i = 0; i < bots.size(); i++) 
+            for (int i = 0; i < bots.size(); i++) 
             {
                 bots.at(i).eventLoop();
                 bots.at(i).userLoop();
             }
-	    std::this_thread::sleep_for(std::chrono::milliseconds(30000));
         }
 
         MSG msg;
@@ -586,7 +571,7 @@ int main()
                             ImGui::EndTabItem();
                         }
                         ImGui::EndTabBar();
-                    }else{
+                    }else{/*
 			    httplib::Server svr;
 			    svr.Get("/getbot", [](const httplib::Request &, httplib::Response &res) {
 				    for (int i = 0; i < bots.size(); i++) 
@@ -597,7 +582,7 @@ int main()
 				});
 
 				svr.listen("0.0.0.0", 8080);
-
+*/
                     ImGui::BeginTabBar("##Tab 1");
                     if (ImGui::BeginTabItem("Multibot"))
                     {
@@ -672,7 +657,7 @@ int main()
                             {
                                 if (bots.size() == 0) {
                                     create(usernamebot, passwordbot);
-                                    //loginpacket = true;
+                                    loginpacket = true;
                                     current_item = 0;
                                 }
                                 else {
@@ -761,13 +746,6 @@ int main()
                                                 ImGui::Text("NetID: %d", bot.localnetid);
                                                 ImGui::Text("Position X: %d, Y: %d", (int)bot.localx / 32, (int)bot.localy / 32);
                                             }
-					    if (ImGui::Button("Connect Manualy", ImVec2(50,0))){
-						bots.at(current_item).eventLoop();
-                				bots.at(current_item).userLoop();
-					    }
-					    if (ImGui::Checkbox("Auto connect", &loginpacket)){
-						loginpacket = true;
-					    }
                                         }
                                         i++;
                                     }
@@ -1524,7 +1502,7 @@ int main()
                             {
                                 if (bots.size() > 0) {
                                     for (int i = 0; i < bots.at(current_item).inventory.size(); i++) {
-					    ImGui::Text("Item: %d, Count: %d", ItemList.at(i).c_str(), (int)bots.at(current_item).inventory.at(i).amount);
+					    ImGui::Text("Item: %d, Count: %d", (int)bots.at(current_item).inventory.at(i).id, (int)bots.at(current_item).inventory.at(i).amount);
 					    ImGui::SameLine();
                                         ImGui::PushID(i + 1);
                                         if (ImGui::Button("Wear", ImVec2(45, 0)))
