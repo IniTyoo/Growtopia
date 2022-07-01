@@ -974,6 +974,7 @@ vector<string> string_split(string arg0, string arg1) {
 			break;
 		case 3:
 		{	
+			cout << get_struct(packets) << endl;
 			UpdateInventory3(get_struct(packets));
 			break;
 		}
