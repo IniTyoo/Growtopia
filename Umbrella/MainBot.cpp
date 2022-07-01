@@ -93,7 +93,7 @@ bool set = true;
 static int speed = 1;
 bool follow = false;
 bool autoacc = false;
-bool asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = false;
+bool asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
 
 string word = "";
 string name = "";
