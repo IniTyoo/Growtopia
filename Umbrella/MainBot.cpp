@@ -282,7 +282,7 @@ void executelua(string text){
             lua_register(state, "moveUp", lua_moveup);
             lua_register(state, "moveDown", lua_movedown);
 	    lua_register(state, "sleep", L_SLEEP);
-	    lua_register(state, "getObject", L_GETFLOATITEM);
+	   // lua_register(state, "getObject", L_GETFLOATITEM);
                     auto script = text;
                     std::thread thr(execute_thread, state, script);
                     thr.detach();
