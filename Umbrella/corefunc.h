@@ -918,7 +918,7 @@ vector<string> string_split(string arg0, string arg1) {
 		 cout << "m_int_data : " << packet->m_int_data << endl;
 		 cout << "m_vec_x : " << packet->m_vec_x << endl;
 		 cout << "m_vec_y : " << packet->m_vec_y << endl;
-		 cout << "m_vec2_x : " < packet->m_vec2_x << endl;
+		 cout << "m_vec2_x : " << packet->m_vec2_x << endl;
 		 cout << "m_vec2_y : " << packet->m_vec2_y << endl;
 		 cout << "m_particle_time : " << packet->m_particle_time << endl;
 		 cout << "m_state1 : " << packet->m_state1 << endl;
@@ -1015,7 +1015,6 @@ vector<string> string_split(string arg0, string arg1) {
 			floatItem.clear();
 			last_oid = 0;
 			SerializeObject(packets);
-			tile.clear();
 			BYTE* worldPtr = GetExtendedDataPointerFromTankPacket(structPointer); // World::LoadFromMem
 			world = new WorldStruct;
 			World wrld;
