@@ -906,6 +906,30 @@ vector<string> string_split(string arg0, string arg1) {
 		return gamepacket;
 	}
 
+	
+	 void packetprint(gameupdatepacket_t* packet){
+		 cout << "-------------------------------------" << endl;
+		 cout << "m_type : " << packet->m_type << endl;
+		 cout << "m_netid : " << packet->m_netid << endl;
+		 cout << "m_jump_amount : " << packet->m_jump_amount << endl;
+		 cout << "m_player_flags : " << packet->m_player_flags << endl;
+		 cout << "m_packet_flags : " << packet->m_packet_flags << endl;
+		 cout << "m_struct_flags : " << packet->m_struct_flags << endl;
+		 cout << "m_int_data : " << packet->m_int_data << endl;
+		 cout << "m_vec_x : " << packet->m_vec_x << endl;
+		 cout << "m_vec_y : " << packet->m_vec_y << endl;
+		 cout << "m_vec2_x : " < packet->m_vec2_x << endl;
+		 cout << "m_vec2_y : " << packet->m_vec2_y << endl;
+		 cout << "m_particle_time : " << packet->m_particle_time << endl;
+		 cout << "m_state1 : " << packet->m_state1 << endl;
+		 cout << "m_state2 : " << packet->m_state2 << endl;
+		 cout << "m_data_size : " << packet->m_data_size << endl;
+		 cout << "m_data : " << packet->m_data << endl;
+		 cout << "-------------------------------------" << endl;
+
+	}
+	
+	
 	void ProcessTankUpdatePacket(float someVal, EntityComponent* entityComponent, BYTE* structPointer, ENetPacket* packets)
 	{
 		cout << "Processing tank packet with id of: " << +(*(char*)structPointer) << " Where first byte is " << std::to_string(structPointer[0]) << endl;
@@ -975,7 +999,7 @@ vector<string> string_split(string arg0, string arg1) {
 			break;
 		case 3:
 		{	
-			cout << get_struct(packets) << endl;
+			packetprint(get_struct(packets));
 			UpdateInventory3(get_struct(packets));
 			break;
 		}
