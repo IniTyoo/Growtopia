@@ -13,6 +13,7 @@
 #include <regex>
 #include "utilsfunc.h"
 #include <map>
+#include <cmath>
 #include "HTTPRequest.hpp"
 using namespace std;
 
@@ -1104,60 +1105,14 @@ vector<string> string_split(string arg0, string arg1) {
 		__int16* background;
 	};
 	*/
-				if (i < 100){
-				cout <<"World fg:" << world->foreground[i] << " | bg: " << world->background[i] << " | POS X:" << i << " | Y:" << 1 << endl;
-					WorldTile tile;
-					tile.x  = i;
-					tile.y = 1;
-					tile.foreground = (int)world->foreground[i];
-					tile.background = (int)world->background[i];
-					tiles.push_back(tile);
-				}
-				if (i < 200){
-				cout <<"World fg:" << world->foreground[i] << " | bg: " << world->background[i] << " | POS X:" << i << " | Y:" << 2 << endl;
-					WorldTile tile;
-					tile.x  = i;
-					tile.y = 2;
-					tile.foreground = (int)world->foreground[i];
-					tile.background = (int)world->background[i];
-					tiles.push_back(tile);
-				}
-				if (i < 300){
-				cout <<"World fg:" << world->foreground[i] << " | bg: " << world->background[i] << " | POS X:" << i << " | Y:" << 3 << endl;
-					WorldTile tile;
-					tile.x  = i;
-					tile.y = 3;
-					tile.foreground = (int)world->foreground[i];
-					tile.background = (int)world->background[i];
-					tiles.push_back(tile);
-				}
-				if (i < 400){
-				cout <<"World fg:" << world->foreground[i] << " | bg: " << world->background[i] << " | POS X:" << i << " | Y:" << 4 << endl;
-					WorldTile tile;
-					tile.x  = i;
-					tile.y = 4;
-					tile.foreground = (int)world->foreground[i];
-					tile.background = (int)world->background[i];
-					tiles.push_back(tile);
-				}
-				if (i =< 500){
-				cout <<"World fg:" << world->foreground[i] << " | bg: " << world->background[i] << " | POS X:" << i << " | Y:" << 5 << endl;
-					WorldTile tile;
-					tile.x  = i;
-					tile.y = 5;
-					tile.foreground = (int)world->foreground[i];
-					tile.background = (int)world->background[i];
-					tiles.push_back(tile);
-				}
-				if (i < 600){
-				cout <<"World fg:" << world->foreground[i] << " | bg: " << world->background[i] << " | POS X:" << i << " | Y:" << 6 << endl;
-					WorldTile tile;
-					tile.x  = i;
-					tile.y = 6;
-					tile.foreground = (int)world->foreground[i];
-					tile.background = (int)world->background[i];
-					tiles.push_back(tile);
-				}
+				cout << "Y:" <<floor(i/100) << endl;
+  				cout << "X:" << i % 100 << endl;
+				WorldTile tile;
+				tile.x = i % world->XSize;
+				tile.y = floor(i/world->XSize);
+				tile.foreground = (int)world->foreground[i];
+				tile.background = (int)world->background[i];
+				tiles.push_back(tile);
 				worldPtr += 4;
 				//tile.push_back(wrld);
 			}
