@@ -116,6 +116,22 @@ GrowtopiaBot create(string username, string password) {
     return bot;
 }
 
+static void autocollecting(int range)
+{
+    using namespace std::literals::chrono_literals;
+    for (auto& bot : bots)
+    {
+        while (bot.autocollect)
+        {
+            for (auto& bot : bots)
+            {
+                bot.Collect(bot.range);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
+    }
+}
+
 std::string tm_to_readable_time(tm ctx) {
     char buffer[80];
 
@@ -288,21 +304,7 @@ void spamthread(std::string text1)
     }
 }
 
-static void autocollecting(int range)
-{
-    using namespace std::literals::chrono_literals;
-    for (auto& bot : bots)
-    {
-        while (bot.autocollect)
-        {
-            for (auto& bot : bots)
-            {
-                bot.Collect(bot.range);
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        }
-    }
-}
+
 
 
 
