@@ -228,27 +228,27 @@ void lua_pushfloatingitem(lua_State* l, int index) {
 lua_newtable(l);
 
 lua_pushliteral(l, "PosX");
-lua_pustnumber(l, bots.at(current_item).floatItem.at(index).x;
+lua_pushnumber(l, bots.at(current_item).floatItem.at(index).x);
 lua_settable(l, -3);
 	       
 lua_pushliteral(l, "PosY");
-lua_pustnumber(l, bots.at(current_item).floatItem.at(index).y;
+lua_pushnumber(l, bots.at(current_item).floatItem.at(index).y);
 lua_settable(l, -3);
 	       
 lua_pushliteral(l, "Id");
-lua_pustnumber(l, (int)bots.at(current_item).floatItem.at(index).id;
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).id);
 lua_settable(l, -3);
 	       
 lua_pushliteral(l, "Flags");
-lua_pustnumber(l, (int)bots.at(current_item).floatItem.at(index).flags;
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).flags);
 lua_settable(l, -3);
 	       
 lua_pushliteral(l, "Amount");
-lua_pustnumber(l, (int)bots.at(current_item).floatItem.at(index).amount;
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).amount);
 lua_settable(l, -3);	  
 	       
 lua_pushliteral(l, "Oid");
-lua_pustnumber(l, (int)bots.at(current_item).floatItem.at(index).oid;
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).oid);
 lua_settable(l, -3);
 
 } 
