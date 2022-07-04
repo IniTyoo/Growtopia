@@ -265,9 +265,29 @@ return 1;
 int L_AddBot(lua_State* l){
 	if (lua_isstring(l, 1) && lua_isstring(l,2){
 		if(!selectall){
+			lua_pushboolean(l, true);
 			create(lua_tostring(l, 1), lua_tostring(l, 2));
                 	loginpacket = true;	
+		}else{
+			lua_pushboolean(l, false);
 		}
+	}else{
+			lua_pushboolean(l, false);
+	}
+}
+	    
+int L_RemoveBot(lua_State* l){
+	if(lua_isstring(l,1)){
+		for (int i = 0; i < bots.size(); i++) 
+            	{
+                	if (bots.at(i).uname.c_str() == lua_tostring(l, 1)){
+				bots.erase(bots.begin() + i);
+                                bots.at(i).WhenDisconnected();
+				lua_pushboolean(l, true);
+			}
+            	}
+	}else{
+			lua_pushboolean(l, false);
 	}
 }
 
