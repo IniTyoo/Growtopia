@@ -230,7 +230,16 @@ int L_RemoveBot(lua_State* l){
 
 int L_Collect(lua_State* l){
 	if(lua_isnumber(l,1)){
-		bots.at(i).Collect(lua_tonumber(l,1));
+		bots.at(current_item).Collect(lua_tonumber(l,1));
+	}
+}
+
+int L_AutoCollect(lua_State* l){
+	if(lua_isboolean(l,1) && lua_isnumber(l,2)){
+		bots.at(current_item).autocollect = true;
+		bots.at(current_item).range = lua_tonumber(l,2);
+		std::thread collecting(autocollecting, bots.at(current_item).range);
+                collecting.detach();
 	}
 }
 
@@ -250,6 +259,7 @@ void executelua(string text){
 		    lua_register(state, "RemoveBot", L_RemoveBot);
 	   	    lua_register(state, "Sleep", L_SLEEP);
 		    lua_register(state, "Collect", L_Collect);
+		    lua_register(state, "AutoCollect", L_AutoCollect);
                     std::thread thr(execute_thread, state, text);
                     thr.detach();
 
