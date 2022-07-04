@@ -250,17 +250,26 @@ return 1;
 }
 
 // Bot[] getBots()
-int L_GETBOTS(lua_State* l) {
-lua_newtable(l);
-for (int i = 0; i < bots.size(); i++) {
-lua_pushinteger(l, i);
-lua_pushbot(l, &bots.at(i));
-lua_settable(l, -3);
-}
-return 1;
-}
+// int L_GETBOTS(lua_State* l) {
+// lua_newtable(l);
+// for (int i = 0; i < bots.size(); i++) {
+// lua_pushinteger(l, i);
+// lua_pushbot(l, &bots.at(i));
+// lua_settable(l, -3);
+// }
+// return 1;
+// }
 
 
+
+int L_AddBot(lua_State* l){
+	if (lua_isstring(l, 1) && lua_isstring(l,2){
+		if(!selectall){
+			create(lua_tostring(l, 1), lua_tostring(l, 2));
+                	loginpacket = true;	
+		}
+	}
+}
 
 int L_SLEEP(lua_State* l) {
 std::this_thread::sleep_for(std::chrono::milliseconds(luaL_checkinteger(l, 1)));
@@ -274,15 +283,12 @@ void executelua(string text){
                     //lua_newtable(state);
                     lua_setglobal(state, "imgui");
 
-                    lua_register(state, "sendPacket", lua_sendpacket);
-                    lua_register(state, "getBot", L_GETBOT);
-            lua_register(state, "getBots", L_GETBOTS);
-            lua_register(state, "moveRight", lua_moveright);
-            lua_register(state, "moveLeft", lua_moveleft);
-            lua_register(state, "moveUp", lua_moveup);
-            lua_register(state, "moveDown", lua_movedown);
-	    lua_register(state, "sleep", L_SLEEP);
+                    lua_register(state, "SendPacket", lua_sendpacket);
+                    lua_register(state, "GetLocal", L_GETBOT);
+            //lua_register(state, "getBots", L_GETBOTS);
+	    lua_register(state, "Sleep", L_SLEEP);
 	   // lua_register(state, "getObject", L_GETFLOATITEM);
+			lua_register(state,"AddBot",L_AddBot);
                     auto script = text;
                     std::thread thr(execute_thread, state, script);
                     thr.detach();
@@ -656,8 +662,8 @@ int main()
                             if (ImGui::Button("Add", ImVec2(85, 20)))
                             {
                                 if (bots.size() == 0) {
-                                    create(usernamebot, passwordbot);
-                                    loginpacket = true;
+					    create(usernamebot, passwordbot);
+					    loginpacket = true;
                                     current_item = 0;
                                 }
                                 else {
