@@ -288,7 +288,7 @@ void spamthread(std::string text1)
     }
 }
 
-void autocollecting(int range)
+static void autocollecting(int range)
 {
     using namespace std::literals::chrono_literals;
     for (auto& bot : bots)
