@@ -224,6 +224,46 @@ return 1;
 // return 1;
 // }
 
+void lua_pushfloatingitem(lua_State* l, int index) {
+lua_newtable(l);
+
+lua_pushliteral(l, "PosX");
+lua_pustnumber(l, bots.at(current_item).floatItem.at(index).x;
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "PosY");
+lua_pustnumber(l, bots.at(current_item).floatItem.at(index).y;
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "Id");
+lua_pustnumber(l, (int)bots.at(current_item).floatItem.at(index).id;
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "Flags");
+lua_pustnumber(l, (int)bots.at(current_item).floatItem.at(index).flags;
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "Amount");
+lua_pustnumber(l, (int)bots.at(current_item).floatItem.at(index).amount;
+lua_settable(l, -3);	  
+	       
+lua_pushliteral(l, "Oid");
+lua_pustnumber(l, (int)bots.at(current_item).floatItem.at(index).oid;
+lua_settable(l, -3);
+
+} 
+
+
+int L_GETFLOATITEMS(lua_State* l) {
+lua_newtable(l);
+for (int i = 0; i < bots.at(current_item).floatItem.size(); i++) {
+lua_pushinteger(l, i);
+lua_pushfloatingitem(l, i);
+lua_settable(l, -3);
+}
+return 1;
+}
+
 
 int L_AddBot(lua_State* l){
 	if (lua_isstring(l, 1) && lua_isstring(l,2)){
@@ -265,7 +305,7 @@ int L_Connect(lua_State* l){
 	bots.at(current_item).userInit();
 }
 int L_Disconnect(lua_State* l){
-	//bots.at(current_item).Disconnect();
+	bots.at(current_item).Disconnect();
 }
 
 int L_SLEEP(lua_State* l) {
@@ -279,12 +319,16 @@ void executelua(string text){
                     lua_setglobal(state, "imgui");
 
                     lua_register(state, "SendPacket", lua_sendpacket);
-                    lua_register(state, "GetLocal", L_GETBOT);
 		    lua_register(state, "AddBot", L_AddBot);
 		    lua_register(state, "RemoveBot", L_RemoveBot);
 	   	    lua_register(state, "Sleep", L_SLEEP);
 		    lua_register(state, "Collect", L_Collect);
 		    lua_register(state, "AutoCollect", L_AutoCollect);
+		    // Get
+		    lua_register(state, "GetFloatItems", L_GETFLOATITEMS);
+                    lua_register(state, "GetLocal", L_GETBOT);
+			
+		    //
                     std::thread thr(execute_thread, state, text);
                     thr.detach();
 
