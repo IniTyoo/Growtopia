@@ -261,18 +261,12 @@ return 1;
 // }
 
 
-
 int L_AddBot(lua_State* l){
-	if (lua_isstring(l, 1) && lua_isstring(l,2){
+	if (lua_isstring(l, 1) && lua_isstring(l,2)){
 		if(!selectall){
-			lua_pushboolean(l, true);
 			create(lua_tostring(l, 1), lua_tostring(l, 2));
                 	loginpacket = true;	
-		}else{
-			lua_pushboolean(l, false);
 		}
-	}else{
-			lua_pushboolean(l, false);
 	}
 }
 	    
@@ -283,11 +277,8 @@ int L_RemoveBot(lua_State* l){
                 	if (bots.at(i).uname.c_str() == lua_tostring(l, 1)){
 				bots.erase(bots.begin() + i);
                                 bots.at(i).WhenDisconnected();
-				lua_pushboolean(l, true);
 			}
             	}
-	}else{
-			lua_pushboolean(l, false);
 	}
 }
 
@@ -299,18 +290,14 @@ void executelua(string text){
                 if (bots.size() > 0) {
                     lua_State* state = luaL_newstate();
                     luaL_openlibs(state);
-
-                    //lua_newtable(state);
                     lua_setglobal(state, "imgui");
 
                     lua_register(state, "SendPacket", lua_sendpacket);
                     lua_register(state, "GetLocal", L_GETBOT);
-            //lua_register(state, "getBots", L_GETBOTS);
-	    lua_register(state, "Sleep", L_SLEEP);
-	   // lua_register(state, "getObject", L_GETFLOATITEM);
-			lua_register(state,"AddBot",L_AddBot);
-                    auto script = text;
-                    std::thread thr(execute_thread, state, script);
+		    lua_register(state, "AddBot", L_AddBot);
+		    lua_register(state, "RemoveBot", L_RemoveBot);
+	   	    lua_register(state, "Sleep", L_SLEEP);
+                    std::thread thr(execute_thread, state, text);
                     thr.detach();
 
                 }
