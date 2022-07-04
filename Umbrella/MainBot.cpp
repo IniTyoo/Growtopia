@@ -200,6 +200,8 @@ lua_settable(l, -3);
 
 
 
+
+
 int L_GETBOT(lua_State* l) {
 int index = luaL_checkinteger(l, 1);
 if (index < bots.size() && index > -1) {
@@ -257,6 +259,13 @@ int L_AutoCollect(lua_State* l){
 		std::thread collecting(autocollecting, bots.at(current_item).range);
                 collecting.detach();
 	}
+}
+
+int L_Connect(lua_State* l){
+	bots.at(current_item).userInit();
+}
+int L_Disconnect(lua_State* l){
+	//bots.at(current_item).Disconnect();
 }
 
 int L_SLEEP(lua_State* l) {
