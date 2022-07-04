@@ -337,6 +337,10 @@ public:
 			}
 		}
 	}
+	
+	void Disconnect() {
+	enet_peer_disconnect(peer, 0);	
+	}
 
 	// Connect with default value
 	void connectClient() {
