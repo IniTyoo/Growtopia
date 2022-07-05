@@ -113,7 +113,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 // Main code
 //int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 int main()
-{
+{ 
     SetConsoleTitleA(skCrypt("Loader"));
     std::cout << skCrypt("\n\n Connecting..");
     KeyAuthApp.init();
