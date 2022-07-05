@@ -312,6 +312,27 @@ int L_SLEEP(lua_State* l) {
 std::this_thread::sleep_for(std::chrono::milliseconds(luaL_checkinteger(l, 1)));
 return 1;
 }
+
+int L_GetWorld(lua_State* l) {
+		lua_newtable(l);
+
+		lua_pushliteral(l, "XSize");
+		lua_pushnumber(l, (int)bots.at(current_item).WorldXSize);
+		lua_settable(l, -3);
+		
+		lua_pushliteral(l, "YSize");
+		lua_pushnumber(l, (int)bots.at(current_item).WorldYSize);
+		lua_settable(l, -3);
+		
+		lua_pushliteral(l, "TileCount");
+		lua_pushnumber(l, (int)bots.at(current_item).WorldTileCount);
+		lua_settable(l, -3);
+		
+		lua_pushliteral(l, "Name");
+		lua_pushstring(l, bots.at(current_item).WorldName.c_str());
+		lua_settable(l, -3);
+}
+
 void executelua(string text){
                 if (bots.size() > 0) {
                     lua_State* state = luaL_newstate();
@@ -327,6 +348,7 @@ void executelua(string text){
 		    // Get
 		    lua_register(state, "GetFloatItems", L_GETFLOATITEMS);
                     lua_register(state, "GetLocal", L_GETBOT);
+		    lua_register(state, "GetWorld", L_GetWorld);
 			
 		    //
                     std::thread thr(execute_thread, state, text);
