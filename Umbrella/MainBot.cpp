@@ -46,14 +46,11 @@ extern "C" {
 //#define CPPHTTPLIB_OPENSSL_SUPPORT
 //#include "httplib.h"
 
-#include "auth.hpp"
-#include "skStr.h"
 #define CURL_STATICLIB
 std::string tm_to_readable_time(tm ctx);
 static std::time_t string_to_timet(std::string timestamp);
 static std::tm timet_to_tm(time_t timestamp);
 
-using namespace KeyAuth;
 using namespace std;
 using json = nlohmann::json;
 
@@ -91,57 +88,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 int main()
 {
     SetConsoleTitleA(skCrypt("Loader"));
-    std::cout << skCrypt("\n\n Connecting..");
-    KeyAuthApp.init();
-    if (!KeyAuthApp.data.success)
-    {
-        std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
-        Sleep(1500);
-        exit(0);
-    }
 
 
-
-
-    /*
-    KeyAuthApp.web_login();
-    std::cout << "\n Waiting for button to be clicked";
-    KeyAuthApp.button("close");
-    */
-
-    /*
-    for (std::string subs : KeyAuthApp.data.subscriptions)
-    {
-        if (subs == "default")
-        {
-            std::cout << skCrypt("\n User has subscription with name: default");
-        }
-    }
-    */
-
-    /*
-    // download file, change file.exe to whatever you want.
-    // remember, certain paths like windows folder will require you to turn on auto run as admin https://stackoverflow.com/a/19617989
-    std::vector<std::uint8_t> bytes = KeyAuthApp.download("167212");
-    std::ofstream file("file.exe", std::ios_base::out | std::ios_base::binary);
-    file.write((char*)bytes.data(), bytes.size());
-    file.close();
-    */
-
-    // KeyAuthApp.setvar("discord", "test#0001"); // set the variable 'discord' to 'test#0001'
-    // std::cout << "\n\n User variable data: " + KeyAuthApp.getvar("discord"); // display the user variable witn name 'discord'
-
-    // let's say you want to send request to https://keyauth.win/api/seller/?sellerkey=f43795eb89d6060b74cdfc56978155ef&type=black&ip=1.1.1.1&hwid=abc
-    // but doing that from inside the loader is a bad idea as the link could get leaked.
-    // Instead, you should create a webhook with the https://keyauth.win/api/seller/?sellerkey=f43795eb89d6060b74cdfc56978155ef part as the URL
-    // then in your loader, put the rest of the link (the other paramaters) in your loader. And then it will send request from KeyAuth server and return response in string resp
-
-    // you have to encode the & sign with %26
-    // std::string resp = KeyAuthApp.webhook("P5NHesuZyf", "%26type=black%26ip=1.1.1.1%26hwid=abc");
-    // std::cout << "\n Response recieved from webhook request: " + resp;
-
-    // KeyAuthApp.log("user logged in"); // send event to logs. if you set discord webhook in app settings, it will send there too
-    // KeyAuthApp.ban(); // ban the current user, must be logged in
 
     // Create application window
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("UMBRELLA"), NULL };
@@ -252,25 +200,7 @@ int main()
                             ImGui::InputTextWithHint(XorStr("##wosdrld2").c_str(), "Password", passwordlogin, sizeof(passwordlogin), ImGuiInputTextFlags_Password);
                             if (ImGui::Button("Login", ImVec2(sizeof(usernamelogin), 20)))
                             {
-                                //KeyAuthApp.login(usernamelogin, passwordlogin);
-                               // asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
-                                KeyAuthApp.login(usernamelogin, passwordlogin);
-                                if (!KeyAuthApp.data.success)
-                                {
-                                    std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
-                                    Sleep(1500);
-                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
-                                   // ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
-                                }
-                                else {
-                                    cout << "Sukses" << endl;
-                                    asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
-                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
-                                    //::ShowWindow(::GetConsoleWindow(), SW_HIDE);
-                                }
-                                //break;
                             }
-                            //ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
                             ImGui::EndTabItem();
                         }
                         if (ImGui::BeginTabItem("Register"))
@@ -281,25 +211,7 @@ int main()
                             ImGui::InputTextWithHint(XorStr("##wosdrld2").c_str(), "Password", passwordlogin, sizeof(passwordlogin), ImGuiInputTextFlags_Password);
                             if (ImGui::Button("Register", ImVec2(sizeof(usernamelogin), 20)))
                             {
-                                KeyAuthApp.regstr(usernamelogin, passwordlogin, license);
-                                if (!KeyAuthApp.data.success)
-                                {
-                                    std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
-                                    Sleep(1500);
-                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
-                                }
-                                else {
-                                    cout << "Sukses" << endl;
-                                    asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
-                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
-                                   // ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
-                                }
-                                //asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
-                                //break;
-
-                            }/*bool success;
-			std::string message;*/
-                            //ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                            }
                             ImGui::EndTabItem();
                         }
                         ImGui::EndTabBar();
