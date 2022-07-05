@@ -1,14 +1,136 @@
-#include "Lua_Api.h"
+#include <iostream>
+#include <fstream>
+#include <future>
+#include <thread>
+#include <chrono>
+#include "corefunc.h"
+#include "userfunc.h"
+#include "json.hpp"
+#include <string>
+#include <windows.h>
+#include <direct.h>
+#include <iomanip>
+#include <vector>
+#include <string>
+#include <stdlib.h>
+#include <TlHelp32.h>
+#include <tchar.h>.
+
+#include <cmath>
+#include <future>
+
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_dx9.h"
+#include "imgui/imgui_impl_win32.h"
+#include "imgui/TextEditor.h"
+#include "ItemList.h"
+
+extern "C" {
+#include "lua/lauxlib.h"
+#include "lua/lua.h"
+#include "lua/luaconf.h"
+#include "lua/lualib.h"
+}
 
 
+#include <d3d9.h>
+#include <tchar.h>
+#include <iostream>
+#include "globals.h"
+#include "xorstr.hpp"
+#include "proton/variant.hpp"
+//#define CPPHTTPLIB_OPENSSL_SUPPORT
+//#include "httplib.h"
+
+#include "auth.hpp"
+#include "skStr.h"
 #define CURL_STATICLIB
 std::string tm_to_readable_time(tm ctx);
 static std::time_t string_to_timet(std::string timestamp);
 static std::tm timet_to_tm(time_t timestamp);
 
+using namespace KeyAuth;
 
+std::string sslPin = "ssl pin key (optional)"; // don't change unless you intend to pin public certificate key. you can get here in the "Pin SHA256" field https://www.ssllabs.com/ssltest/analyze.html?d=keyauth.win&latest. If you do this you need to be aware of when SSL key expires so you can update it
+std::string namex = "payung"; // application name. right above the blurred text aka the secret on the licenses tab among other tabs
+std::string ownerid = "MCbJ0h8d3p"; // ownerid, found in account settings. click your profile picture on top right of dashboard and then account settings.
+std::string secret = "2e013a6ac7c57740f8ad0ecab08f7c7bf0af0d0aad7b5812e18fe082baf41b65"; // app secret, the blurred text on licenses tab and other tabs
+std::string version = "1.0"; // leave alone unless you've changed version on website
+std::string url = "https://umberella-server.000webhostapp.com/api/1.1/"; // change if you're self-hosting
+api KeyAuthApp(namex, ownerid, secret, version, url, sslPin);
 
+using namespace std;
+using json = nlohmann::json;
 
+int active_tab = 0;
+static int range = 0;
+
+static bool selected[60] = { false };
+static bool open = true;
+static char usernamebot[120];
+static char passwordbot[120];
+static char usernamelogin[120];
+static char passwordlogin[120];
+static char license[120];
+
+static char worldName[60];
+char namaFile[40] = "Script.lua";
+static char growid[70];
+
+// Auto Spam
+static bool autospam;
+static char spamtext[500];
+float interval = 4;
+
+bool loginpacket = false;
+bool autocollect = false;
+bool autoreconnect = false;
+static int current_item;
+static bool selectall;
+
+// Main Tab
+bool set = true;
+static int speed = 1;
+bool follow = false;
+bool autoacc = false;
+bool asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+
+string word = "";
+string name = "";
+string last;
+
+vector<GrowtopiaBot> bots;
+GrowtopiaBot create(string username, string password) {
+    GrowtopiaBot bot = { username, password };
+    http::Request request{ "http://growtopia2.com/growtopia/server_data.php" };
+    const auto response = request.send("POST", "version=1&protocol=128", { "Content-Type: application/x-www-form-urlencoded" });
+    rtvar var = rtvar::parse({ response.body.begin(), response.body.end() });
+    var.serialize();
+    if (var.find("server")) {
+        bot.SERVER_HOST = var.get("server");
+        bot.SERVER_PORT = std::stoi(var.get("port"));
+    }
+    cout << "Parsing port and ip is done. port is " << to_string(bot.SERVER_PORT).c_str() << " and ip is " << bot.SERVER_HOST << endl;
+    bot.userInit();
+    bots.push_back(bot);
+    return bot;
+}
+
+static void autocollecting(int range)
+{
+    using namespace std::literals::chrono_literals;
+    for (auto& bot : bots)
+    {
+        while (bot.autocollect)
+        {
+            for (auto& bot : bots)
+            {
+                bot.Collect(bot.range);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
+    }
+}
 
 std::string tm_to_readable_time(tm ctx) {
     char buffer[80];
@@ -31,12 +153,212 @@ static std::tm timet_to_tm(time_t timestamp) {
 
     return context;
 }
+void execute_thread(lua_State* state, std::string text) {
+	luaL_dostring(state, text.c_str());
+    lua_close(state);
+}
 
+
+// LUA 
+static int lua_sendpacket(lua_State* L) {
+	if (lua_isstring(L, 2) && lua_isnumber(L, 1)) {
+		if (!selectall) {
+			bots.at(current_item).SendPacket(lua_tonumber(L, 1), lua_tostring(L, 2), bots.at(current_item).peer);
+		}
+		
+	}
+	return 0;
+}
+
+
+
+void lua_pushbot(lua_State* l, GrowtopiaBot* bot) {
+if (!bot) { lua_pushnil(l); return; }
+lua_newtable(l);
+
+lua_pushliteral(l, "name");
+lua_pushstring(l, bot->uname.c_str());
+lua_settable(l, -3);
+
+
+lua_pushliteral(l, "world");
+lua_pushstring(l, bot->currentworld.c_str());
+lua_settable(l, -3);
+
+lua_pushliteral(l, "status");
+lua_pushstring(l, bot->statusbot.c_str());
+lua_settable(l, -3);
+
+lua_pushliteral(l, "x");
+lua_pushnumber(l, bot->localx);
+lua_settable(l, -3);
+
+lua_pushliteral(l, "y");
+lua_pushnumber(l, bot->localy);
+lua_settable(l, -3);
+} 
+
+
+
+
+
+int L_GETBOT(lua_State* l) {
+int index = luaL_checkinteger(l, 1);
+if (index < bots.size() && index > -1) {
+GrowtopiaBot* bot = &bots.at(index);
+lua_pushbot(l, bot);
+} else {
+lua_pushnil(l);
+}
+return 1;
+}
+
+// Bot[] getBots()
+// int L_GETBOTS(lua_State* l) {
+// lua_newtable(l);
+// for (int i = 0; i < bots.size(); i++) {
+// lua_pushinteger(l, i);
+// lua_pushbot(l, &bots.at(i));
+// lua_settable(l, -3);
+// }
+// return 1;
+// }
+
+void lua_pushfloatingitem(lua_State* l, int index) {
+lua_newtable(l);
+
+lua_pushliteral(l, "PosX");
+lua_pushnumber(l, bots.at(current_item).floatItem.at(index).x);
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "PosY");
+lua_pushnumber(l, bots.at(current_item).floatItem.at(index).y);
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "Id");
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).id);
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "Flags");
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).flags);
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "Amount");
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).amount);
+lua_settable(l, -3);	  
+	       
+lua_pushliteral(l, "Oid");
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).oid);
+lua_settable(l, -3);
+
+} 
+
+
+int L_GETFLOATITEMS(lua_State* l) {
+lua_newtable(l);
+for (int i = 0; i < bots.at(current_item).floatItem.size(); i++) {
+lua_pushinteger(l, i);
+lua_pushfloatingitem(l, i);
+lua_settable(l, -3);
+}
+return 1;
+}
+
+
+int L_AddBot(lua_State* l){
+	if (lua_isstring(l, 1) && lua_isstring(l,2)){
+		if(!selectall){
+			create(lua_tostring(l, 1), lua_tostring(l, 2));
+                	loginpacket = true;	
+		}
+	}
+}
+	    
+int L_RemoveBot(lua_State* l){
+	if(lua_isstring(l,1)){
+		for (int i = 0; i < bots.size(); i++) 
+            	{
+                	if (bots.at(i).uname.c_str() == lua_tostring(l, 1)){
+				bots.erase(bots.begin() + i);
+                                bots.at(i).WhenDisconnected();
+			}
+            	}
+	}
+}
+
+int L_Collect(lua_State* l){
+	if(lua_isnumber(l,1)){
+		bots.at(current_item).Collect(lua_tonumber(l,1));
+	}
+}
+
+int L_AutoCollect(lua_State* l){
+	if(lua_isboolean(l,1) && lua_isnumber(l,2)){
+		bots.at(current_item).autocollect = true;
+		bots.at(current_item).range = lua_tonumber(l,2);
+		std::thread collecting(autocollecting, bots.at(current_item).range);
+                collecting.detach();
+	}
+}
+
+int L_Connect(lua_State* l){
+	bots.at(current_item).userInit();
+}
+int L_Disconnect(lua_State* l){
+	bots.at(current_item).Disconnect();
+}
+
+int L_SLEEP(lua_State* l) {
+std::this_thread::sleep_for(std::chrono::milliseconds(luaL_checkinteger(l, 1)));
+return 1;
+}
+void executelua(string text){
+                if (bots.size() > 0) {
+                    lua_State* state = luaL_newstate();
+                    luaL_openlibs(state);
+                    lua_setglobal(state, "imgui");
+
+                    lua_register(state, "SendPacket", lua_sendpacket);
+		    lua_register(state, "AddBot", L_AddBot);
+		    lua_register(state, "RemoveBot", L_RemoveBot);
+	   	    lua_register(state, "Sleep", L_SLEEP);
+		    lua_register(state, "Collect", L_Collect);
+		    lua_register(state, "AutoCollect", L_AutoCollect);
+		    // Get
+		    lua_register(state, "GetFloatItems", L_GETFLOATITEMS);
+                    lua_register(state, "GetLocal", L_GETBOT);
+			
+		    //
+                    std::thread thr(execute_thread, state, text);
+                    thr.detach();
+
+                }
+}
 
 inline bool exists_test(const string& name) {
     ifstream f(name.c_str());
     return f.good();
 }
+
+
+void spamthread(std::string text1)
+{
+    using namespace std::literals::chrono_literals;
+    for (auto& bot : bots)
+    {
+        while (bot.autospamm)
+        {
+            for (auto& bot : bots)
+            {
+                bot.SendPacket(2, "action|input\n|text|" + text1, bot.peer);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(bot.intervalspam));
+        }
+    }
+}
+
+
+
 
 
 static void HelpMarker(const char* desc)
@@ -66,7 +388,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 // Main code
 //int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 int main()
-{ 
+{
     SetConsoleTitleA(skCrypt("Loader"));
     std::cout << skCrypt("\n\n Connecting..");
     KeyAuthApp.init();
