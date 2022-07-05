@@ -57,6 +57,42 @@ using json = nlohmann::json;
 
 bool activeglobal = true;
 
+int active_tab = 0;
+static int range = 0;
+
+static bool selected[60] = { false };
+static bool open = true;
+static char usernamebot[120];
+static char passwordbot[120];
+static char usernamelogin[120];
+static char passwordlogin[120];
+static char license[120];
+
+static char worldName[60];
+char namaFile[40] = "Script.lua";
+static char growid[70];
+
+// Auto Spam
+static bool autospam;
+static char spamtext[500];
+float interval = 4;
+
+bool loginpacket = false;
+bool autocollect = false;
+bool autoreconnect = false;
+static int current_item;
+static bool selectall;
+
+// Main Tab
+bool set = true;
+static int speed = 1;
+bool follow = false;
+bool autoacc = false;
+bool asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+
+string word = "";
+string name = "";
+string last;
 
 
 static void HelpMarker(const char* desc)
