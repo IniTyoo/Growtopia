@@ -1,4 +1,6 @@
 #include "include.h"
+#include "multibot.h"
+
 
 void execute_thread(lua_State* state, std::string text) {
 	luaL_dostring(state, text.c_str());
