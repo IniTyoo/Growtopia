@@ -66,7 +66,7 @@ using namespace std;
 using json = nlohmann::json;
 
 
-
+bool activeglobal = true;
 
 
 std::string tm_to_readable_time(tm ctx) {
@@ -272,14 +272,14 @@ int main()
             ImVec2 window_size{ 650, 415 };
 
             DWORD window_flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize;
-            if (globals.active)
+            if (activeglobal)
             {
                 ImGui::SetNextWindowSize(window_size);
                 ImGui::SetNextWindowBgAlpha(1.0f);
                 ImGui::StyleColorsGreenBlue();
                 ImGui::PushFont(font);
                 {
-                    ImGui::Begin(window_title, &globals.active, window_flags);
+                    ImGui::Begin(window_title, &activeglobal, window_flags);
                     if (asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd == false) {
                         //std::cout << skCrypt("\n\n Connecting..");
                        // KeyAuthApp.init();
