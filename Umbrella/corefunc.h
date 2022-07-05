@@ -1047,7 +1047,7 @@ vector<string> string_split(string arg0, string arg1) {
 			WorldXSize = world->XSize;
 			WorldYSize = world->YSize;
 			WorldTileCount = world->tileCount;
-			WorldName = world->name
+			WorldName = world->name;
 			for (int i = 0; i < world->tileCount; i++)
 			{
 				world->foreground[i] = *(__int16*)worldPtr;
