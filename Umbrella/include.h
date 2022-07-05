@@ -38,5 +38,6 @@ extern "C" {
 #include "globals.h"
 #include "xorstr.hpp"
 #include "proton/variant.hpp"
+#include "variable.h"
 //#define CPPHTTPLIB_OPENSSL_SUPPORT
 //#include "httplib.h"
