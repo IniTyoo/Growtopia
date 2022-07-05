@@ -32,7 +32,7 @@ extern "C" {
 #include "lua/lualib.h"
 }
 
-#include "multibot.h
+#include "multibot.h"
 
 
 
