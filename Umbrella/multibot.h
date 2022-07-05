@@ -32,7 +32,7 @@ extern "C" {
 #include "lua/lualib.h"
 }
 
-#include "Lua_Api.h"
+//#include "Lua_Api.h"
 
 #include <d3d9.h>
 #include <tchar.h>
