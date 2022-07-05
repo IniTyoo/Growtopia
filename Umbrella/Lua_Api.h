@@ -33,6 +33,7 @@ extern "C" {
 }
 
 #include "multibot.h"
+#include "variable.h"
 
 
 
