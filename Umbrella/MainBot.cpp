@@ -1,6 +1,4 @@
-#include "Lua_Api.h"
-#include "multibot.h"
-#include "variable.h"
+#include "include.h"
 
 
 #define CURL_STATICLIB
