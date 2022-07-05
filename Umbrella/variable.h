@@ -68,6 +68,37 @@ api KeyAuthApp(namex, ownerid, secret, version, url, sslPin);
 using namespace std;
 using json = nlohmann::json;
 
+
+std::string tm_to_readable_time(tm ctx) {
+    char buffer[80];
+
+    strftime(buffer, sizeof(buffer), "%a %m/%d/%y %H:%M:%S %Z", &ctx);
+
+    return std::string(buffer);
+}
+
+static std::time_t string_to_timet(std::string timestamp) {
+    auto cv = strtol(timestamp.c_str(), NULL, 10); // long
+
+    return (time_t)cv;
+}
+
+static std::tm timet_to_tm(time_t timestamp) {
+    std::tm context;
+
+    localtime_s(&context, &timestamp);
+
+    return context;
+}
+
+inline bool exists_test(const string& name) {
+    ifstream f(name.c_str());
+    return f.good();
+}
+
+
+
+
 int active_tab = 0;
 static int range = 0;
 
