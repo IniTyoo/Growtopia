@@ -40,7 +40,6 @@ extern "C" {
 #include <d3d9.h>
 #include <tchar.h>
 #include <iostream>
-#include "globals.h"
 #include "xorstr.hpp"
 #include "proton/variant.hpp"
 //#define CPPHTTPLIB_OPENSSL_SUPPORT
