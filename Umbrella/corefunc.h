@@ -65,10 +65,7 @@ public:
 	//int worldplayercount=0;
 	
 	
-	int WorldXSize;
-	int WorldYSize;
-	int WorldTileCount;
-	string WorldName;
+	
 	
 	
 	// seturuktur
@@ -1044,10 +1041,7 @@ vector<string> string_split(string arg0, string arg1) {
 			world->background = (__int16*)malloc(world->tileCount * sizeof(__int16));
 			wrld.XSize = world->XSize;
 			wrld.YSize = world->YSize;
-			WorldXSize = world->XSize;
-			WorldYSize = world->YSize;
-			WorldTileCount = world->tileCount;
-			WorldName = world->name;
+
 			for (int i = 0; i < world->tileCount; i++)
 			{
 				world->foreground[i] = *(__int16*)worldPtr;

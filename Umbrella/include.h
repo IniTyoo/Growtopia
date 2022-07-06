@@ -18,7 +18,6 @@
 
 #include <cmath>
 #include <future>
-
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx9.h"
 #include "imgui/imgui_impl_win32.h"
@@ -39,5 +38,6 @@ extern "C" {
 #include "globals.h"
 #include "xorstr.hpp"
 #include "proton/variant.hpp"
-
-
+#include "variable.h"
+//#define CPPHTTPLIB_OPENSSL_SUPPORT
+//#include "httplib.h"

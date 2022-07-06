@@ -33,10 +33,6 @@ extern "C" {
 }
 
 
-#include "multibot.h"
-#include "Lua_Api.h"
-#include "variable.h"
-
 #include <d3d9.h>
 #include <tchar.h>
 #include <iostream>
@@ -46,16 +42,25 @@ extern "C" {
 //#define CPPHTTPLIB_OPENSSL_SUPPORT
 //#include "httplib.h"
 
+#include "auth.hpp"
+#include "skStr.h"
 #define CURL_STATICLIB
 std::string tm_to_readable_time(tm ctx);
 static std::time_t string_to_timet(std::string timestamp);
 static std::tm timet_to_tm(time_t timestamp);
 
+using namespace KeyAuth;
+
+std::string sslPin = "ssl pin key (optional)"; // don't change unless you intend to pin public certificate key. you can get here in the "Pin SHA256" field https://www.ssllabs.com/ssltest/analyze.html?d=keyauth.win&latest. If you do this you need to be aware of when SSL key expires so you can update it
+std::string namex = "payung"; // application name. right above the blurred text aka the secret on the licenses tab among other tabs
+std::string ownerid = "MCbJ0h8d3p"; // ownerid, found in account settings. click your profile picture on top right of dashboard and then account settings.
+std::string secret = "2e013a6ac7c57740f8ad0ecab08f7c7bf0af0d0aad7b5812e18fe082baf41b65"; // app secret, the blurred text on licenses tab and other tabs
+std::string version = "1.0"; // leave alone unless you've changed version on website
+std::string url = "https://umberella-server.000webhostapp.com/api/1.1/"; // change if you're self-hosting
+api KeyAuthApp(namex, ownerid, secret, version, url, sslPin);
+
 using namespace std;
 using json = nlohmann::json;
-
-
-bool activeglobal = true;
 
 int active_tab = 0;
 static int range = 0;
@@ -94,6 +99,267 @@ string word = "";
 string name = "";
 string last;
 
+vector<GrowtopiaBot> bots;
+GrowtopiaBot create(string username, string password) {
+    GrowtopiaBot bot = { username, password };
+    http::Request request{ "http://growtopia2.com/growtopia/server_data.php" };
+    const auto response = request.send("POST", "version=1&protocol=128", { "Content-Type: application/x-www-form-urlencoded" });
+    rtvar var = rtvar::parse({ response.body.begin(), response.body.end() });
+    var.serialize();
+    if (var.find("server")) {
+        bot.SERVER_HOST = var.get("server");
+        bot.SERVER_PORT = std::stoi(var.get("port"));
+    }
+    cout << "Parsing port and ip is done. port is " << to_string(bot.SERVER_PORT).c_str() << " and ip is " << bot.SERVER_HOST << endl;
+    bot.userInit();
+    bots.push_back(bot);
+    return bot;
+}
+
+static void autocollecting(int range)
+{
+    using namespace std::literals::chrono_literals;
+    for (auto& bot : bots)
+    {
+        while (bot.autocollect)
+        {
+            for (auto& bot : bots)
+            {
+                bot.Collect(bot.range);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
+    }
+}
+
+std::string tm_to_readable_time(tm ctx) {
+    char buffer[80];
+
+    strftime(buffer, sizeof(buffer), "%a %m/%d/%y %H:%M:%S %Z", &ctx);
+
+    return std::string(buffer);
+}
+
+static std::time_t string_to_timet(std::string timestamp) {
+    auto cv = strtol(timestamp.c_str(), NULL, 10); // long
+
+    return (time_t)cv;
+}
+
+static std::tm timet_to_tm(time_t timestamp) {
+    std::tm context;
+
+    localtime_s(&context, &timestamp);
+
+    return context;
+}
+void execute_thread(lua_State* state, std::string text) {
+	luaL_dostring(state, text.c_str());
+    lua_close(state);
+}
+
+
+// LUA 
+static int lua_sendpacket(lua_State* L) {
+	if (lua_isstring(L, 2) && lua_isnumber(L, 1)) {
+		if (!selectall) {
+			bots.at(current_item).SendPacket(lua_tonumber(L, 1), lua_tostring(L, 2), bots.at(current_item).peer);
+		}
+		
+	}
+	return 0;
+}
+
+
+
+void lua_pushbot(lua_State* l, GrowtopiaBot* bot) {
+if (!bot) { lua_pushnil(l); return; }
+lua_newtable(l);
+
+lua_pushliteral(l, "name");
+lua_pushstring(l, bot->uname.c_str());
+lua_settable(l, -3);
+
+
+lua_pushliteral(l, "world");
+lua_pushstring(l, bot->currentworld.c_str());
+lua_settable(l, -3);
+
+lua_pushliteral(l, "status");
+lua_pushstring(l, bot->statusbot.c_str());
+lua_settable(l, -3);
+
+lua_pushliteral(l, "x");
+lua_pushnumber(l, bot->localx);
+lua_settable(l, -3);
+
+lua_pushliteral(l, "y");
+lua_pushnumber(l, bot->localy);
+lua_settable(l, -3);
+} 
+
+
+
+
+
+int L_GETBOT(lua_State* l) {
+int index = luaL_checkinteger(l, 1);
+if (index < bots.size() && index > -1) {
+GrowtopiaBot* bot = &bots.at(index);
+lua_pushbot(l, bot);
+} else {
+lua_pushnil(l);
+}
+return 1;
+}
+
+// Bot[] getBots()
+// int L_GETBOTS(lua_State* l) {
+// lua_newtable(l);
+// for (int i = 0; i < bots.size(); i++) {
+// lua_pushinteger(l, i);
+// lua_pushbot(l, &bots.at(i));
+// lua_settable(l, -3);
+// }
+// return 1;
+// }
+
+void lua_pushfloatingitem(lua_State* l, int index) {
+lua_newtable(l);
+
+lua_pushliteral(l, "PosX");
+lua_pushnumber(l, bots.at(current_item).floatItem.at(index).x);
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "PosY");
+lua_pushnumber(l, bots.at(current_item).floatItem.at(index).y);
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "Id");
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).id);
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "Flags");
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).flags);
+lua_settable(l, -3);
+	       
+lua_pushliteral(l, "Amount");
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).amount);
+lua_settable(l, -3);	  
+	       
+lua_pushliteral(l, "Oid");
+lua_pushnumber(l, (int)bots.at(current_item).floatItem.at(index).oid);
+lua_settable(l, -3);
+
+} 
+
+
+int L_GETFLOATITEMS(lua_State* l) {
+lua_newtable(l);
+for (int i = 0; i < bots.at(current_item).floatItem.size(); i++) {
+lua_pushinteger(l, i);
+lua_pushfloatingitem(l, i);
+lua_settable(l, -3);
+}
+return 1;
+}
+
+
+int L_AddBot(lua_State* l){
+	if (lua_isstring(l, 1) && lua_isstring(l,2)){
+		if(!selectall){
+			create(lua_tostring(l, 1), lua_tostring(l, 2));
+                	loginpacket = true;	
+		}
+	}
+}
+	    
+int L_RemoveBot(lua_State* l){
+	if(lua_isstring(l,1)){
+		for (int i = 0; i < bots.size(); i++) 
+            	{
+                	if (bots.at(i).uname.c_str() == lua_tostring(l, 1)){
+				bots.erase(bots.begin() + i);
+                                bots.at(i).WhenDisconnected();
+			}
+            	}
+	}
+}
+
+int L_Collect(lua_State* l){
+	if(lua_isnumber(l,1)){
+		bots.at(current_item).Collect(lua_tonumber(l,1));
+	}
+}
+
+int L_AutoCollect(lua_State* l){
+	if(lua_isboolean(l,1) && lua_isnumber(l,2)){
+		bots.at(current_item).autocollect = true;
+		bots.at(current_item).range = lua_tonumber(l,2);
+		std::thread collecting(autocollecting, bots.at(current_item).range);
+                collecting.detach();
+	}
+}
+
+int L_Connect(lua_State* l){
+	bots.at(current_item).userInit();
+}
+int L_Disconnect(lua_State* l){
+	bots.at(current_item).Disconnect();
+}
+
+int L_SLEEP(lua_State* l) {
+std::this_thread::sleep_for(std::chrono::milliseconds(luaL_checkinteger(l, 1)));
+return 1;
+}
+void executelua(string text){
+                if (bots.size() > 0) {
+                    lua_State* state = luaL_newstate();
+                    luaL_openlibs(state);
+                    lua_setglobal(state, "imgui");
+
+                    lua_register(state, "SendPacket", lua_sendpacket);
+		    lua_register(state, "AddBot", L_AddBot);
+		    lua_register(state, "RemoveBot", L_RemoveBot);
+	   	    lua_register(state, "Sleep", L_SLEEP);
+		    lua_register(state, "Collect", L_Collect);
+		    lua_register(state, "AutoCollect", L_AutoCollect);
+		    // Get
+		    lua_register(state, "GetFloatItems", L_GETFLOATITEMS);
+                    lua_register(state, "GetLocal", L_GETBOT);
+			
+		    //
+                    std::thread thr(execute_thread, state, text);
+                    thr.detach();
+
+                }
+}
+
+inline bool exists_test(const string& name) {
+    ifstream f(name.c_str());
+    return f.good();
+}
+
+
+void spamthread(std::string text1)
+{
+    using namespace std::literals::chrono_literals;
+    for (auto& bot : bots)
+    {
+        while (bot.autospamm)
+        {
+            for (auto& bot : bots)
+            {
+                bot.SendPacket(2, "action|input\n|text|" + text1, bot.peer);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(bot.intervalspam));
+        }
+    }
+}
+
+
+
+
 
 static void HelpMarker(const char* desc)
 {
@@ -124,8 +390,57 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 int main()
 {
     SetConsoleTitleA(skCrypt("Loader"));
+    std::cout << skCrypt("\n\n Connecting..");
+    KeyAuthApp.init();
+    if (!KeyAuthApp.data.success)
+    {
+        std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+        Sleep(1500);
+        exit(0);
+    }
 
 
+
+
+    /*
+    KeyAuthApp.web_login();
+    std::cout << "\n Waiting for button to be clicked";
+    KeyAuthApp.button("close");
+    */
+
+    /*
+    for (std::string subs : KeyAuthApp.data.subscriptions)
+    {
+        if (subs == "default")
+        {
+            std::cout << skCrypt("\n User has subscription with name: default");
+        }
+    }
+    */
+
+    /*
+    // download file, change file.exe to whatever you want.
+    // remember, certain paths like windows folder will require you to turn on auto run as admin https://stackoverflow.com/a/19617989
+    std::vector<std::uint8_t> bytes = KeyAuthApp.download("167212");
+    std::ofstream file("file.exe", std::ios_base::out | std::ios_base::binary);
+    file.write((char*)bytes.data(), bytes.size());
+    file.close();
+    */
+
+    // KeyAuthApp.setvar("discord", "test#0001"); // set the variable 'discord' to 'test#0001'
+    // std::cout << "\n\n User variable data: " + KeyAuthApp.getvar("discord"); // display the user variable witn name 'discord'
+
+    // let's say you want to send request to https://keyauth.win/api/seller/?sellerkey=f43795eb89d6060b74cdfc56978155ef&type=black&ip=1.1.1.1&hwid=abc
+    // but doing that from inside the loader is a bad idea as the link could get leaked.
+    // Instead, you should create a webhook with the https://keyauth.win/api/seller/?sellerkey=f43795eb89d6060b74cdfc56978155ef part as the URL
+    // then in your loader, put the rest of the link (the other paramaters) in your loader. And then it will send request from KeyAuth server and return response in string resp
+
+    // you have to encode the & sign with %26
+    // std::string resp = KeyAuthApp.webhook("P5NHesuZyf", "%26type=black%26ip=1.1.1.1%26hwid=abc");
+    // std::cout << "\n Response recieved from webhook request: " + resp;
+
+    // KeyAuthApp.log("user logged in"); // send event to logs. if you set discord webhook in app settings, it will send there too
+    // KeyAuthApp.ban(); // ban the current user, must be logged in
 
     // Create application window
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("UMBRELLA"), NULL };
@@ -217,14 +532,14 @@ int main()
             ImVec2 window_size{ 650, 415 };
 
             DWORD window_flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize;
-            if (activeglobal)
+            if (globals.active)
             {
                 ImGui::SetNextWindowSize(window_size);
                 ImGui::SetNextWindowBgAlpha(1.0f);
                 ImGui::StyleColorsGreenBlue();
                 ImGui::PushFont(font);
                 {
-                    ImGui::Begin(window_title, &activeglobal, window_flags);
+                    ImGui::Begin(window_title, &globals.active, window_flags);
                     if (asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd == false) {
                         //std::cout << skCrypt("\n\n Connecting..");
                        // KeyAuthApp.init();
@@ -236,7 +551,25 @@ int main()
                             ImGui::InputTextWithHint(XorStr("##wosdrld2").c_str(), "Password", passwordlogin, sizeof(passwordlogin), ImGuiInputTextFlags_Password);
                             if (ImGui::Button("Login", ImVec2(sizeof(usernamelogin), 20)))
                             {
+                                //KeyAuthApp.login(usernamelogin, passwordlogin);
+                               // asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+                                KeyAuthApp.login(usernamelogin, passwordlogin);
+                                if (!KeyAuthApp.data.success)
+                                {
+                                    std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+                                    Sleep(1500);
+                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                                   // ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+                                }
+                                else {
+                                    cout << "Sukses" << endl;
+                                    asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                                    //::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+                                }
+                                //break;
                             }
+                            //ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
                             ImGui::EndTabItem();
                         }
                         if (ImGui::BeginTabItem("Register"))
@@ -247,7 +580,25 @@ int main()
                             ImGui::InputTextWithHint(XorStr("##wosdrld2").c_str(), "Password", passwordlogin, sizeof(passwordlogin), ImGuiInputTextFlags_Password);
                             if (ImGui::Button("Register", ImVec2(sizeof(usernamelogin), 20)))
                             {
-                            }
+                                KeyAuthApp.regstr(usernamelogin, passwordlogin, license);
+                                if (!KeyAuthApp.data.success)
+                                {
+                                    std::cout << skCrypt("\n Status: ") << KeyAuthApp.data.message;
+                                    Sleep(1500);
+                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                                }
+                                else {
+                                    cout << "Sukses" << endl;
+                                    asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+                                    ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
+                                   // ::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+                                }
+                                //asdhgsahdasvdsagsbdadhasgdbsajhdsauhdsajhdjashdjahsd = true;
+                                //break;
+
+                            }/*bool success;
+			std::string message;*/
+                            //ImGui::Text("Status: %s", KeyAuthApp.data.message + " | " + KeyAuthApp.data.success);
                             ImGui::EndTabItem();
                         }
                         ImGui::EndTabBar();
