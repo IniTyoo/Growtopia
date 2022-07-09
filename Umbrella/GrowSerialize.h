@@ -61,7 +61,7 @@ void GrowtopiaBot::SerializeObject4(ENetPacket* packet) {
 		}
 	}
 	
-	void SerializeInventory(ENetPacket* packet) {
+	void GrowtopiaBot::SerializeInventory(ENetPacket* packet) {
         uint8_t* extended = packet->data + 60;
         extended += 5;
 
