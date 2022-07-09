@@ -288,7 +288,7 @@ public:
 	void UpdateInventory(gameupdatepacket_t* packet);
 	void UpdateObject(gameupdatepacket_t* packet);
 	void decPacket(gameupdatepacket_t* packet);
-	void SerializeInventory(ENetPacket* packet)
+	void SerializeInventory(ENetPacket* packet);
 	/********* user funcs  *********/
 
 	/***************    debug stuff   ***************/
