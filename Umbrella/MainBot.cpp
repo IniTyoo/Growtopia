@@ -5,6 +5,7 @@
 #include <chrono>
 #include "corefunc.h"
 #include "userfunc.h"
+#include "GrowSerialize.h"
 #include "json.hpp"
 #include <string>
 #include <windows.h>
