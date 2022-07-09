@@ -11,7 +11,7 @@
 #include "../xorstr.hpp"
 #include "../proton/rtparam.hpp"
 #include <regex>
-#include "../utilsfunc.h"
+#include "utilsfunc.h"
 #include <map>
 #include <cmath>
 #include "../HTTPRequest.hpp"
