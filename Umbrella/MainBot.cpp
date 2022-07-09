@@ -3,9 +3,9 @@
 #include <future>
 #include <thread>
 #include <chrono>
-#include "corefunc.h"
-#include "userfunc.h"
-#include "GrowSerialize.h"
+#include "growtopiabot/corefunc.h"
+#include "growtopiabot/userfunc.h"
+#include "growtopiabot/UpdatePacket.h"
 #include "json.hpp"
 #include <string>
 #include <windows.h>
