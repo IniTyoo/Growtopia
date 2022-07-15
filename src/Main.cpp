@@ -14,6 +14,7 @@
 
 std::vector<ENetClient*> bots;
 
+int tab = 1;
 
 #ifdef _CONSOLE
 int main() {
@@ -130,14 +131,34 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DWORD window_flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize;
 			ImGui::SetNextWindowCollapsed(false, ImGuiCond_::ImGuiCond_Once);
 			if (ImGui::Begin("MultiBot V.1", &Gui::Instance, window_flags)) {
-				ImGui::BeginTabBar("tb");
-				if (ImGui::BeginTabItem("Main")) {
+				//ImGui::BeginTabBar("tb");
+				static ImVec4 active = ImVec4(0.13f, 0.75f, 1.00f, 0.80f);
+				static ImVec4 inactive = ImVec4(0.13f, 0.75f, 0.55f, 0.40f);
+
+				ImGui::PushStyleColor(ImGuiCol_Button, tab == 1 ? active : inactive);
+				if (ImGui::Button("Bots", ImVec2(ImGui::GetWindowSize().x / 3 - 11, 40))) {
+					tab = 1;
+				}
+				ImGui::SameLine();
+				ImGui::PushStyleColor(ImGuiCol_Button, tab == 2 ? active : inactive);
+				if (ImGui::Button("Executor", ImVec2(ImGui::GetWindowSize().x / 3 - 11, 40))) {
+					tab = 2;
+				}
+				ImGui::SameLine();
+				ImGui::PushStyleColor(ImGuiCol_Button, tab == 3 ? active : inactive);
+				if (ImGui::Button("Item DB", ImVec2(ImGui::GetWindowSize().x / 3 - 11, 40))) {
+					tab = 3;
+				}
+				ImGui::PopStyleColor(3);
+
+				//Bots
+				if (tab == 1) {
 					static ENetClient* bot = NULL;
 					
-					ImGui::BeginChild("ls", ImVec2(200, 345 + 60), false);
+					ImGui::BeginChild("ls", ImVec2(200, 345 + 45), false);
 					static float availx = ImGui::GetContentRegionAvail().x;
 					
-					if (ImGui::BeginListBox("##lbls", ImVec2(availx, 340.f))) {
+					if (ImGui::BeginListBox("##lbls", ImVec2(availx, 325.f))) {
 						for (uint32_t i = 0; i < bots.size(); i++) {
 							ImGui::PushID(i);
 							if (ImGui::Selectable(bots[i]->data.name.empty() ? "[Guest Acccount]" : bots[i]->data.name.c_str(), bot == bots[i]))
@@ -166,11 +187,11 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					ImGui::EndChild();
 					ImGui::SameLine();
 					
-					ImGui::BeginChild("rs", ImVec2(420 + 100, 345 + 60), false);
+					ImGui::BeginChild("rs", ImVec2(420 + 100, 345 + 45), false);
 					if (bot){
 						ImGui::BeginTabBar("tbm");
 						if (ImGui::BeginTabItem("Info##1")) {
-							ImGui::TextUnformatted("Name:");
+							ImGui::TextUnformatted("Selected:");
 							ImGui::SameLine();
 							if (bot->data.name.empty()){
 							ImGui::TextUnformatted("[Guest Acccount]");
@@ -579,10 +600,11 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 					
 					ImGui::EndChild();
-					ImGui::EndTabItem();
+					//ImGui::EndTabItem();
 				}
 				
-				if (ImGui::BeginTabItem("Item DB")) {
+				//Item DB
+				if (tab == 3) {
 					ImGui::Spacing();
 					if (itemDefs->Instance) {
 						
@@ -629,10 +651,10 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							itemDefs->LoadFromFile();
 					}
 					
-					ImGui::EndTabItem();
+					//ImGui::EndTabItem();
 				}
 				
-				ImGui::EndTabBar();
+				//ImGui::EndTabBar();
 			}
 			
 			// popup for add bot
