@@ -15,6 +15,7 @@
 std::vector<ENetClient*> bots;
 
 int tab = 1;
+bool connected = true;
 
 #ifdef _CONSOLE
 int main() {
@@ -205,26 +206,40 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								case 0: {
 									style.Colors[ImGuiCol_Text] = ImVec4(1, 0, 0, 1);
 									ImGui::TextUnformatted("Disconnected");
+									connected = false;
 								} break;
 								case 1: {
 									style.Colors[ImGuiCol_Text] = ImVec4(1, 1, 0, 1);
 									ImGui::TextUnformatted("Connecting");
+									connected = false;
 								} break;
 								case 5: {
 									style.Colors[ImGuiCol_Text] = ImVec4(0, 1, 0, 1);
 									ImGui::TextUnformatted("Connected");
+									connected = true;
 								} break;
 								case 7: {
 									style.Colors[ImGuiCol_Text] = ImVec4(1, 0.3f, 0, 1);
 									ImGui::TextUnformatted("Disconnecting");
+									connected = false;
 								} break;
 								default: {
 									ImGui::TextUnformatted("Unknown status");
+									connected = false;
 								} break;
 							}
 							style.Colors[ImGuiCol_Text] = backup_color;
 							ImGui::SameLine();
 							ImGui::Text("Ping: %d", bot->GetPing());
+							if (connected) {
+								ImGui::Text("Current world: %s", bot->local.worldname.c_str());
+								ImGui::Text("Server: %s:%d", bot->data.ip.c_str(), bot->data.port);
+								ImGui::Text("Position X: %d, Y: %d", (int)((bot->local.pos.m_x + 10) / 32), (int)((bot->local.pos.m_y + 15) / 32));
+								ImGui::Text("UserID: %d", bot->local.userid);
+								ImGui::Text("NetID: %d", bot->local.netid);
+								ImGui::Text("Gems: %d", bot->local.gems);
+								ImGui::Text("Level: %d", bot->local.level);
+							}
 							ImGui::Text("Other status: %s", bot->data.status.c_str());
 							if (ImGui::Button("Connect"))
 								bot->Connect(true);
@@ -235,16 +250,22 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						}
 						
 						if (ImGui::BeginTabItem("Control")) {
-							static char worldname[25];
+							ImGui::Spacing();
+							static char worldname[30];
+							static char doorid[30];
 							static uint64_t warp_delay = 0;
-							ImGui::Text("Current world: %s", bot->local.worldname.c_str());
-							ImGui::SetNextItemWidth(220);
-							ImGui::InputTextWithHint("##itwn", "Warp world name", worldname, 25, ImGuiInputTextFlags_CharsUppercase);
+							ImGui::SetNextItemWidth(200);
+							ImGui::InputTextWithHint("##itwn", "World name", worldname, 30, ImGuiInputTextFlags_CharsUppercase);
 							ImGui::SameLine();
 							if (ImGui::Button("Warp")) {
 								std::string nwn(worldname);
 								if (nwn != bot->local.worldname && Utils::HandleDelay(warp_delay, 3000))
 									bot->SendPacket(3, "action|join_request\nname|" + nwn);
+							}
+							ImGui::SetNextItemWidth(200);
+							ImGui::InputTextWithHint("##itwnn", "Door ID", doorid, 30, ImGuiInputTextFlags_CharsUppercase);
+							ImGui::SameLine();
+							if (ImGui::Button("Enter")) {
 							}
 							
 							static int buttonsize = 40;
