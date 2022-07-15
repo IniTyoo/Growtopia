@@ -23,7 +23,7 @@ void LocalData::ExitWorld() {
 	objects.clear();
 	tiles.clear();
 	
-	worldname = "";
+	worldname = "In EXIT";
 	width = 0;
 	height = 0;
 	tilecount = 0;
