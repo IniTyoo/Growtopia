@@ -272,6 +272,7 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								ImGui::Text("Current world: %s", bot->local.worldname.c_str());
 								ImGui::Text("Server: %s:%d", bot->data.ip.c_str(), bot->data.port);
 								ImGui::Text("Position X: %d, Y: %d", (int)((bot->local.pos.m_x + 10) / 32), (int)((bot->local.pos.m_y + 15) / 32));
+								ImGui::Text("Country : %s", bot->local.country.c_str());
 								ImGui::Text("UserID: %d", bot->local.userid);
 								ImGui::Text("NetID: %d", bot->local.netid);
 								ImGui::Text("Gems: %d", bot->local.gems);
@@ -292,7 +293,7 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							static char doorid[30];
 							static uint64_t warp_delay = 0;
 							ImGui::SetNextItemWidth(200);
-							ImGui::InputTextWithHint("##itwn", "World name", worldname, 30, ImGuiInputTextFlags_CharsUppercase);
+							ImGui::InputTextWithHint("##itwn", "World name", worldname, 33, ImGuiInputTextFlags_CharsUppercase);
 							ImGui::SameLine();
 							if (ImGui::Button("Warp")) {
 								std::string nwn(worldname);
@@ -300,40 +301,41 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									bot->SendPacket(3, "action|join_request\nname|" + nwn);
 							}
 							ImGui::SetNextItemWidth(200);
-							ImGui::InputTextWithHint("##itwnn", "Door ID", doorid, 30, ImGuiInputTextFlags_CharsUppercase);
+							ImGui::InputTextWithHint("##itwnn", "Door ID", doorid, 33, ImGuiInputTextFlags_CharsUppercase);
 							ImGui::SameLine();
 							if (ImGui::Button("Enter")) {
+								
 							}
 							
-							static int buttonsize = 40;
+							static int buttonsize = 50;
 							static int moveradius = 1;
-							ImGui::SliderInt("##sibs", &buttonsize, 10, 50, "Button size: %d");
+							
 							ImGui::Text("Current tile pos: %d, %d", (int)((bot->local.pos.m_x + 10) / 32), (int)((bot->local.pos.m_y + 15) / 32));
-							ImVec2 buttonsizeF = ImVec2(buttonsize, buttonsize);
+							ImVec2 buttonsizeF = ImVec2(50, 50);
 							ImGui::BeginChild("cm", ImVec2(0, 0));
-							if (ImGui::Button("RUP##mnw", buttonsizeF))
+							if (ImGui::Button("1##Right UP", buttonsizeF))
 								bot->Move(-1 * moveradius, -1 * moveradius);
 							ImGui::SameLine();
-							if (ImGui::Button("UP##mn", buttonsizeF))
+							if (ImGui::Button("2##Up", buttonsizeF))
 								bot->Move(0, -1 * moveradius);
 							ImGui::SameLine();
-							if (ImGui::Button("LUP##mne", buttonsizeF))
+							if (ImGui::Button("3##Left Up", buttonsizeF))
 								bot->Move(1 * moveradius, -1 * moveradius);
-							if (ImGui::Button("LEFT##mw", buttonsizeF))
+							if (ImGui::Button("4##Left", buttonsizeF))
 								bot->Move(-1 * moveradius, 0);
 							ImGui::SameLine();
-							if (ImGui::Button("DOOR##mdoor", buttonsizeF))
+							if (ImGui::Button("5##Door", buttonsizeF))
 								bot->Door();
 							ImGui::SameLine();
-							if (ImGui::Button("RIGHT##me", buttonsizeF))
+							if (ImGui::Button("6##Right", buttonsizeF))
 								bot->Move(1 * moveradius, 0);
-							if (ImGui::Button("RDOWn##msw", buttonsizeF))
+							if (ImGui::Button("7##Rightdown", buttonsizeF))
 								bot->Move(-1 * moveradius, 1 * moveradius);
 							ImGui::SameLine();
-							if (ImGui::Button("DOWN##ms", buttonsizeF))
+							if (ImGui::Button("8##down", buttonsizeF))
 								bot->Move(0, 1 * moveradius);
 							ImGui::SameLine();
-							if (ImGui::Button("LDOWn##mse", buttonsizeF))
+							if (ImGui::Button("9##ldown", buttonsizeF))
 								bot->Move(1 * moveradius, 1 * moveradius);
 							ImGui::SliderInt("##simr", &moveradius, 1, 3, "Move radius: %d");
 							if (ImGui::Button("Respawn")) {
@@ -345,27 +347,21 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								if (bot->InWorld())
 									bot->SendPacket(3, "action|quit_to_exit");
 							}
+							ImGui::Checkbox("Auto accept access", &bot->cheat.auto_aa);
+								ImGui::SameLine();
+								if (ImGui::Button("Unaccess")) {
+									if (bot->InWorld())
+										bot->SendPacket(2, "action|input\n|text|/unaccess");
+								}
 							ImGui::EndChild();
 							ImGui::EndTabItem();
 						}
-						if (ImGui::BeginTabItem("Info")) {
-							ImGui::BeginTabBar("tbi");
-							
-							if (ImGui::BeginTabItem("Local Info")) {
-								ImGui::BeginChild("ili", ImVec2(0, 0));
-								ImGui::Text("name|%s" "\n" "netID|%d" "\n" "userID|%d" "\n" "posXY|%.0f|%.0f" "\n" "country|%s",
-								bot->local.name.c_str(), bot->local.netid, bot->local.userid, bot->local.pos.m_x, bot->local.pos.m_y, bot->local.country.c_str());
-								ImGui::Separator();
-								ImGui::Text("world name: %s" "\n" "width: %d" "\n" "height: %d" "\n" "tile count: %d" "\n" "object count: %d" "\n" "last object id: %d",
-								bot->local.worldname.c_str(), bot->local.width, bot->local.height, bot->local.tilecount, bot->local.objectcount, bot->local.last_oid);
-								ImGui::EndChild();
-								ImGui::EndTabItem();
-							}
-							if (ImGui::BeginTabItem("Inventory")) {
+						
+						if (ImGui::BeginTabItem("Inventory")) {
 								static int dt_count = 1;
 								static uint64_t dt_time = 0;
 								
-								ImGui::Text("gems: %d, level: %d", bot->local.gems, bot->local.level);
+								ImGui::Text("Gems: %d, Level: %d", bot->local.gems, bot->local.level);
 								ImGui::SliderInt("##iiic", &dt_count, 1, 200, "Drop/trash count: %d");
 								float availx = ImGui::GetContentRegionAvail().x - 3 * style.ItemSpacing.x - 3 * 50;
 								
@@ -409,12 +405,11 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								ImGui::EndChild();
 								ImGui::EndTabItem();
 							}
-							
-							if (ImGui::BeginTabItem("Floating Object")) {
+						if (ImGui::BeginTabItem("Floating Object")) {
 								if (ImGui::Button("Rescan"))
 									bot->local.RescanObject();
 								ImGui::SameLine();
-								ImGui::Text("count: %d, actual count: %d", bot->local.objects.size(), bot->local.objectcount);
+								ImGui::Text("Count: %d, Actual Count: %d", bot->local.objects.size(), bot->local.objectcount);
 								ImGui::BeginChild("iwo", ImVec2(0, 0), true);
 								for (auto& scanned : bot->local.scanned_object) {
 									ItemInfo* info = itemDefs->Get(scanned.first);
@@ -426,12 +421,12 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								ImGui::EndChild();
 								ImGui::EndTabItem();
 							}
-							
-							if (ImGui::BeginTabItem("World Tile")) {
+						
+						if (ImGui::BeginTabItem("World Tile")) {
+								ImGui::Text("World Name: %s" "\n" "Width: %d" "\n" "Height: %d" "\n" "Tile count: %d" "\n" ,
+								bot->local.worldname.c_str(), bot->local.width, bot->local.height, bot->local.tilecount );
 								if (ImGui::Button("Rescan"))
 									bot->local.RescanTile();
-								ImGui::SameLine();
-								ImGui::Text("count: %d, actual count: %d", bot->local.tiles.size(), bot->local.tilecount);
 								ImGui::BeginChild("iwt", ImVec2(0, 0), true);
 								for (auto& scanned : bot->local.scanned_tile) {
 									ItemInfo* info = itemDefs->Get(scanned.first);
@@ -443,25 +438,8 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								ImGui::EndChild();
 								ImGui::EndTabItem();
 							}
-							ImGui::EndTabBar();
-							ImGui::EndTabItem();
-						}
-						
-						
-						if (ImGui::BeginTabItem("Auto")) {
+						if (ImGui::BeginTabItem("Automation")) {
 							ImGui::BeginTabBar("ta");
-							if (ImGui::BeginTabItem("Main")) {
-								ImGui::BeginChild("am", ImVec2(0, 0));
-								ImGui::Checkbox("Auto accept access", &bot->cheat.auto_aa);
-								ImGui::SameLine();
-								if (ImGui::Button("Unaccess")) {
-									if (bot->InWorld())
-										bot->SendPacket(2, "action|input\n|text|/unaccess");
-								}
-								
-								ImGui::EndChild();
-								ImGui::EndTabItem();
-							}
 							
 							if (ImGui::BeginTabItem("Collect")) {
 								ImGui::BeginChild("ac", ImVec2(0, 0));
@@ -538,28 +516,6 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							ImGui::EndTabItem();
 						}
 						
-						if (ImGui::BeginTabItem("Setting")) {
-							ImGui::BeginChild("mbs", ImVec2(0, 0));
-							ImGui::Checkbox("Disable public broadcast messages", &bot->data.personal.disable_public_broadcast);
-							ImGui::Checkbox("Disable adding friends", &bot->data.personal.disable_adding_friends);
-							ImGui::Checkbox("Disable guild invites", &bot->data.personal.disable_guild_invites);
-							ImGui::Checkbox("Disable guild flag", &bot->data.personal.disable_guild_flag);
-							ImGui::Checkbox("Disable player text on signs and bulletin boards", &bot->data.personal.disable_player_text);
-							ImGui::Checkbox("Disable Billboard", &bot->data.personal.disable_billboard);
-							ImGui::Checkbox("Use classic store categories", &bot->data.personal.use_classic_store);
-							ImGui::Checkbox("Disable In App Purchase options", &bot->data.personal.disable_in_app);
-							ImGui::Checkbox("Disable Tapjoy earn free gems option", &bot->data.personal.disable_tapjoy);
-							
-							//ImGui::Text("cbits: %d", bot->data.personal.GetCbits());
-							ImGui::Text("mac|%s" "\n" "rid|%s", bot->data.mac.c_str(), bot->data.rid.c_str());
-							if (ImGui::Button("Random mac"))
-								bot->data.mac = Utils::GenerateMac();
-							ImGui::SameLine();
-							if (ImGui::Button("Random rid"))
-								bot->data.rid = Utils::Random(32);
-							ImGui::EndChild();
-							ImGui::EndTabItem();
-						}
 						ImGui::EndTabBar();
 					} else {
 						ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "No bots selected.");
