@@ -5,17 +5,32 @@
 #include "wrapper/Gui.h"
 #include "wrapper/FileBrowser.h"
 #include "wrapper/TextEditor.h"
+#include "wrapper/HTTPRequest.hpp"
 
 #include "Utils.h"
 
 #include <fstream>
 #include <iostream>
-
-
+#include <sstream>
+#include <Windows.h>
+#include <string>
+#pragma comment(lib, "urlmon.lib")
+ 
+// PUBLIC CONFIG
 std::vector<ENetClient*> bots;
 
 int tab = 1;
-bool connected = true;
+
+int botselected;
+
+std::string version = "1.0";
+std::string linkversion = "https://raw.githubusercontent.com/IniTyoo/umbrlla-config/main/version";
+
+//
+
+
+
+using namespace std;
 
 #ifdef _CONSOLE
 int main() {
@@ -31,8 +46,22 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		return 0;
 	}
 #endif
+	std::string itemsdats = "C:\\items.dat";
+	std::ifstream itemdat(itemsdats.c_str());
+
+	if (!itemdat) {
+		LPCTSTR url = TEXT("https://raw.githubusercontent.com/IniTyoo/umbrlla-config/main/Updater.exe");
+		LPCTSTR fPath = TEXT("C:\\items.dat");
+		HRESULT hr = URLDownloadToFile (NULL, url, fPath, 0, NULL);
+		if (!FAILED(hr))
+		{
+			itemDefs->LoadFromFile();
+		}
+	}else{
+		itemDefs->LoadFromFile();
+	}
 	
-	itemDefs->LoadFromFile();
+	
 	
 	Gui::CreateHWindow(L"main window");
 	if (Gui::CreateDevice()) {
@@ -131,6 +160,8 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::SetNextWindowSize(ImVec2(650 + 100, 415 + 70), ImGuiCond_::ImGuiCond_Once);
 			DWORD window_flags = ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize;
 			ImGui::SetNextWindowCollapsed(false, ImGuiCond_::ImGuiCond_Once);
+			static ENetClient* bot = NULL;
+			
 			if (ImGui::Begin("MultiBot V.1", &Gui::Instance, window_flags)) {
 				//ImGui::BeginTabBar("tb");
 				static ImVec4 active = ImVec4(0.13f, 0.75f, 1.00f, 0.80f);
@@ -154,7 +185,7 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				//Bots
 				if (tab == 1) {
-					static ENetClient* bot = NULL;
+					
 					
 					ImGui::BeginChild("ls", ImVec2(200, 345 + 45), false);
 					static float availx = ImGui::GetContentRegionAvail().x;
@@ -162,8 +193,13 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					if (ImGui::BeginListBox("##lbls", ImVec2(availx, 325.f))) {
 						for (uint32_t i = 0; i < bots.size(); i++) {
 							ImGui::PushID(i);
-							if (ImGui::Selectable(bots[i]->data.name.empty() ? "[Guest Acccount]" : bots[i]->data.name.c_str(), bot == bots[i]))
+							if (botselected > 0){
+								bot = bots[botselected];
+							}
+							if (ImGui::Selectable(bots[i]->data.name.empty() ? "[Guest Acccount]" : bots[i]->data.name.c_str(), bot == bots[i])){
 								bot = bots[i];
+								botselected = i;
+								}
 							ImGui::PopID();
 						}
 						ImGui::EndListBox();
@@ -190,6 +226,7 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					
 					ImGui::BeginChild("rs", ImVec2(420 + 100, 345 + 45), false);
 					if (bot){
+						bool connected = true;
 						ImGui::BeginTabBar("tbm");
 						if (ImGui::BeginTabItem("Info##1")) {
 							ImGui::TextUnformatted("Selected:");
@@ -410,47 +447,6 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							ImGui::EndTabItem();
 						}
 						
-						if (ImGui::BeginTabItem("Debug")) {
-							ImGui::BeginTabBar("td");
-							if (ImGui::BeginTabItem("game")) {
-								if (ImGui::Button("Clear"))
-									bot->logger.textList[3].clear();
-								ImGui::BeginChild("lg", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-								for (auto& text : bot->logger.textList[3])
-									ImGui::TextUnformatted(text.c_str());
-								ImGui::EndChild();
-								ImGui::EndTabItem();
-							}
-							if (ImGui::BeginTabItem("error")) {
-								if (ImGui::Button("Clear"))
-									bot->logger.textList[5].clear();
-								ImGui::BeginChild("le", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-								for (auto& text : bot->logger.textList[5])
-									ImGui::TextUnformatted(text.c_str());
-								ImGui::EndChild();
-								ImGui::EndTabItem();
-							}
-							if (ImGui::BeginTabItem("track")) {
-								if (ImGui::Button("Clear"))
-									bot->logger.textList[6].clear();
-								ImGui::BeginChild("lt", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-								for (auto& text : bot->logger.textList[6])
-									ImGui::TextUnformatted(text.c_str());
-								ImGui::EndChild();
-								ImGui::EndTabItem();
-							}
-							if (ImGui::BeginTabItem("console")) {
-								if (ImGui::Button("Clear"))
-									bot->logger.textList[1].clear();
-								ImGui::BeginChild("lc", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-								for (auto& text : bot->logger.textList[1])
-									ImGui::TextUnformatted(text.c_str());
-								ImGui::EndChild();
-								ImGui::EndTabItem();
-							}
-							ImGui::EndTabBar();
-							ImGui::EndTabItem();
-						}
 						
 						if (ImGui::BeginTabItem("Auto")) {
 							ImGui::BeginTabBar("ta");
@@ -542,19 +538,89 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							ImGui::EndTabItem();
 						}
 						
-						if (ImGui::BeginTabItem("Executor")) {
+						if (ImGui::BeginTabItem("Setting")) {
+							ImGui::BeginChild("mbs", ImVec2(0, 0));
+							ImGui::Checkbox("Disable public broadcast messages", &bot->data.personal.disable_public_broadcast);
+							ImGui::Checkbox("Disable adding friends", &bot->data.personal.disable_adding_friends);
+							ImGui::Checkbox("Disable guild invites", &bot->data.personal.disable_guild_invites);
+							ImGui::Checkbox("Disable guild flag", &bot->data.personal.disable_guild_flag);
+							ImGui::Checkbox("Disable player text on signs and bulletin boards", &bot->data.personal.disable_player_text);
+							ImGui::Checkbox("Disable Billboard", &bot->data.personal.disable_billboard);
+							ImGui::Checkbox("Use classic store categories", &bot->data.personal.use_classic_store);
+							ImGui::Checkbox("Disable In App Purchase options", &bot->data.personal.disable_in_app);
+							ImGui::Checkbox("Disable Tapjoy earn free gems option", &bot->data.personal.disable_tapjoy);
+							
+							//ImGui::Text("cbits: %d", bot->data.personal.GetCbits());
+							ImGui::Text("mac|%s" "\n" "rid|%s", bot->data.mac.c_str(), bot->data.rid.c_str());
+							if (ImGui::Button("Random mac"))
+								bot->data.mac = Utils::GenerateMac();
+							ImGui::SameLine();
+							if (ImGui::Button("Random rid"))
+								bot->data.rid = Utils::Random(32);
+							ImGui::EndChild();
+							ImGui::EndTabItem();
+						}
+						ImGui::EndTabBar();
+					} else {
+						ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "No bots selected.");
+					}
+					
+					ImGui::EndChild();
+					//ImGui::EndTabItem();
+				}
+				
+				if (tab == 2){
+					
+					ImGui::BeginChild("ls", ImVec2(200, 345 + 45), false);
+					static float availx = ImGui::GetContentRegionAvail().x;
+					
+					if (ImGui::BeginListBox("##lbls", ImVec2(availx, 325.f))) {
+						for (uint32_t i = 0; i < bots.size(); i++) {
+							ImGui::PushID(i);
+							if (botselected > 0){
+								bot = bots[botselected];
+							}
+							if (ImGui::Selectable(bots[i]->data.name.empty() ? "[Guest Acccount]" : bots[i]->data.name.c_str(), bot == bots[i])){
+								bot = bots[i];
+								botselected = i;
+								}
+							ImGui::PopID();
+						}
+						ImGui::EndListBox();
+					}
+					
+					if (ImGui::Button("Add", ImVec2(availx, 0)))
+						popup_open = true;
+					
+					if (ImGui::Button("Remove", ImVec2(availx, 0))) {
+						if (bot) {
+							for (uint32_t i = 0; i < bots.size(); i++) {
+								if (bots[i] == bot) {
+									bots.erase(bots.begin() + i);
+									cachedBots.push_back(bot);
+									break;
+								}
+							}
+							bot = NULL;
+						}
+					}
+					
+					ImGui::EndChild();
+					ImGui::SameLine();
+					ImGui::BeginChild("rs", ImVec2(420 + 100, 345 + 45), false);
+					if (bot){
 							ImGui::BeginTabBar("te");
 							if (ImGui::BeginTabItem("Main")) {
 								if (!bot->l_t) {
 									if (ImGui::Button("Execute")) {
-										kembali2:
+										kembali1:
 										if (bot->l) {
 											std::thread lua_thread(Api::THREAD, bot->l, &bot->l_t, m_editor.GetText());
 											lua_thread.detach();
 										} else {
 											bot->l = luaL_newstate();
 											Api::OPEN(bot->l, (uintptr_t)bot);
-											goto kembali2;
+											goto kembali1;
 										}
 									}
 									ImGui::SameLine();
@@ -591,37 +657,12 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								ImGui::EndTabItem();
 							}
 							ImGui::EndTabBar();
-							ImGui::EndTabItem();
-						}
-						if (ImGui::BeginTabItem("Setting")) {
-							ImGui::BeginChild("mbs", ImVec2(0, 0));
-							ImGui::Checkbox("Disable public broadcast messages", &bot->data.personal.disable_public_broadcast);
-							ImGui::Checkbox("Disable adding friends", &bot->data.personal.disable_adding_friends);
-							ImGui::Checkbox("Disable guild invites", &bot->data.personal.disable_guild_invites);
-							ImGui::Checkbox("Disable guild flag", &bot->data.personal.disable_guild_flag);
-							ImGui::Checkbox("Disable player text on signs and bulletin boards", &bot->data.personal.disable_player_text);
-							ImGui::Checkbox("Disable Billboard", &bot->data.personal.disable_billboard);
-							ImGui::Checkbox("Use classic store categories", &bot->data.personal.use_classic_store);
-							ImGui::Checkbox("Disable In App Purchase options", &bot->data.personal.disable_in_app);
-							ImGui::Checkbox("Disable Tapjoy earn free gems option", &bot->data.personal.disable_tapjoy);
-							
-							//ImGui::Text("cbits: %d", bot->data.personal.GetCbits());
-							ImGui::Text("mac|%s" "\n" "rid|%s", bot->data.mac.c_str(), bot->data.rid.c_str());
-							if (ImGui::Button("Random mac"))
-								bot->data.mac = Utils::GenerateMac();
-							ImGui::SameLine();
-							if (ImGui::Button("Random rid"))
-								bot->data.rid = Utils::Random(32);
-							ImGui::EndChild();
-							ImGui::EndTabItem();
-						}
-						ImGui::EndTabBar();
 					} else {
 						ImGui::TextColored(ImVec4(255.0f, 0.0f, 0.0f, 1.00f), "No bots selected.");
 					}
-					
 					ImGui::EndChild();
-					//ImGui::EndTabItem();
+						
+						
 				}
 				
 				//Item DB
@@ -667,9 +708,18 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						
 						ImGui::EndChild();
 					} else {
-						ImGui::TextUnformatted("items.dat not found!\nMake sure to put items.dat inside same folder with this app");
-						if (ImGui::Button("Reload items.dat"))
-							itemDefs->LoadFromFile();
+						ImGui::TextUnformatted("items.dat not found!\n");
+						if (ImGui::Button("Download items.dat")){
+							
+							LPCTSTR url = TEXT("http://cdn.discordapp.com/attachments/914033740651569203/997673251658530956/items.dat");
+							LPCTSTR fPath = TEXT("C:\\items.dat");
+
+							HRESULT hr = URLDownloadToFile (NULL, url, fPath, 0, NULL);
+							if (!FAILED(hr))
+							{
+								itemDefs->LoadFromFile();
+							}
+						}
 					}
 					
 					//ImGui::EndTabItem();

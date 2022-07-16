@@ -23,7 +23,7 @@ public:
 	int itemcount = 0;
 	bool Instance = false;
 	
-	void LoadFromFile(std::string path = "items.dat");
+	void LoadFromFile(std::string path = "C:\\items.dat");
 	bool LoadFromMem(char* address);
 	
 	ItemInfo* Get(int id);
