@@ -1,3 +1,6 @@
+#include <string>
+
+
 #ifndef STRUCT_H_
 #define STRUCT_H_
 
@@ -39,6 +42,16 @@ struct WorldObject {
 struct Tile {
 	uint16_t fg = 0;
 	uint16_t bg = 0;
+	bool readyharvest;
 };
+
+struct Player {
+	std::string name;
+	int userid;
+	int netid;
+	vector2_t pos;
+};
+
+
 
 #endif

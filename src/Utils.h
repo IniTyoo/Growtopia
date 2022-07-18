@@ -16,4 +16,5 @@ namespace Utils {
 	bool HandleDelay(uint64_t& alpha, int beta);
 	uint64_t GetTime();
 	float SolveCaptcha(RTTEX& image);
+	bool is_number(const std::string& s);
 };

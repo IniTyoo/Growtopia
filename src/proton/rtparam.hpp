@@ -120,7 +120,7 @@ class rtvar {
             auto pair = this->find(str);
             if (!pair)
                 return false;
-            if (!utils::is_number(pair->m_value))
+            if (!Utils::is_number(pair->m_value))
                 return false;
         }
         return true;
@@ -129,7 +129,7 @@ class rtvar {
         auto pair = this->find(str);
         if (!pair)
             return false;
-        if (!utils::is_number(pair->m_value))
+        if (!Utils::is_number(pair->m_value))
             return false;
         return true;
     }

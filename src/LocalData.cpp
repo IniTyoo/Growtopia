@@ -3,9 +3,10 @@
 #include "LocalData.h"
 #include "Utils.h"
 #include "ItemInfoManager.h"
+#include "proton/rtparam.hpp"
 
 // LocalData
-
+using namespace std;
 Tile* LocalData::GetTile(int x, int y) {
 	int index = x + width * y;
 	if (index > -1 && index < tiles.size() && x > -1 && x < width && y > -1 && y < height)
@@ -22,6 +23,7 @@ void LocalData::ExitWorld() {
 	
 	objects.clear();
 	tiles.clear();
+	players.clear();
 	
 	worldname = "In EXIT";
 	width = 0;
@@ -59,7 +61,42 @@ void LocalData::InitOnSpawn(std::string spawn) {
 			country = nrow[1];
 	}
 }
+rtvar rtpar;
+void LocalData::PlayerSpawn(std::string spawn) {
+	rtpar = rtvar::parse(spawn); 
+    Player player;
+		player.name = rtpar.get("name");
+		player.netid = rtpar.get_int("netID");  
+		player.userid =  rtpar.get_int("userID");
+		auto pos = rtpar.find("posXY");
+            if (pos && pos->m_values.size() >= 2) {
+            auto x = atoi(pos->m_values[0].c_str());
+            auto y = atoi(pos->m_values[1].c_str());
+		    player.pos.m_x = x;
+			player.pos.m_y = y;
+        }
+	players.push_back(player);
+}
 
+rtvar rtpur;
+void LocalData::PlayerRemove(std::string remove){
+	rtpur = rtvar::parse(remove);
+	Player player;
+	int netidd = rtpar.get_int("netID");
+	
+	for (int i = 0; i < players.size(); i++) {
+		if (players.at(i).netid == netidd) {
+			players.erase(players.begin() + i );
+		}
+	}
+	
+	
+}
+
+
+int LocalData::PlayerTotal(){
+	return players.size();
+}
 
 
 void LocalData::Serialize9(uint8_t* ptr) {
@@ -82,11 +119,13 @@ void LocalData::Serialize9(uint8_t* ptr) {
 void LocalData::Serialize4(uint8_t* ptr) {
 	objects.clear();
 	tiles.clear();
+	players.clear();
 	
 	uint8_t* extended = ptr + *(uint32_t*)(ptr + 52) + 40;
 	int estimate = *(int*)(extended);
 	
-	for (int i = 0; i < estimate + 1; i++) {
+	for (int i = 0; i
+ < estimate + 1; i++) {
 		if (*(extended - i*16 - 2) == 0) {
 			objectcount = *(int*)(extended - i*16 - 4);
 			last_oid = *(int*)(extended - i*16);
@@ -140,14 +179,25 @@ void LocalData::Serialize4(uint8_t* ptr) {
 			tiles.clear();
 			return;
 		}
-		
 		Tile tile;
-		memcpy(&tile.fg, extended, 2);
-		extended += 2;
-		memcpy(&tile.bg, extended, 2);
-		extended += 2;
+		if (*(int16_t*)(ptr + 10) == 0) {
+			tile.readyharvest = true;
+			memcpy(&tile.fg, extended, 2);
+			extended += 2;
+			memcpy(&tile.bg, extended, 2);
+			extended += 2;
+			
+			tiles.push_back(tile);
+        } else {
+			tile.readyharvest = false;
+			memcpy(&tile.fg, extended, 2);
+			extended += 2;
+			memcpy(&tile.bg, extended, 2);
+			extended += 2;
+			
+			tiles.push_back(tile);
+        }
 		
-		tiles.push_back(tile);
 		
 		short flags = *(short*)(extended);
 		if (flags != 0)

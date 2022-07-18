@@ -90,6 +90,10 @@ void lua_pushTile(lua_State* l, Tile* tile, int x, int y) {
 	lua_pushinteger(l, tile->bg);
 	lua_settable(l, -3);
 	
+	lua_pushliteral(l, "ready");
+	lua_pushboolean(l, tile->readyharvest);
+	lua_settable(l, -3);
+	
 	lua_pushliteral(l, "x");
 	lua_pushinteger(l, x);
 	lua_settable(l, -3);

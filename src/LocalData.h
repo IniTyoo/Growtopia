@@ -27,6 +27,9 @@ struct LocalData {
 	std::vector<InventoryItem> items;
 	std::vector<WorldObject> objects;
 	std::vector<Tile> tiles;
+	std::vector<Player> players;
+	
+	int PlayerTotal();
 	
 	std::string worldname = "";
 	int width = 0;
@@ -41,6 +44,8 @@ struct LocalData {
 	void ExitWorld();
 	void Reset();
 	void InitOnSpawn(std::string spawn);
+	void PlayerSpawn(std::string spawn);
+	void PlayerRemove(std::string remove);
 	
 	void Serialize9(uint8_t* ptr);
 	void Serialize4(uint8_t* ptr);
@@ -52,9 +57,10 @@ struct LocalData {
 	// growscan smh
 	std::map<int, int> scanned_object;
 	std::map<int, int> scanned_tile;
+	std::map<int, int> scanned_player;
 	
 	void RescanObject();
 	void RescanTile();
-	
+	void RescanPlayer();
 	
 };

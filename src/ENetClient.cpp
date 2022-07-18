@@ -584,8 +584,14 @@ void ENetClient::OnTankPacket(int type, uint8_t* ptr, int size) {
 			
 			else if (func == "OnSpawn") {
 				std::string spawn  = var[1].get_string();
+				local.PlayerSpawn(spawn);
 				if (spawn.find("type|local") != std::string::npos)
 					local.InitOnSpawn(spawn);
+			}
+			
+			else if (func == "OnRemove"){
+				std::string remove = var[1].get_string();
+				local.PlayerRemove(remove);
 			}
 			
 			else if (func == "OnSetPos") {

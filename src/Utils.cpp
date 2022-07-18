@@ -67,6 +67,10 @@ uint64_t Utils::GetTime() {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
+bool Utils::is_number(const std::string& s) {
+    return !s.empty() && std::find_if(s.begin() + (*s.data() == '-' ? 1 : 0), s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+}
+
 float Utils::SolveCaptcha(RTTEX& Image) {
 	RGB_A borderColor(0x1E, 0x1E, 0x1E, 0xFF); // blacky border stuff
 	RGB_A currentColor(0, 0, 0, 0xFF); // temporary color

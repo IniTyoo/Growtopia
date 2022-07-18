@@ -277,6 +277,7 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								ImGui::Text("NetID: %d", bot->local.netid);
 								ImGui::Text("Gems: %d", bot->local.gems);
 								ImGui::Text("Level: %d", bot->local.level);
+								ImGui::Text("Players In World: %d", bot->local.players.size());
 							}
 							ImGui::Text("Other status: %s", bot->data.status.c_str());
 							if (ImGui::Button("Connect"))
@@ -356,7 +357,8 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							ImGui::EndChild();
 							ImGui::EndTabItem();
 						}
-						
+						if (ImGui::BeginTabItem("Scanner")){
+						ImGui::BeginTabBar("aowkoawkw");
 						if (ImGui::BeginTabItem("Inventory")) {
 								static int dt_count = 1;
 								static uint64_t dt_time = 0;
@@ -420,8 +422,7 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								}
 								ImGui::EndChild();
 								ImGui::EndTabItem();
-							}
-						
+							}					
 						if (ImGui::BeginTabItem("World Tile")) {
 								ImGui::Text("World Name: %s" "\n" "Width: %d" "\n" "Height: %d" "\n" "Tile count: %d" "\n" ,
 								bot->local.worldname.c_str(), bot->local.width, bot->local.height, bot->local.tilecount );
@@ -438,6 +439,9 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								ImGui::EndChild();
 								ImGui::EndTabItem();
 							}
+							ImGui::EndTabBar();
+							ImGui::EndTabItem();
+						}
 						if (ImGui::BeginTabItem("Automation")) {
 							ImGui::BeginTabBar("ta");
 							
