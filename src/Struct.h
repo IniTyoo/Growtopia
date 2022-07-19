@@ -43,6 +43,9 @@ struct Tile {
 	uint16_t fg = 0;
 	uint16_t bg = 0;
 	bool readyharvest;
+	uint16_t data;
+	uint8_t flags_1;
+	uint8_t flags_2;
 };
 
 struct Player {

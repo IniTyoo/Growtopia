@@ -49,6 +49,8 @@ struct LocalData {
 	void PlayerSpawn(std::string spawn);
 	void PlayerRemove(std::string remove);
 	
+	void PlayerMove(TankPacketStruct* packet);
+	
 	void Serialize9(uint8_t* ptr);
 	void Serialize4(uint8_t* ptr);
 	
@@ -59,10 +61,8 @@ struct LocalData {
 	// growscan smh
 	std::map<int, int> scanned_object;
 	std::map<int, int> scanned_tile;
-	std::map<int, int> scanned_player;
 	
 	void RescanObject();
 	void RescanTile();
-	void RescanPlayer();
 	
 };

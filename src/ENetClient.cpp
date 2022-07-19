@@ -539,7 +539,7 @@ void ENetClient::OnTankPacket(int type, uint8_t* ptr, int size) {
 	TankPacketStruct* packet = (TankPacketStruct*)ptr;
 	switch (packet->type) {
 		case 0: {
-			// state
+			local.PlayerMove(packet);
 		} break;
 		case 1: {
 			// call

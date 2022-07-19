@@ -98,9 +98,19 @@ void lua_pushTile(lua_State* l, Tile* tile, int x, int y) {
 	lua_pushinteger(l, x);
 	lua_settable(l, -3);
 	
-	lua_pushliteral(l, "y");
-	lua_pushinteger(l, y);
+	lua_pushliteral(l, "data");
+	lua_pushinteger(l, tile->data);
 	lua_settable(l, -3);
+	
+	lua_pushliteral(l, "flags_1");
+	lua_pushinteger(l, tile->flags_1);
+	lua_settable(l, -3);
+	
+	lua_pushliteral(l, "flags_2");
+	lua_pushinteger(l, tile->flags_2);
+	lua_settable(l, -3);
+	
+	
 	
 	
 }

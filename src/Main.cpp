@@ -439,6 +439,16 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								ImGui::EndChild();
 								ImGui::EndTabItem();
 							}
+						if (ImGui::BeginTabItem("Players")){
+							for (int i = 0; i < bot->local.players.size(); i++){
+								if (ImGui::CollapsingHeader(bot->local.players.at(i).name.c_str())) {
+									ImGui::Text("NetId: %d", bot->local.players.at(i).netid);
+									ImGui::Text("UserId: %d", bot->local.players.at(i).userid);
+									ImGui::Text("X: %d | Y: %d", (int)bot->local.players.at(i).pos.m_x / 32, (int)bot->local.players.at(i).pos.m_y / 32);
+								}
+							}
+							ImGui::EndTabItem();
+						}
 							ImGui::EndTabBar();
 							ImGui::EndTabItem();
 						}

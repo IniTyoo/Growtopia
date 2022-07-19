@@ -181,23 +181,16 @@ void LocalData::Serialize4(uint8_t* ptr) {
 			return;
 		}
 		Tile tile;
-		if (*(int16_t*)(ptr + 10) == 0) {
-			tile.readyharvest = true;
-			memcpy(&tile.fg, extended, 2);
-			extended += 2;
-			memcpy(&tile.bg, extended, 2);
-			extended += 2;
+		memcpy(&tile.fg, extended, 2);
+		extended += 2;
+		memcpy(&tile.bg, extended, 2);
+		memcpy(&tile.data, extended + 4, 2);
+		memcpy(&tile.flags_1, extended + 6, 1);
+		memcpy(&tile.flags_2, extended + 7, 1);
+		extended += 2;
+		std::cout << (int)ptr << std::endl;
 			
-			tiles.push_back(tile);
-        } else {
-			tile.readyharvest = false;
-			memcpy(&tile.fg, extended, 2);
-			extended += 2;
-			memcpy(&tile.bg, extended, 2);
-			extended += 2;
-			
-			tiles.push_back(tile);
-        }
+		tiles.push_back(tile);
 		
 		
 		short flags = *(short*)(extended);
@@ -467,6 +460,17 @@ void LocalData::Update13(TankPacketStruct* packet) {
 				items[i].amount = temp;
 			break;
 		}
+	}
+}
+
+void LocalData::PlayerMove(TankPacketStruct* packet){
+	for (int i = 0; i < players.size(); i++){
+		if (players[i].netid == packet->netid){
+			players[i].pos.m_x = packet->x;
+			players[i].pos.m_y = packet->y;
+			break;
+		}
+		
 	}
 }
 

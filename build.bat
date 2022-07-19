@@ -6,4 +6,4 @@
 mkdir Release
 mkdir obj
 
-cl /std:c++17 /GS /GL /analyze- /W3 /Gy /Zc:wchar_t /Zi /Gm- /O2 /Zc:inline /fp:precise /D UNICODE /D _UNICODE /WX- /Zc:forScope /Gd /Oy- /Oi /EHsc /nologo /Foobj/ /FeRelease/%OUT_EXE%.exe %SOURCES% %INCLUDES% /link %LIBS%
+cl /std:c++17 /GS /GL /analyze- /W3 /Gy /Zc:wchar_t /Zi /Gm- /O2 /Zc:inline /fp:precise /D _CONSOLE /D UNICODE /D _UNICODE /WX- /Zc:forScope /Gd /Oy- /Oi /EHsc /nologo /Foobj/ /FeRelease/%OUT_EXE%.exe %SOURCES% %INCLUDES% /link %LIBS%
