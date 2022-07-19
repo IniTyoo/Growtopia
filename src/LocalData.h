@@ -41,6 +41,8 @@ struct LocalData {
 	
 	Tile* GetTile(int x, int y);
 	
+	
+	
 	void ExitWorld();
 	void Reset();
 	void InitOnSpawn(std::string spawn);

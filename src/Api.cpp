@@ -102,7 +102,12 @@ void lua_pushTile(lua_State* l, Tile* tile, int x, int y) {
 	lua_pushinteger(l, y);
 	lua_settable(l, -3);
 	
+	
 }
+
+
+
+
 
 void lua_pushWorldObject(lua_State* l, WorldObject* object) {
 	if (!object) {
@@ -140,6 +145,8 @@ void lua_pushWorldObject(lua_State* l, WorldObject* object) {
 	lua_pushliteral(l, "oid");
 	lua_pushinteger(l, object->oid);
 	lua_settable(l, -3);
+	
+	
 }
 
 
@@ -306,6 +313,56 @@ int Api::L_GETOBJECTLIST(lua_State* l) {
 		for (auto& object : client->local.objects) {
 			lua_pushinteger(l, object.oid);
 			lua_pushWorldObject(l, &object);
+			lua_settable(l, -3);
+		}
+	} else {
+		lua_pushnil(l);
+	}
+	return 1;
+}
+
+void lua_pushplayerlist(lua_State* l, Player* player) {
+	if (!player) {
+		lua_pushnil(l);
+		return;
+	}
+	
+	lua_newtable(l);
+	
+	lua_pushliteral(l, "name");
+	lua_pushstring(l, player->name.c_str());
+	lua_settable(l, -3);
+	
+	lua_pushliteral(l, "pos");
+	lua_newtable(l);
+	
+	lua_pushliteral(l, "x");
+	lua_pushnumber(l, player->pos.m_x);
+	lua_settable(l, -3);
+	
+	lua_pushliteral(l, "y");
+	lua_pushnumber(l, player->pos.m_y);
+	lua_settable(l, -3);
+	
+	lua_settable(l, -3);
+	
+	lua_pushliteral(l, "userid");
+	lua_pushinteger(l, player->userid);
+	lua_settable(l, -3);
+	
+	lua_pushliteral(l, "netid");
+	lua_pushinteger(l, player->netid);
+	lua_settable(l, -3);
+}
+
+
+int Api::L_GETPLAYERLIST(lua_State* l) {
+	ENetClient* client = L_GC(l);
+	if (client) {
+		lua_newtable(l);
+		for (auto& playerd : client->local.players) {
+			lua_pushstring(l, playerd.name.c_str());
+			lua_pushplayerlist(l, &playerd);
 			lua_settable(l, -3);
 		}
 	} else {
@@ -489,6 +546,7 @@ void Api::OPEN(lua_State* l, uintptr_t addr) {
 	lua_register(l, "FindPath", L_FINDPATH);
 	lua_register(l, "Sleep", L_SLEEP);
 	
+	lua_register(l, "GetPlayersList", L_GETPLAYERLIST);
 	lua_register(l, "GetInventory", L_GETINVENTORY);
 	lua_register(l, "GetItemInfo", L_GETITEMINFO);
 	lua_register(l, "GetLocal", L_GETLOCAL);
@@ -598,7 +656,7 @@ void Api::INIT_EDITOR(TextEditor* editor) {
 	const char* apis[] = {
 		"LogToConsole", "Sleep", "SendPacket", "SendPacketRaw", "AddHook", "FindPath", "RemoveHooks",
 		"GetInventory", "GetItemInfo", "GetLocal", "GetObjectList", "GetTile", "GetTiles", "GetWorld",
-		"Collect", "Door", "Hit", "Move"
+		"Collect", "Door", "Hit", "Move", "GetPlayersList"
 	};
 	auto langdef = TextEditor::LanguageDefinition::Lua();
 	

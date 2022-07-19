@@ -14,6 +14,7 @@ namespace Api {
 	int L_GETTILE(lua_State* l);
 	int L_GETTILES(lua_State* l);
 	int L_GETWORLD(lua_State* l);
+	int L_GETPLAYERLIST(lua_State* l);
 	
 	int L_SENDPACKET(lua_State* l);
 	int L_SENDPACKETRAW(lua_State* l);

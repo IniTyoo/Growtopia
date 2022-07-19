@@ -14,6 +14,7 @@ Tile* LocalData::GetTile(int x, int y) {
 	return NULL;
 }
 
+
 void LocalData::ExitWorld() {
 	name = "";
 	netid = 0;
