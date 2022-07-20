@@ -276,6 +276,24 @@ int Api::L_GETITEMINFO(lua_State* l) {
 	return 1;
 }
 
+int Api::L_GETITEM(lua_State* l) {
+	ENetClient* client = L_GC(l);
+	if (client) {
+		int id = luaL_checkinteger(l, 1);
+		lua_newtable(l);
+		for (auto& item : client->local.items) {
+			if (item.id == id){
+				lua_pushinteger(l, item.id);
+				lua_pushInventoryItem(l, &item);
+				lua_settable(l, -3);
+			}
+		}
+	} else {
+		lua_pushnil(l);
+	}
+	return 1;
+}
+
 int Api::L_GETLOCAL(lua_State* l) {
 	ENetClient* client = L_GC(l);
 	if (client) {
@@ -564,6 +582,7 @@ void Api::OPEN(lua_State* l, uintptr_t addr) {
 	lua_register(l, "GetTile", L_GETTILE);
 	lua_register(l, "GetTiles", L_GETTILES);
 	lua_register(l, "GetWorld", L_GETWORLD);
+	lua_register(l, "GetItem", L_GETITEM);
 }
 
 

@@ -40,7 +40,7 @@ struct LocalData {
 	int last_oid = 0;
 	
 	Tile* GetTile(int x, int y);
-	
+	InventoryItem* GetItem(int id);
 	
 	
 	void ExitWorld();

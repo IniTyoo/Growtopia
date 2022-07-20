@@ -14,6 +14,16 @@ Tile* LocalData::GetTile(int x, int y) {
 	return NULL;
 }
 
+InventoryItem* LocalData::GetItem(int id) {
+	for (int i = 0; i < items.size(); i++) {
+		if (items.at(i).id == id) {
+			return &items[i];
+		}
+	}
+	return NULL;
+}
+
+
 
 void LocalData::ExitWorld() {
 	name = "";
@@ -188,7 +198,6 @@ void LocalData::Serialize4(uint8_t* ptr) {
 		memcpy(&tile.flags_1, extended + 6, 1);
 		memcpy(&tile.flags_2, extended + 7, 1);
 		extended += 2;
-		std::cout << (int)ptr << std::endl;
 			
 		tiles.push_back(tile);
 		

@@ -9,6 +9,7 @@
 namespace Api {
 	int L_GETINVENTORY(lua_State* l);
 	int L_GETITEMINFO(lua_State* l);
+	int L_GETITEM(lua_State* l);
 	int L_GETLOCAL(lua_State* l);
 	int L_GETOBJECTLIST(lua_State* l);
 	int L_GETTILE(lua_State* l);
