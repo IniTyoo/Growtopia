@@ -161,7 +161,6 @@ ENetClient::ENetClient(std::string alpha, std::string beta) {
 	cheat.client = this;
 	data.name = alpha;
 	data.pass = beta;
-	data.status = "";
 	pathfinder = new Pathfinder(&local.tiles);
 	Init();
 }
@@ -365,7 +364,6 @@ void ENetClient::Connect(bool flush) {
 	if (data.ip == "" || data.port == 0)
 		return;
 	
-	data.status = "";
 	data.captcha = false;
 	
 	ENetAddress address;
