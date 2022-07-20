@@ -685,7 +685,15 @@ void Api::INIT_EDITOR(TextEditor* editor) {
 	const char* apis[] = {
 		"LogToConsole", "Sleep", "SendPacket", "SendPacketRaw", "AddHook", "FindPath", "RemoveHooks",
 		"GetInventory", "GetItemInfo", "GetLocal", "GetObjectList", "GetTile", "GetTiles", "GetWorld",
-		"Collect", "Door", "Hit", "Move", "GetPlayersList"
+		"Collect", "Door", "Hit", "Move", "GetPlayersList", "GetItem"
+	};
+	
+	const char* structapis[] = {
+		"id","amount","name","rarity","growtime","breakhit","clothingtype",
+		"collisiontype","type","fg","bg","pos.x","pos.y","flags",
+		"oid","netid","userid","width","height","tilecount","objectcount","lastoid",
+		"dropped","padding1","padding2","secondnetid","characterstate","padding4",
+		"value","x","y","xspeed","yspeed","padding5","px","py","extrasize"
 	};
 	auto langdef = TextEditor::LanguageDefinition::Lua();
 	
@@ -693,6 +701,9 @@ void Api::INIT_EDITOR(TextEditor* editor) {
 		TextEditor::Identifier id;
 		langdef.mIdentifiers.insert(std::make_pair(std::string(apis[i]), id));
 	}
+	
+	for (auto& k : structapis)
+			langdef.mKeywords.insert(k);
 	
 	editor->SetLanguageDefinition(langdef);
 }

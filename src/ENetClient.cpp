@@ -525,7 +525,7 @@ void SolveCaptcha(ENetClient* cl, std::string link, std::string captchatitle, in
 			std::cout << "(" << cl->data.name << ") captcha solved: " << result << std::endl;
 #endif
 			cl->SendPacket(2, "action|dialog_return\ndialog_name|puzzle_captcha_submit\ncaptcha_answer|" + result + "|CaptchaID|" + std::to_string(captchaid));
-			cl->data.status = "";
+			cl->data.status = "Catpcha Solved : " + result;
 			cl->data.captcha = false;
 		}
 		
