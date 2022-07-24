@@ -31,6 +31,7 @@ void LocalData::ExitWorld() {
 	userid = 0;
 	pos = vector2_t(0, 0);
 	country = "";
+	hadapkanan = true;
 	
 	objects.clear();
 	tiles.clear();
@@ -131,6 +132,7 @@ void LocalData::Serialize4(uint8_t* ptr) {
 	objects.clear();
 	tiles.clear();
 	players.clear();
+	hadapkanan = true;
 	
 	uint8_t* extended = ptr + *(uint32_t*)(ptr + 52) + 40;
 	int estimate = *(int*)(extended);
