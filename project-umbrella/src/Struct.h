@@ -4,7 +4,23 @@
 #ifndef STRUCT_H_
 #define STRUCT_H_
 
-
+struct GamePacket {
+		char type;
+		char objtype;
+		char count1;
+		char count2;
+		int netid;
+		int item;
+		int flags;
+		float float1;
+		int int_data;
+		vec2 pos;
+		vec2 pos2;
+		float float2;
+		vec2i tile;
+		unsigned int data_size;
+		unsigned int data;
+	};
 
 struct TankPacketStruct {
     uint8_t type = 0;
