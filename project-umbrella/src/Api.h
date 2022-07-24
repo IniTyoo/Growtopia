@@ -2,7 +2,7 @@
 
 #pragma once
 #include <algorithm>
-#include "lua/lua.hpp"
+#include "../vendor/lua/lua.hpp"
 #include "proton/variant.hpp"
 #include "wrapper/TextEditor.h"
 

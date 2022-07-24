@@ -363,4 +363,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Library Include="libs\libcurl.lib" />
+    <Library Include="libs\library_x64.lib" />
+  </ItemGroup>
 </Project>

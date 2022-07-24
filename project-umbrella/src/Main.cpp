@@ -1,11 +1,13 @@
 
-#include "enet/include/enet.h"
+#include "../vendor/enet/include/enet.h"
 
 #include "ENetClient.h"
 #include "wrapper/Gui.h"
 #include "wrapper/FileBrowser.h"
 #include "wrapper/TextEditor.h"
 #include "wrapper/HTTPRequest.hpp"
+#include "auth.hpp"
+#include "skStr.h"
 
 #include "Utils.h"
 
@@ -17,6 +19,16 @@
 #pragma comment(lib, "urlmon.lib")
 
 // PUBLIC CONFIG
+using namespace KeyAuth;
+
+std::string name = "payung"; // application name. right above the blurred text aka the secret on the licenses tab among other tabs
+std::string ownerid = "wEPAjNN2RB"; // ownerid, found in account settings. click your profile picture on top right of dashboard and then account settings.
+std::string secret = "38efe7bfc57838cda3906670348d1b35e73e014b2365bfcf6d55ebdaad06707e"; // app secret, the blurred text on licenses tab and other tabs
+std::string url = "http://ryocloud.my.id/api/1.1/"; // change if you're self-hosting
+
+api KeyAuthApp(name, ownerid, secret, "1.0", url, "ssl pin key (optional)");
+
+
 
 std::vector<ENetClient*> bots;
 
@@ -70,7 +82,7 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		std::vector<ENetClient*> cachedBots; // pending to remove
 		bool popup_open = false;
 		
-		
+		bool panel_open = true;
 		ImGui::FileBrowser m_browser;
 		m_browser.SetWindowPos(0, 0);
 		m_browser.SetTitle("Browse script");
@@ -690,7 +702,50 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				ImGui::OpenPopup("Add bot");
 			}
 			
+			if (panel_open) {
+				panel_open = false;
+				ImGui::OpenPopup("Auth");
+			}
+			
 			ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x + 100, ImGui::GetWindowPos().y + 300), ImGuiCond_Once);
+			if (ImGui::BeginPopupModal("Auth", NULL, ImGuiWindowFlags_NoDecoration)) {
+				static char nameeeee[20];
+				static char licensee[20];
+				
+				ImGui::SetNextItemWidth(300);
+				ImGui::InputTextWithHint("##itn", "Username", nameeeee, 20);
+					
+				ImGui::SetNextItemWidth(300);
+				ImGui::InputTextWithHint("##itp", "Licensee (empety for login)", licensee, 20);
+					
+				float ww = (ImGui::GetContentRegionAvail().x - style.ItemSpacing.x) / 2;
+					
+				if (ImGui::Button("Register", ImVec2(ww, 0))) {
+						
+						KeyAuthApp.init();
+						KeyAuthApp.regstr(nameeeee, "1", licensee);
+						if (KeyAuthApp.data.success)
+						{
+							KeyAuthApp.setvar("defaultip", KeyAuthApp.data.ip);
+							ImGui::CloseCurrentPopup();
+						}
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Login", ImVec2(ww, 0))) {
+						KeyAuthApp.init();
+						KeyAuthApp.login(nameeeee, "1");
+						if (KeyAuthApp.data.success)
+						{
+							if (KeyAuthApp.data.ip == KeyAuthApp.getvar("defaultip")){
+								ImGui::CloseCurrentPopup();
+								std::cout<<"Default IP: " << KeyAuthApp.getvar("defaultip");
+							}
+						}
+						
+				}
+				ImGui::EndPopup();
+			}
+			
 			if (ImGui::BeginPopupModal("Add bot", NULL, ImGuiWindowFlags_NoDecoration)) {
 				static char name[20];
 				static char pass[20];

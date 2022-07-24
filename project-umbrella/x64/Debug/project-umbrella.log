@@ -1,0 +1,175 @@
+﻿  Api.cpp
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(324,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(341,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(357,1): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(171,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(173,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(176,33): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(178,33): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(181,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(183,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(186,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(188,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(205,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(207,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(209,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(212,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(214,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(216,32): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(226,35): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(229,38): warning C4244: '=': conversion from 'lua_Integer' to 'uint32_t', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(259,55): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(282,10): warning C4244: 'initializing': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(405,9): warning C4244: 'initializing': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(406,9): warning C4244: 'initializing': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(474,39): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(481,28): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(494,28): warning C4244: '=': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(498,81): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(498,56): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(513,36): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(528,82): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(528,57): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(528,32): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(535,58): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Api.cpp(535,33): warning C4244: 'argument': conversion from 'lua_Integer' to 'int', possible loss of data
+  ENetClient.cpp
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(324,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(341,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(357,1): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\ENetClient.cpp(37,26): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\ENetClient.cpp(181,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\ENetClient.cpp(182,9): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\ENetClient.cpp(201,27): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\ENetClient.cpp(202,27): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\ENetClient.cpp(210,48): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\ENetClient.cpp(211,48): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\ENetClient.cpp(299,29): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\ENetClient.cpp(446,63): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  ItemInfoManager.cpp
+  LocalData.cpp
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\LocalData.cpp(86,20): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\LocalData.cpp(87,20): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\LocalData.cpp(109,23): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+  Main.cpp
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(324,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(341,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(357,1): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Main.cpp(737,14): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  CheatData.cpp
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(324,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(341,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\proton\variant.hpp(357,1): warning C4267: 'initializing': conversion from 'size_t' to 'uint32_t', possible loss of data
+  Logger.cpp
+  Utils.cpp
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Utils.cpp(12,28): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\project-umbrella\src\Utils.cpp(13,34): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  TextEditor.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_dx9.cpp
+  imgui_impl_win32.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  Generating Code...
+  callbacks.c
+  compress.c
+  host.c
+  list.c
+  packet.c
+  peer.c
+  protocol.c
+  unix.c
+  win32.c
+  lapi.c
+  lauxlib.c
+  lbaselib.c
+  lcode.c
+  lcorolib.c
+  lctype.c
+  ldblib.c
+  ldebug.c
+  ldo.c
+  ldump.c
+  lfunc.c
+  Generating Code...
+  Compiling...
+  lgc.c
+  linit.c
+  liolib.c
+  llex.c
+  lmathlib.c
+  lmem.c
+  loadlib.c
+  lobject.c
+  lopcodes.c
+  loslib.c
+  lparser.c
+  lstate.c
+  lstring.c
+  lstrlib.c
+  ltable.c
+  ltablib.c
+  ltm.c
+  lua.c
+  luac.c
+  lundump.c
+  Generating Code...
+  Compiling...
+  lutf8lib.c
+  lvm.c
+  lzio.c
+  Generating Code...
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_closesocket referenced in function "private: void __cdecl http::detail::Socket::close(void)" (?close@Socket@detail@http@@AEAAXXZ)
+win32.obj : error LNK2001: unresolved external symbol __imp_closesocket
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_connect referenced in function "public: void __cdecl http::detail::Socket::connect(struct sockaddr const *,int,__int64)" (?connect@Socket@detail@http@@QEAAXPEBUsockaddr@@H_J@Z)
+win32.obj : error LNK2001: unresolved external symbol __imp_connect
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_ioctlsocket referenced in function "public: __cdecl http::detail::Socket::Socket(enum http::InternetProtocol)" (??0Socket@detail@http@@QEAA@W4InternetProtocol@2@@Z)
+win32.obj : error LNK2001: unresolved external symbol __imp_ioctlsocket
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_getsockopt referenced in function "public: void __cdecl http::detail::Socket::connect(struct sockaddr const *,int,__int64)" (?connect@Socket@detail@http@@QEAAXPEBUsockaddr@@H_J@Z)
+win32.obj : error LNK2001: unresolved external symbol __imp_getsockopt
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_recv referenced in function "public: unsigned __int64 __cdecl http::detail::Socket::recv(void *,unsigned __int64,__int64)" (?recv@Socket@detail@http@@QEAA_KPEAX_K_J@Z)
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_select referenced in function "private: void __cdecl http::detail::Socket::select(enum http::detail::Socket::SelectType,__int64)" (?select@Socket@detail@http@@AEAAXW4SelectType@123@_J@Z)
+win32.obj : error LNK2001: unresolved external symbol __imp_select
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_send referenced in function "public: unsigned __int64 __cdecl http::detail::Socket::send(void const *,unsigned __int64,__int64)" (?send@Socket@detail@http@@QEAA_KPEBX_K_J@Z)
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_socket referenced in function "public: __cdecl http::detail::Socket::Socket(enum http::InternetProtocol)" (??0Socket@detail@http@@QEAA@W4InternetProtocol@2@@Z)
+win32.obj : error LNK2001: unresolved external symbol __imp_socket
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_WSAStartup referenced in function "public: __cdecl http::detail::WinSock::WinSock(void)" (??0WinSock@detail@http@@QEAA@XZ)
+win32.obj : error LNK2001: unresolved external symbol __imp_WSAStartup
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_WSACleanup referenced in function "public: __cdecl http::detail::WinSock::WinSock(void)" (??0WinSock@detail@http@@QEAA@XZ)
+win32.obj : error LNK2001: unresolved external symbol __imp_WSACleanup
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_WSAGetLastError referenced in function "public: __cdecl http::detail::Socket::Socket(enum http::InternetProtocol)" (??0Socket@detail@http@@QEAA@W4InternetProtocol@2@@Z)
+win32.obj : error LNK2001: unresolved external symbol __imp_WSAGetLastError
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_getaddrinfo referenced in function "public: struct http::Response __cdecl http::Request::send(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,class std::vector<unsigned char,class std::allocator<unsigned char> > const &,class std::vector<class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >,class std::allocator<class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > > > const &,class std::chrono::duration<__int64,struct std::ratio<1,1000> >)" (?send@Request@http@@QEAA?AUResponse@2@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBV?$vector@EV?$allocator@E@std@@@5@AEBV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@5@V?$duration@_JU?$ratio@$00$0DOI@@std@@@chrono@5@@Z)
+ENetClient.obj : error LNK2019: unresolved external symbol __imp_freeaddrinfo referenced in function "public: struct http::Response __cdecl http::Request::send(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &,class std::vector<unsigned char,class std::allocator<unsigned char> > const &,class std::vector<class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >,class std::allocator<class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > > > const &,class std::chrono::duration<__int64,struct std::ratio<1,1000> >)" (?send@Request@http@@QEAA?AUResponse@2@AEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@AEBV?$vector@EV?$allocator@E@std@@@5@AEBV?$vector@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@2@@5@V?$duration@_JU?$ratio@$00$0DOI@@std@@@chrono@5@@Z)
+Main.obj : error LNK2019: unresolved external symbol Direct3DCreate9 referenced in function "bool __cdecl Gui::CreateDevice(void)" (?CreateDevice@Gui@@YA_NXZ)
+host.obj : error LNK2019: unresolved external symbol __imp_htonl referenced in function enet_host_bandwidth_throttle
+packet.obj : error LNK2001: unresolved external symbol __imp_htonl
+peer.obj : error LNK2001: unresolved external symbol __imp_htonl
+protocol.obj : error LNK2001: unresolved external symbol __imp_htonl
+host.obj : error LNK2019: unresolved external symbol __imp_htons referenced in function enet_host_connect
+peer.obj : error LNK2001: unresolved external symbol __imp_htons
+protocol.obj : error LNK2001: unresolved external symbol __imp_htons
+win32.obj : error LNK2001: unresolved external symbol __imp_htons
+peer.obj : error LNK2019: unresolved external symbol __imp_ntohl referenced in function enet_peer_send
+protocol.obj : error LNK2001: unresolved external symbol __imp_ntohl
+peer.obj : error LNK2019: unresolved external symbol __imp_ntohs referenced in function enet_peer_queue_incoming_command
+protocol.obj : error LNK2001: unresolved external symbol __imp_ntohs
+win32.obj : error LNK2001: unresolved external symbol __imp_ntohs
+win32.obj : error LNK2019: unresolved external symbol __imp_timeGetTime referenced in function enet_host_random_seed
+win32.obj : error LNK2019: unresolved external symbol __imp_timeBeginPeriod referenced in function enet_initialize
+win32.obj : error LNK2019: unresolved external symbol __imp_timeEndPeriod referenced in function enet_deinitialize
+win32.obj : error LNK2019: unresolved external symbol __WSAFDIsSet referenced in function enet_socket_wait
+win32.obj : error LNK2019: unresolved external symbol __imp_accept referenced in function enet_socket_accept
+win32.obj : error LNK2019: unresolved external symbol __imp_bind referenced in function enet_socket_bind
+win32.obj : error LNK2019: unresolved external symbol __imp_getsockname referenced in function enet_socket_get_address
+win32.obj : error LNK2019: unresolved external symbol __imp_inet_ntoa referenced in function enet_address_get_host_ip
+win32.obj : error LNK2019: unresolved external symbol __imp_listen referenced in function enet_socket_listen
+win32.obj : error LNK2019: unresolved external symbol __imp_setsockopt referenced in function enet_socket_set_option
+win32.obj : error LNK2019: unresolved external symbol __imp_shutdown referenced in function enet_socket_shutdown
+win32.obj : error LNK2019: unresolved external symbol __imp_gethostbyaddr referenced in function enet_address_get_host
+win32.obj : error LNK2019: unresolved external symbol __imp_gethostbyname referenced in function enet_address_set_host
+win32.obj : error LNK2019: unresolved external symbol __imp_WSARecvFrom referenced in function enet_socket_receive
+win32.obj : error LNK2019: unresolved external symbol __imp_WSASendTo referenced in function enet_socket_send
+C:\Users\Administrator\Desktop\Project\Si-paling-umberela\x64\Debug\project-umbrella.exe : fatal error LNK1120: 33 unresolved externals

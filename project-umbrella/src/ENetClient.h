@@ -1,6 +1,6 @@
 #pragma once
 
-#include "enet/include/enet.h"
+#include "../vendor/enet/include/enet.h"
 #include <iostream>
 
 #include "proton/variant.hpp"
@@ -29,7 +29,6 @@ struct PersonalSetting {
 };
 
 struct ClientData {
-	bool hadapkanan = true;
 	std::string name = "";
 	std::string pass = "";
 	
