@@ -29,6 +29,7 @@ struct PersonalSetting {
 };
 
 struct ClientData {
+	bool hadapkanan = true;
 	std::string name = "";
 	std::string pass = "";
 	
